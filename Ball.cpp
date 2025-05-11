@@ -13,16 +13,17 @@ Ball::Ball(float startX, float startY) {
 }
 
 void Ball::reflect(const sf::Vector2f& normal) {
+    // Нормализация скорости после отскока
+    float speed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
     float dot = velocity.x * normal.x + velocity.y * normal.y;
-    velocity -= 2.0f * dot * normal;
+    velocity.x -= 2 * dot * normal.x;
+    velocity.y -= 2 * dot * normal.y;
 
-    float currentSpeed = std::hypot(velocity.x, velocity.y);
-    if (currentSpeed > 0) {
-        velocity = (velocity / currentSpeed) * baseSpeed;
+    // Сохраняем исходную скорость
+    float newSpeed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+    if (newSpeed > 0) {
+        velocity = (velocity / newSpeed) * speed;
     }
-
-    constexpr float offset = 2.0f;
-    sprite.move(normal * offset);
 }
 
 void Ball::reset(float x, float y) {

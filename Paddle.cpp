@@ -9,22 +9,27 @@ Paddle::Paddle(float startX, float startY) {
 
 //Обновление позиции платформы
 void Paddle::update(float dt, float windowWidth) {
+    sf::Vector2f prevPos = sprite.getPosition(); // Сохраняем предыдущую позицию
+
+    // Обновляем позицию платформы
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-        sprite.move(-speed * dt, 0); //Движение влево
+        sprite.move(-speed * dt, 0);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        sprite.move(speed * dt, 0); //Движение вправо
+        sprite.move(speed * dt, 0);
     }
 
-    //Ограничение движения платформы в пределах окна
+    // Ограничение границ
     float x = std::clamp(
         sprite.getPosition().x,
         0.0f,
         windowWidth - sprite.getGlobalBounds().width
     );
     sprite.setPosition(x, sprite.getPosition().y);
-}
 
+    // Расчет реальной скорости (вектор)
+    velocity = (sprite.getPosition() - prevPos) / dt;
+}
 //Отрисовка 
 void Paddle::draw(sf::RenderWindow& window) {
     window.draw(sprite);

@@ -19,6 +19,7 @@ set(SOURCES
     GameEngine.cpp
     Paddle.cpp
     AssetManager.cpp
+    Physics.cpp
 )
 
 # Список заголовочных файлов
@@ -28,10 +29,11 @@ set(HEADERS
     Block.h
     GameEngine.h
     Paddle.h
+    Physics.cpp
 )
 
 # Создаем исполняемый файл
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} "Physics.cpp")
 
 # Подключаем SFML
 target_link_libraries(${PROJECT_NAME}

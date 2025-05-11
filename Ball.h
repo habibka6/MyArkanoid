@@ -16,11 +16,12 @@ public:
     sf::FloatRect getBounds() const;
     sf::Vector2f getPosition() const;
     sf::Vector2f getVelocity() const;
+    sf::Sprite& getSprite() { return sprite; }
     float getSpeed() const;
     void setVelocity(float x, float y); //Установка скорости
 
 private:
     sf::Sprite sprite;
     sf::Vector2f velocity;
-    const float baseSpeed = 600.0f; 
+    const float baseSpeed = 500.0f; 
 };

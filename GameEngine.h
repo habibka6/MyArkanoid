@@ -6,7 +6,7 @@
 #include "Ball.h"
 #include "Block.h"
 #include "AssetManager.h"
-
+#include "Physics.h"
 // Основной класс игры
 class GameEngine {
 public:
