@@ -1,20 +1,20 @@
-#include "GameEngine.h"
-#include <sstream>
+п»ї#include "GameEngine.h"
 
 GameEngine::GameEngine()
     : window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Arkanoid"),
-    paddle(WINDOW_WIDTH / 2 - 100, WINDOW_HEIGHT - 50), //Центрирование платформы
+    paddle(WINDOW_WIDTH / 2 - 100, WINDOW_HEIGHT - 50), //Р¦РµРЅС‚СЂРёСЂРѕРІР°РЅРёРµ РїР»Р°С‚С„РѕСЂРјС‹
     ball(WINDOW_WIDTH / 2, WINDOW_HEIGHT - 100) 
 {    
 
-    //Загрузка фона и масштабирование под размер окна
+
+    //Р—Р°РіСЂСѓР·РєР° С„РѕРЅР° Рё РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµ РїРѕРґ СЂР°Р·РјРµСЂ РѕРєРЅР°
     backgroundSprite.setTexture(AssetManager::GetTexture("background.png"));
     
     float scaleX = WINDOW_WIDTH / backgroundSprite.getLocalBounds().width;
     float scaleY = WINDOW_HEIGHT / backgroundSprite.getLocalBounds().height;
     backgroundSprite.setScale(scaleX, scaleY);
 
-    //Настройка текста "Game Over"
+    //РќР°СЃС‚СЂРѕР№РєР° С‚РµРєСЃС‚Р° "Game Over"
     gameOverText.setFont(AssetManager::GetFont("retro.ttf"));
     gameOverText.setString("GAME OVER");
     gameOverText.setCharacterSize(100);
@@ -24,61 +24,156 @@ GameEngine::GameEngine()
         WINDOW_HEIGHT / 2 - gameOverText.getLocalBounds().height / 2
     );
 
-    //Установка иконки окна игрыы
+    //РЈСЃС‚Р°РЅРѕРІРєР° РёРєРѕРЅРєРё РѕРєРЅР° РёРіСЂС‹С‹
     sf::Image icon = AssetManager::GetImage("icon.png");
     window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
 
-    window.setFramerateLimit(60); //FPS
-    //Шрифт очков
+    window.setFramerateLimit(70); //FPS
+    //РЁСЂРёС„С‚ РѕС‡РєРѕРІ
     scoreText.setFont(AssetManager::GetFont("retro.ttf"));
     scoreText.setCharacterSize(30);
     scoreText.setPosition(20, 20);
     
-    //Загрузка уровня и звуковых эффектов
+    //Р—Р°РіСЂСѓР·РєР° СѓСЂРѕРІРЅСЏ Рё Р·РІСѓРєРѕРІС‹С… СЌС„С„РµРєС‚РѕРІ
     loadLevel();
     hitPaddleSound.setBuffer(AssetManager::GetSoundBuffer("paddle_hit.wav"));
     hitBlockSound.setBuffer(AssetManager::GetSoundBuffer("block_hit.wav"));
+    hitRockSound.setBuffer(AssetManager::GetSoundBuffer("rock_hit.wav"));
     loseBallSound.setBuffer(AssetManager::GetSoundBuffer("lose_ball.wav"));
 
 }
 
 void GameEngine::loadLevel() {
     blocks.clear();
-    //Рандомно расставляем блоки(50% зел, 30% жел, 20% красн)
-    std::mt19937 gen(std::random_device{}());
-    std::discrete_distribution<> dist{ 50, 30, 20 };
 
-    const int cols = 10; // 10 блоков в ряду
-    const int rows = 5;  // 5 рядов
-    const float blockWidth = 90.f;
-    const float blockHeight = 40.f;
-    const float marginX = (WINDOW_WIDTH - (cols * blockWidth + (cols - 1) * 30)) / 2; // Было 10
+    // 1) РџР°СЂР°РјРµС‚СЂС‹ РїРѕР»СЏ
+    const int cols = 10;
+    const int rows = 5;
+    const float blockW = 90.f;
+    const float blockH = 40.f;
+    const float spacing = 30.f;
+    const float marginX = (WINDOW_WIDTH - (cols * blockW + (cols - 1) * spacing)) / 2;
     const float marginY = 60.f;
 
-    for (int y = 0; y < rows; ++y) {
-        for (int x = 0; x < cols; ++x) {
-            Block::Type type;
-            switch (dist(gen)) {
-            case 0: type = Block::Type::Green; break;
-            case 1: type = Block::Type::Yellow; break;
-            case 2: type = Block::Type::Red; break;
-            default: type = Block::Type::Green;
-            }
-            float posX = marginX + x * (blockWidth + 30); // Было +10
-            float posY = marginY + y * (blockHeight + 30); // Было +15
-            blocks.emplace_back(posX, posY, type);
+    // 2) РЎРєРѕР»СЊРєРѕ РЅСѓР¶РЅРѕ РєР°РјРЅРµР№ Рё РІСЃРµ РёРЅРґРµРєСЃС‹
+    const int rockCount = 5;
+    std::vector<int> allIdx(cols * rows);
+    std::iota(allIdx.begin(), allIdx.end(), 0);
+
+    // 3) РџРµСЂРµРјРµС€РёРІР°РµРј
+    std::mt19937 gen(std::random_device{}());
+    std::shuffle(allIdx.begin(), allIdx.end(), gen);
+
+    // 4) РћС‚Р±РёСЂР°РµРј РёРЅРґРµРєСЃС‹ РґР»СЏ РєР°РјРЅРµР№ Р±РµР· СЃРѕСЃРµРґРµР№
+    std::unordered_set<int> rockSet;
+    auto hasNeighbor = [&](int idx) {
+        int x = idx % cols, y = idx / cols;
+        // РїСЂРѕРІРµСЂСЏРµРј 4 СЃРѕСЃРµРґРµР№
+        if (x > 0 && rockSet.count(idx - 1))      return true;
+        if (x < cols - 1 && rockSet.count(idx + 1))      return true;
+        if (y > 0 && rockSet.count(idx - cols))   return true;
+        if (y < rows - 1 && rockSet.count(idx + cols))   return true;
+        return false;
+        };
+
+    for (int idx : allIdx) {
+        if ((int)rockSet.size() >= rockCount)
+            break;
+        if (!hasNeighbor(idx)) {
+            rockSet.insert(idx);
+        }
+    }
+    // РµСЃР»Рё РЅРµ РЅР°Р±СЂР°Р»Рё РЅСѓР¶РЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ (РєСЂР°Р№РЅРµ РјР°Р»РѕРІРµСЂРѕСЏС‚РЅРѕ), 
+    // РјРѕР¶РЅРѕ РїСЂРѕСЃС‚Рѕ РґРѕРєРёРЅСѓС‚СЊ РёР· РѕСЃС‚Р°РІС€РёС…СЃСЏ:
+    for (int idx : allIdx) {
+        if ((int)rockSet.size() >= rockCount)
+            break;
+        rockSet.insert(idx);
+    }
+
+    // 5) Р”РёСЃС‚СЂРёР±СѓС†РёСЏ РґР»СЏ С†РІРµС‚РЅС‹С… Р±Р»РѕРєРѕРІ
+    std::discrete_distribution<> colorDist{ 45, 25, 20 };
+
+    // 6) РЎС‚СЂРѕРёРј РІРµРєС‚РѕСЂ unique_ptr<BlockBase>
+    for (int idx = 0; idx < cols * rows; ++idx) {
+        int y = idx / cols;
+        int x = idx % cols;
+        float posX = marginX + x * (blockW + spacing);
+        float posY = marginY + y * (blockH + spacing);
+
+        if (rockSet.count(idx)) {
+            // РєР°РјРµРЅРЅС‹Р№ Р±Р»РѕРє
+            blocks.emplace_back(std::make_unique<Rock>(posX, posY));
+        }
+        else {
+            // РѕР±С‹С‡РЅС‹Р№ С†РІРµС‚РЅРѕР№
+            int d = colorDist(gen);
+            Block::Type type = (d == 0 ? Block::Type::Green
+                : d == 1 ? Block::Type::Yellow
+                : Block::Type::Red);
+            blocks.emplace_back(std::make_unique<Block>(posX, posY, type));
         }
     }
 }
 
-void GameEngine::run() {
-    sf::Clock clock; //Таймер для измерения времени между кадрами
-    while (window.isOpen()) {
-        float dt = clock.restart().asSeconds();//Вычисляем прошедшее в секундах время между кадрами)
+void GameEngine::resetBallPosition()
+{
+    // Р¦РµРЅС‚СЂ РїР»Р°С‚С„РѕСЂРјС‹
+    float px = paddle.getPosition().x + paddle.getSize().x / 2;
+    float py = paddle.getPosition().y;
+    // РЎС‚Р°РІРёРј РјСЏС‡ С‡СѓС‚СЊ РІС‹С€Рµ
+    ball.getSprite().setPosition(px, py - ball.getBounds().height);
+}
+
+void GameEngine::launchBall()
+{
+    // РЎР»СѓС‡Р°Р№РЅС‹Р№ СѓРіРѕР» РѕС‚ -60В° РґРѕ +60В°
+    static std::mt19937 gen(std::random_device{}());
+    std::uniform_real_distribution<float> dist(-20.f, 20.f);
+    float angleDeg = dist(gen) * 3.1415926f / 180.f;
+
+    float speed = ball.getSpeed();
+    float vx = std::sin(angleDeg) * speed;
+    float vy = -std::cos(angleDeg) * speed;
+
+    ball.setVelocity(vx, vy);
+    waitingLaunch = false;
+}
+
+void GameEngine::run()
+{
+    sf::Clock clock;
+    const float fixedStep = 1.f / 120.f;   // С€Р°Рі С„РёР·РёРєРё
+    const int   maxSubSteps = 5;            // РЅРµ Р±РѕР»РµРµ 5 РїРѕРґС€Р°РіРѕРІ Р·Р° РєР°РґСЂ
+
+    float accumulator = 0.f;
+
+    while (window.isOpen())
+    {
+        // 1) РЎС‡РёС‚Р°РµРј dt Рё РѕРіСЂР°РЅРёС‡РёРІР°РµРј Р±СЂРѕСЃРєРё
+        float dt = clock.restart().asSeconds();
+        if (dt > 0.25f)               // Р·Р°С‰РёС‚Р° РѕС‚ РґРѕР»РіРёС… С„СЂРёР·РѕРІ
+            dt = 0.25f;
+
+        accumulator += dt;
+
+        // 2) Р’РІРѕРґ РѕР±СЂР°Р±Р°С‚С‹РІР°РµРј РѕРґРёРЅ СЂР°Р· Р·Р° РєР°РґСЂ
         handleInput();
-        update(dt); //Обновляем игровое состояние
-        render(); //Отрисовываем кадр
+
+        // 3) РџРѕРґС€Р°РіРё С„РёР·РёРєРё
+        int subSteps = 0;
+        while (accumulator >= fixedStep && subSteps < maxSubSteps)
+        {
+            ball.savePrevPosition();
+            update(fixedStep);
+            accumulator -= fixedStep;
+            subSteps++;
+        }
+
+        // 4) РРЅС‚РµСЂРїРѕР»СЏС†РёСЏ РґР»СЏ РїР»Р°РІРЅРѕР№ РѕС‚СЂРёСЃРѕРІРєРё
+        float alpha = accumulator / fixedStep;
+        render(alpha);
     }
 }
 
@@ -92,43 +187,67 @@ void GameEngine::handleInput() {
     }
 }
 
-//Обновление игрового состояния
-void GameEngine::update(float dt) {
-    if (gameOver) return; //Игра остановлена
+//РћР±РЅРѕРІР»РµРЅРёРµ РёРіСЂРѕРІРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ
+void GameEngine::update(float dt)
+{
+    if (gameOver) return;
 
-    paddle.update(dt, WINDOW_WIDTH); //Обновляем позицию платформы
-    ball.update(dt); //Обновляем позицию мяча
-    checkCollisions(); //Проверяем столкновения
+    paddle.update(dt, WINDOW_WIDTH);
 
-    //Обновление текста счета и жизней
+    if (waitingLaunch) {
+        // РџСЂРёРІСЏР·С‹РІР°РµРј С€Р°СЂ Рє РїР»Р°С‚С„РѕСЂРјРµ
+        resetBallPosition();
+
+        // Р•СЃР»Рё РЅР°Р¶Р°Р»Рё Space вЂ” Р·Р°РїСѓСЃРєР°РµРј
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+            launchBall();
+        }
+    }
+    else {
+        // РћР±С‹С‡РЅРѕРµ РїРѕРІРµРґРµРЅРёРµ
+        ball.update(dt);
+        checkCollisions(dt);
+
+        // РџСЂРѕРІРµСЂРєР° СЃРјРµСЂС‚Рё (С‚Р°Рј РІС‹СЃС‚Р°РІРёС‚СЃСЏ waitingLaunch=true)
+        // Рё РјСЏС‡ РїСЂРёР»РёРїРЅРµС‚ Рє РїР»Р°С‚С„РѕСЂРјРµ СЃРЅРѕРІР°
+    }
+    // РћР±РЅРѕРІР»СЏРµРј С‚РµРєСЃС‚
     std::stringstream ss;
     ss << "Score: " << score << " |  Lives: " << lives;
     scoreText.setString(ss.str());
 }
 
 
-void GameEngine::checkCollisions() {
-    Physics::checkPaddleCollision(ball, paddle, hitPaddleSound);
-    Physics::checkBlockCollisions(ball, blocks, score, hitBlockSound);
-    Physics::checkWallCollisions(ball, window);
-    Physics::checkDeathZone(ball, lives, gameOver, window, loseBallSound);
-}
-//Отрисовка игрового состояния
-void GameEngine::render() {
-    window.clear(); //
 
-    window.draw(backgroundSprite); //Рисуем фон
+void GameEngine::checkCollisions(float dt) {
+    Physics::checkPaddleCollision(ball, paddle, hitPaddleSound);
+    Physics::checkBlockCollisions(ball, blocks, score,dt, hitBlockSound,hitRockSound);
+    Physics::checkWallCollisions(ball, window);
+
+    // РџСЂРѕРІРµСЂСЏРµРј Р·РѕРЅСѓ СЃРјРµСЂС‚Рё
+    int oldLives = lives;
+    Physics::checkDeathZone(ball, lives, gameOver, window, loseBallSound);
+    if (lives < oldLives && !gameOver) {
+        // РїРѕС‚РµСЂСЏР»Рё РјСЏС‡ вЂ“ РІРѕР·РІСЂР°С‰Р°РµРјСЃСЏ РІ СЂРµР¶РёРј РѕР¶РёРґР°РЅРёСЏ
+        waitingLaunch = true;
+    }
+}
+//РћС‚СЂРёСЃРѕРІРєР° РёРіСЂРѕРІРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ
+void GameEngine::render(float alpha) {
+    window.clear();
+    window.draw(backgroundSprite);
 
     if (gameOver) {
-        window.draw(gameOverText); // выводим "Game Over"
-    }
-    else {
-        // Рисуем все игровые объекты
-        for (auto& block : blocks) block.draw(window); //Блоки
-        paddle.draw(window); //Платформу
-        ball.draw(window); //Мяч
-        window.draw(scoreText); //Текст счета
+        window.draw(gameOverText);
+    } else {
+        // РћС‚СЂРёСЃРѕРІС‹РІР°РµРј РІСЃРµ Р±Р»РѕРєРё, РїРѕР»РёРјРѕСЂС„РЅРѕ
+        for (auto& blk : blocks)
+            blk->draw(window);
+
+        paddle.draw(window);
+        ball.draw(window, alpha);
+        window.draw(scoreText);
     }
 
-    window.display(); //Отображаем нарисованное
+    window.display();
 }

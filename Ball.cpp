@@ -59,8 +59,12 @@ void Ball::update(float dt) {
     sprite.move(velocity * dt);
 }
 
-void Ball::draw(sf::RenderWindow& window) {
+void Ball::draw(sf::RenderWindow& window, float alpha) {
+    sf::Vector2f renderPos = m_prevPosition * (1 - alpha) + sprite.getPosition() * alpha;
+    sf::Vector2f originalPos = sprite.getPosition();
+    sprite.setPosition(renderPos);
     window.draw(sprite);
+    sprite.setPosition(originalPos);
 }
 
 sf::FloatRect Ball::getBounds() const {

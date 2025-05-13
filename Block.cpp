@@ -29,7 +29,7 @@ Block::Block(float x, float y, Type type)
 }
 
 //Обработка попадания по блоку
-bool Block::hit() {
+bool Block::hit ()  {
     currentHealth--;
     updateColor();
     if (currentHealth <= 0) {
@@ -60,3 +60,8 @@ sf::FloatRect Block::getBounds() const { return shape.getGlobalBounds(); }
 void Block::draw(sf::RenderWindow& window) {
     if (!destroyed) window.draw(shape);
 }
+
+
+
+
+

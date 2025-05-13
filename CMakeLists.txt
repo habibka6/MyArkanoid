@@ -33,7 +33,7 @@ set(HEADERS
 )
 
 # Создаем исполняемый файл
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} "Physics.cpp")
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} "Physics.cpp" "BaseBlock.h" "Rock.h" "Rock.cpp")
 
 # Подключаем SFML
 target_link_libraries(${PROJECT_NAME}
