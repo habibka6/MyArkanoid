@@ -12,6 +12,7 @@
 #include <sstream>
 #include <unordered_set>
 #include <numeric>
+#include "Config.h"
 // Основной класс игры
 class GameEngine {
 public:
@@ -19,8 +20,6 @@ public:
     void run(); //Запуск игрового цикла
 
 private:
-    const unsigned int WINDOW_WIDTH = 1280; 
-    const unsigned int WINDOW_HEIGHT = 720;
 
     sf::RenderWindow window; //Окно игры
     Paddle paddle; //Платформа

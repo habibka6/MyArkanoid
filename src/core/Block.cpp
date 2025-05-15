@@ -1,6 +1,6 @@
 #include "Block.h"
 Block::Block(float x, float y, Type type)
-    : blockType(type), destroyed(false){
+    : blockType(type),  destroyed(false), maxHealth(0), currentHealth(0), points(0) {
     shape.setSize(sf::Vector2f(100, 40));
     shape.setPosition(x, y);
 
@@ -41,15 +41,16 @@ bool Block::hit ()  {
 
 //Визуализация степени разрушенности блока(Обновление цвета на более тусклый в первой версии игры)
 void Block::updateColor() {
-    float ratio = static_cast<float>(currentHealth) / maxHealth;
     switch (blockType) {
-    case Type::Green: break;
+    case Type::Green: return; // Не меняем цвет
     case Type::Yellow:
         shape.setFillColor(sf::Color(205, 164, 52));
         break;
-    case Type::Red:
+    case Type::Red: {
+        float ratio = static_cast<float>(currentHealth) / maxHealth;
         shape.setFillColor(sf::Color(255 * ratio, 0, 0));
         break;
+    }
     }
 }
 

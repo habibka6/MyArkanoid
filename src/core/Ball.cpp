@@ -6,24 +6,17 @@ constexpr float PI = 3.14159f;
 constexpr float DEG_TO_RAD = PI / 180.0f;
 
 Ball::Ball(float startX, float startY) {
-    sprite.setTexture(AssetManager::GetTexture("ball.png"));
+    sprite.setTexture(AssetManager::getInstance().GetTexture("ball.png"));
     sprite.setScale(1.5f, 1.5f);
     sprite.setOrigin(sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
     reset(startX, startY);
 }
 
 void Ball::reflect(const sf::Vector2f& normal) {
-    // Нормализация скорости после отскока
-    float speed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
-    float dot = velocity.x * normal.x + velocity.y * normal.y;
-    velocity.x -= 2 * dot * normal.x;
-    velocity.y -= 2 * dot * normal.y;
-
-    // Сохраняем исходную скорость
-    float newSpeed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
-    if (newSpeed > 0) {
-        velocity = (velocity / newSpeed) * speed;
-    }
+    const float speed = std::hypot(velocity.x, velocity.y);
+    const float dot = velocity.x * normal.x + velocity.y * normal.y;
+    velocity -= 2 * dot * normal;
+    velocity = velocity / std::hypot(velocity.x, velocity.y) * speed;
 }
 
 void Ball::reset(float x, float y) {

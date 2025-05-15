@@ -1,4 +1,9 @@
 #include "AssetManager.h"
+AssetManager& AssetManager::getInstance() {
+    static AssetManager instance;
+    return instance;
+}
+
 
 //Инициализация статических контейнеров
 std::map<std::string, sf::Texture> AssetManager::textures;
@@ -8,8 +13,11 @@ std::map<std::string, sf::Image> AssetManager::images;
 
 //Загрузка текстуры из файла
 sf::Texture& AssetManager::GetTexture(const std::string& filename) {
-    if (!textures[filename].loadFromFile("assets/textures/" + filename)) {
-        throw std::runtime_error("Failed to load texture: " + filename);
+    auto& textures = getInstance().textures;
+    if (textures.find(filename) == textures.end()) {
+        if (!textures[filename].loadFromFile("assets/textures/" + filename)) {
+            throw std::runtime_error("Failed to load texture: " + filename);
+        }
     }
     return textures[filename];
 }

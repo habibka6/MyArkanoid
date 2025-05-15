@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "AssetManager.h"
-
+#include "Config.h"
 // Класс платформы для игры
 class Paddle {
 public:
@@ -13,9 +13,8 @@ public:
     sf::Vector2f getPosition() const; // Получение позиции платформы
     sf::Vector2f getSize() const; // Получение размера платформы
     sf::Vector2f getVelocity() const { return velocity; }
-    float getSpeed() const { return speed; }
 private:
     sf::Sprite sprite; 
     sf::Vector2f velocity;
-    const float speed = 600.0f; 
+    const float speed = PADDLE_SPEED;
 };

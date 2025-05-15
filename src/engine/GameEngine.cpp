@@ -8,14 +8,14 @@ GameEngine::GameEngine()
 
 
     //Загрузка фона и масштабирование под размер окна
-    backgroundSprite.setTexture(AssetManager::GetTexture("background.png"));
+    backgroundSprite.setTexture(AssetManager::getInstance().GetTexture("background.png"));
     
     float scaleX = WINDOW_WIDTH / backgroundSprite.getLocalBounds().width;
     float scaleY = WINDOW_HEIGHT / backgroundSprite.getLocalBounds().height;
     backgroundSprite.setScale(scaleX, scaleY);
 
     //Настройка текста "Game Over"
-    gameOverText.setFont(AssetManager::GetFont("retro.ttf"));
+    gameOverText.setFont(AssetManager::getInstance().GetFont("retro.ttf"));
     gameOverText.setString("GAME OVER");
     gameOverText.setCharacterSize(100);
     gameOverText.setFillColor(sf::Color::Red);
@@ -25,22 +25,22 @@ GameEngine::GameEngine()
     );
 
     //Установка иконки окна игрыы
-    sf::Image icon = AssetManager::GetImage("icon.png");
+    sf::Image icon = AssetManager::getInstance().GetImage("icon.png");
     window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
 
     window.setFramerateLimit(70); //FPS
     //Шрифт очков
-    scoreText.setFont(AssetManager::GetFont("retro.ttf"));
+    scoreText.setFont(AssetManager::getInstance().GetFont("retro.ttf"));
     scoreText.setCharacterSize(30);
     scoreText.setPosition(20, 20);
     
     //Загрузка уровня и звуковых эффектов
     loadLevel();
-    hitPaddleSound.setBuffer(AssetManager::GetSoundBuffer("paddle_hit.wav"));
-    hitBlockSound.setBuffer(AssetManager::GetSoundBuffer("block_hit.wav"));
-    hitRockSound.setBuffer(AssetManager::GetSoundBuffer("rock_hit.wav"));
-    loseBallSound.setBuffer(AssetManager::GetSoundBuffer("lose_ball.wav"));
+    hitPaddleSound.setBuffer(AssetManager::getInstance().GetSoundBuffer("paddle_hit.wav"));
+    hitBlockSound.setBuffer(AssetManager::getInstance().GetSoundBuffer("block_hit.wav"));
+    hitRockSound.setBuffer(AssetManager::getInstance().GetSoundBuffer("rock_hit.wav"));
+    loseBallSound.setBuffer(AssetManager::getInstance().GetSoundBuffer("lose_ball.wav"));
 
 }
 

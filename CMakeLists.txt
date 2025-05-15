@@ -1,52 +1,45 @@
 cmake_minimum_required(VERSION 3.17)
-project(MyArkanoid)
+project(MyArkanoid LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Указываем путь к SFML (измените на ваш путь)
-set(SFML_DIR "C:/C++Libraries/SFML-2.6.2/lib/cmake/SFML")
+# Объявляем список исходных файлов
+set(SOURCES
+    main.cpp
+    src/core/Ball.cpp
+    src/core/Paddle.cpp
+    src/core/Block.cpp
+    src/core/Rock.cpp
 
-# Подключаем необходимые модули SFML
+    src/resource/AssetManager.cpp
+    src/physics/Physics.cpp  
+    src/engine/GameEngine.cpp
+)
+
+# Указываем путь к SFML
+set(SFML_DIR "C:/C++Libraries/SFML-2.6.2/lib/cmake/SFML")
 find_package(SFML 2.6 COMPONENTS graphics window system audio REQUIRED)
 
-# Список исходных файлов
-set(SOURCES
+# Объявляем цель
+add_executable(${PROJECT_NAME} ${SOURCES})
 
-    main.cpp
-    Ball.cpp
-    Block.cpp
-    GameEngine.cpp
-    Paddle.cpp
-    AssetManager.cpp
-    Physics.cpp
+# Теперь указываем include директории
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_SOURCE_DIR}/include/core
+    ${CMAKE_SOURCE_DIR}/include/physics
+    ${CMAKE_SOURCE_DIR}/include/resource
+    ${CMAKE_SOURCE_DIR}/include/engine
 )
 
-# Список заголовочных файлов
-set(HEADERS
-    Ball.h
-    AssetManager.h
-    Block.h
-    GameEngine.h
-    Paddle.h
-    Physics.cpp
-)
-
-# Создаем исполняемый файл
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} "Physics.cpp" "BaseBlock.h" "Rock.h" "Rock.cpp")
-
-# Подключаем SFML
-target_link_libraries(${PROJECT_NAME}
+# Линкуем SFML
+target_link_libraries(${PROJECT_NAME} PRIVATE
     sfml-graphics
     sfml-window
     sfml-system
     sfml-audio
 )
 
-# Указываем пути для include
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_SOURCE_DIR}/include
-)
 
 # Копирование DLL и ассетов
 if(WIN32)

@@ -3,7 +3,7 @@
 #include "Ball.h"
 #include "Paddle.h"
 #include "Block.h"
-
+#include "Config.h"
 class Physics {
 public:
     static void checkPaddleCollision(Ball& ball, const Paddle& paddle, sf::Sound& sound);
@@ -15,9 +15,9 @@ public:
     static std::pair<sf::Vector2f, float> sweepAABB(
         const sf::Vector2f& startPos,
         const sf::Vector2f& velocity,
-        float               dt,
+        float dt,
         const sf::FloatRect& box,
-        float               radius
+        float radius
     );
     
 };

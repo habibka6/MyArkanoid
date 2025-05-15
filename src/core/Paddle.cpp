@@ -2,7 +2,7 @@
 
 
 Paddle::Paddle(float startX, float startY) {
-    sprite.setTexture(AssetManager::GetTexture("paddle.png"));
+    sprite.setTexture(AssetManager::getInstance().GetTexture("paddle.png"));
     sprite.setScale(2.0f, 2.0f);
     sprite.setPosition(startX, startY);
 }
