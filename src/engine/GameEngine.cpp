@@ -132,12 +132,13 @@ void GameEngine::launchBall()
     static std::mt19937 gen(std::random_device{}());
     std::uniform_real_distribution<float> dist(-20.f, 20.f);
     float angleDeg = dist(gen) * 3.1415926f / 180.f;
-
+    ball.resetSpeedFactor();
     float speed = ball.getSpeed();
     float vx = std::sin(angleDeg) * speed;
     float vy = -std::cos(angleDeg) * speed;
 
     ball.setVelocity(vx, vy);
+    
     waitingLaunch = false;
 }
 
@@ -220,16 +221,16 @@ void GameEngine::update(float dt)
 
 
 void GameEngine::checkCollisions(float dt) {
-    Physics::checkPaddleCollision(ball, paddle, hitPaddleSound);
-    Physics::checkBlockCollisions(ball, blocks, score,dt, hitBlockSound,hitRockSound);
-    Physics::checkWallCollisions(ball, window);
+    PaddleCollision::checkPaddleCollision(ball, paddle, hitPaddleSound);
+    BlockCollision::checkBlockCollisions(ball, blocks, score, dt, hitBlockSound, hitRockSound);
+    WallCollision::checkWallCollisions(ball, window);
 
-    // Проверяем зону смерти
-    int oldLives = lives;
-    Physics::checkDeathZone(ball, lives, gameOver, window, loseBallSound);
-    if (lives < oldLives && !gameOver) {
-        // потеряли мяч – возвращаемся в режим ожидания
-        waitingLaunch = true;
+    // Обработка зоны смерти (либо через DeathZone, либо напрямую)
+    if (ball.getPosition().y + ball.getBounds().height / 2 >= WINDOW_HEIGHT) {
+        lives--;
+        loseBallSound.play();
+        if (lives <= 0) gameOver = true;
+        else waitingLaunch = true;
     }
 }
 //Отрисовка игрового состояния

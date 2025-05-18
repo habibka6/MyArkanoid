@@ -13,7 +13,11 @@ set(SOURCES
     src/core/Rock.cpp
 
     src/resource/AssetManager.cpp
-    src/physics/Physics.cpp  
+      
+    src/physics/BlockCollision.cpp  
+    src/physics/WallCollision.cpp  
+    src/physics/PaddleCollision.cpp  
+
     src/engine/GameEngine.cpp
 )
 

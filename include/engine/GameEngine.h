@@ -1,18 +1,20 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <vector>
-#include <random>
 #include "Paddle.h"
 #include "Ball.h"
 #include "Block.h"
 #include "AssetManager.h"
-#include "Physics.h"
+#include "BlockCollision.h"
+#include "WallCollision.h"
+#include "PaddleCollision.h"
 #include "BaseBlock.h"
 #include "Rock.h"
+#include "Config.h"
 #include <sstream>
 #include <unordered_set>
 #include <numeric>
-#include "Config.h"
+#include <vector>
+#include <random>
 // Основной класс игры
 class GameEngine {
 public:

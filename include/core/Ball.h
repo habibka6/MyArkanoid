@@ -24,9 +24,13 @@ public:
     void savePrevPosition() {
         m_prevPosition = sprite.getPosition();
     }
+    void resetSpeedFactor() { speedFactor = 1.0f; }
+    void increaseSpeedFactor(float value);
+    float getSpeedFactor() const { return speedFactor; }
 private:
     sf::Sprite sprite;
     sf::Vector2f velocity;
     const float baseSpeed = BASE_BALL_SPEED;
+    float speedFactor = 1.0f; // Множитель скорости
     sf::Vector2f m_prevPosition; // Предыдущая позиция для интерполяции
 };

@@ -47,6 +47,9 @@ void Ball::setVelocity(float x, float y) {
         velocity = (velocity / currentSpeed) * baseSpeed;
     }
 }
+void Ball::increaseSpeedFactor(float value) {
+    speedFactor = std::min(speedFactor + value, MAX_SPEED_FACTOR);
+}
 
 void Ball::update(float dt) {
     sprite.move(velocity * dt);

@@ -27,4 +27,5 @@ private:
     int  currentHealth; // Текущее здоровье
     int  points; // Очки за уничтожение
     bool destroyed; // Флаг уничтожения
+
 };
