@@ -13,10 +13,16 @@ Ball::Ball(float startX, float startY) {
 }
 
 void Ball::reflect(const sf::Vector2f& normal) {
-    const float speed = std::hypot(velocity.x, velocity.y);
-    const float dot = velocity.x * normal.x + velocity.y * normal.y;
-    velocity -= 2 * dot * normal;
-    velocity = velocity / std::hypot(velocity.x, velocity.y) * speed;
+    // Сохраняем текущую скорость с учетом множителя
+    float currentSpeed = std::hypot(velocity.x, velocity.y);
+
+    // Отражение вектора скорости
+    float dot = velocity.x * normal.x + velocity.y * normal.y;
+    velocity.x -= 2 * dot * normal.x;
+    velocity.y -= 2 * dot * normal.y;
+
+    // Нормализация и сохранение скорости (без изменения множителя)
+    velocity = velocity / std::hypot(velocity.x, velocity.y) * currentSpeed;
 }
 
 void Ball::reset(float x, float y) {
@@ -44,15 +50,25 @@ void Ball::setVelocity(float x, float y) {
     velocity = { x, y };
     float currentSpeed = std::hypot(x, y);
     if (currentSpeed > 0) {
-        velocity = (velocity / currentSpeed) * baseSpeed;
+        // Учитываем множитель скорости
+        velocity = (velocity / currentSpeed) * baseSpeed * speedFactor;
     }
 }
 void Ball::increaseSpeedFactor(float value) {
     speedFactor = std::min(speedFactor + value, MAX_SPEED_FACTOR);
+    // Плавное обновление скорости
+    float currentSpeed = std::hypot(velocity.x, velocity.y);
+    velocity = (velocity / currentSpeed) * baseSpeed * speedFactor;
 }
 
 void Ball::update(float dt) {
-    sprite.move(velocity * dt);
+    const int microSteps = 8; // Было 4
+    float stepDt = dt / microSteps;
+
+    for (int i = 0; i < microSteps; ++i) {
+        m_prevPosition = sprite.getPosition();
+        sprite.move(velocity * stepDt);
+    }
 }
 
 void Ball::draw(sf::RenderWindow& window, float alpha) {

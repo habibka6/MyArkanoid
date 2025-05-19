@@ -15,10 +15,13 @@
 #include <numeric>
 #include <vector>
 #include <random>
+#include "SpatialGrid.h"
+
 // Основной класс игры
 class GameEngine {
 public:
     GameEngine(); //Конструктор
+    SpatialGrid spatialGrid;
     void run(); //Запуск игрового цикла
 
 private:

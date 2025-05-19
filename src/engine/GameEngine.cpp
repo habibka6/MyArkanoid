@@ -3,7 +3,7 @@
 GameEngine::GameEngine()
     : window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Arkanoid"),
     paddle(WINDOW_WIDTH / 2 - 100, WINDOW_HEIGHT - 50), //Центрирование платформы
-    ball(WINDOW_WIDTH / 2, WINDOW_HEIGHT - 100) 
+    ball(WINDOW_WIDTH / 2, WINDOW_HEIGHT - 100), spatialGrid(WINDOW_WIDTH, WINDOW_HEIGHT, SPATIAL_GRID_CELL_SIZE)
 {    
 
 
@@ -115,6 +115,11 @@ void GameEngine::loadLevel() {
             blocks.emplace_back(std::make_unique<Block>(posX, posY, type));
         }
     }
+    spatialGrid.clear();
+    for (auto& block : blocks) {
+        spatialGrid.addBlock(block.get());
+    }
+
 }
 
 void GameEngine::resetBallPosition()
@@ -130,7 +135,7 @@ void GameEngine::launchBall()
 {
     // Случайный угол от -60° до +60°
     static std::mt19937 gen(std::random_device{}());
-    std::uniform_real_distribution<float> dist(-20.f, 20.f);
+    std::uniform_real_distribution<float> dist(-40.f, 40.f);
     float angleDeg = dist(gen) * 3.1415926f / 180.f;
     ball.resetSpeedFactor();
     float speed = ball.getSpeed();
@@ -142,37 +147,30 @@ void GameEngine::launchBall()
     waitingLaunch = false;
 }
 
-void GameEngine::run()
-{
+void GameEngine::run() {
     sf::Clock clock;
-    const float fixedStep = 1.f / 120.f;   // шаг физики
-    const int   maxSubSteps = 5;            // не более 5 подшагов за кадр
+    const float fixedStep = 1.f / 120.f;   // Шаг физики (8.3 мс)
+    const int maxSubSteps = 15;            // Увеличено с 5 до 15 (исправление пропуска коллизий)
 
     float accumulator = 0.f;
 
-    while (window.isOpen())
-    {
-        // 1) Считаем dt и ограничиваем броски
+    while (window.isOpen()) {
         float dt = clock.restart().asSeconds();
-        if (dt > 0.25f)               // защита от долгих фризов
-            dt = 0.25f;
-
+        if (dt > 0.25f) dt = 0.25f; // Защита от "фризов"
         accumulator += dt;
 
-        // 2) Ввод обрабатываем один раз за кадр
         handleInput();
 
-        // 3) Подшаги физики
+        // Обработка подшагов физики
         int subSteps = 0;
-        while (accumulator >= fixedStep && subSteps < maxSubSteps)
-        {
+        while (accumulator >= fixedStep && subSteps < maxSubSteps) {
             ball.savePrevPosition();
             update(fixedStep);
             accumulator -= fixedStep;
             subSteps++;
         }
 
-        // 4) Интерполяция для плавной отрисовки
+        // Интерполяция для плавной отрисовки
         float alpha = accumulator / fixedStep;
         render(alpha);
     }
@@ -222,7 +220,7 @@ void GameEngine::update(float dt)
 
 void GameEngine::checkCollisions(float dt) {
     PaddleCollision::checkPaddleCollision(ball, paddle, hitPaddleSound);
-    BlockCollision::checkBlockCollisions(ball, blocks, score, dt, hitBlockSound, hitRockSound);
+    BlockCollision::checkBlockCollisions(ball, blocks, score, dt, hitBlockSound, hitRockSound,spatialGrid);
     WallCollision::checkWallCollisions(ball, window);
 
     // Обработка зоны смерти (либо через DeathZone, либо напрямую)

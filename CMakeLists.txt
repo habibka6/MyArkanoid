@@ -26,7 +26,7 @@ set(SFML_DIR "C:/C++Libraries/SFML-2.6.2/lib/cmake/SFML")
 find_package(SFML 2.6 COMPONENTS graphics window system audio REQUIRED)
 
 # Объявляем цель
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES} "src/physics/SpatialGrid.cpp" "include/physics/SpatialGrid.h")
 
 # Теперь указываем include директории
 target_include_directories(${PROJECT_NAME} PRIVATE

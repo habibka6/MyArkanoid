@@ -1,7 +1,8 @@
 #include "BlockCollision.h"
+#include "SpatialGrid.h"
 #include <algorithm>
-#include <iostream> // Для отладки
-#include <random>
+#include <vector>
+#include <unordered_set>
 
 std::pair<sf::Vector2f, float> BlockCollision::sweepAABB(
     const sf::Vector2f& startPos,
@@ -13,74 +14,59 @@ std::pair<sf::Vector2f, float> BlockCollision::sweepAABB(
     sf::Vector2f endPos = startPos + velocity * dt;
     sf::FloatRect expanded = box;
 
-    // Расширяем AABB для учета радиуса мяча
     expanded.left -= radius;
     expanded.top -= radius;
-    expanded.width += 2.f * radius;
-    expanded.height += 2.f * radius;
+    expanded.width += 2 * radius;
+    expanded.height += 2 * radius;
 
-    float tEntry = 0.f, tExit = 1.f;
+    const float epsilon = 1e-5f;
+    float velX = (std::abs(velocity.x) < epsilon ? epsilon : velocity.x);
+    float velY = (std::abs(velocity.y) < epsilon ? epsilon : velocity.y);
 
-    // Проверка столкновений по осям X и Y
-    for (int axis = 0; axis < 2; ++axis) {
-        float s = (axis == 0) ? startPos.x : startPos.y;
-        float e = (axis == 0) ? endPos.x : endPos.y;
-        float min = (axis == 0) ? expanded.left : expanded.top;
-        float max = (axis == 0) ? (expanded.left + expanded.width)
-            : (expanded.top + expanded.height);
-        float d = e - s;
+    float tx1 = (expanded.left - startPos.x) / velX;
+    float tx2 = (expanded.left + expanded.width - startPos.x) / velX;
+    float ty1 = (expanded.top - startPos.y) / velY;
+    float ty2 = (expanded.top + expanded.height - startPos.y) / velY;
 
-        if (d == 0.f) {
-            if (s < min || s > max) return { {0, 0}, 0.f };
+    float tEntryX = std::min(tx1, tx2);
+    float tExitX = std::max(tx1, tx2);
+    float tEntryY = std::min(ty1, ty2);
+    float tExitY = std::max(ty1, ty2);
+
+    float tEntry = std::max(tEntryX, tEntryY);
+    float tExit = std::min(tExitX, tExitY);
+
+    if (tEntry > tExit || tExit < 0 || tEntry > dt) {
+        return { sf::Vector2f(0, 0), 0.f };
+    }
+
+    sf::Vector2f normal(0.f, 0.f);
+    bool isCorner = std::abs(tEntryX - tEntryY) < epsilon;
+
+    // Уточнение нормали для углов
+    if (isCorner) {
+        float dx = (velocity.x < 0) ? (expanded.left - startPos.x) : (startPos.x - (expanded.left + expanded.width));
+        float dy = (velocity.y < 0) ? (expanded.top - startPos.y) : (startPos.y - (expanded.top + expanded.height));
+        if (std::abs(dx) < std::abs(dy)) {
+            normal.x = (velocity.x < 0) ? 1.f : -1.f;
         }
         else {
-            float t1 = (min - s) / d;
-            float t2 = (max - s) / d;
-            if (t1 > t2) std::swap(t1, t2);
-            tEntry = std::max(tEntry, t1);
-            tExit = std::min(tExit, t2);
-            if (tEntry > tExit || tExit < 0.f || tEntry > 1.f) {
-                return { {0, 0}, 0.f };
-            }
+            normal.y = (velocity.y < 0) ? 1.f : -1.f;
         }
     }
-
-    // Точка первого контакта
-    sf::Vector2f hitPoint = startPos + velocity * dt * tEntry;
-    const float eps = 1e-2f; // Погрешность для угловых проверок
-    sf::Vector2f normal{ 0, 0 };
-
-    // Проверка на угловое столкновение
-    bool nearLeft = (std::fabs(hitPoint.x - expanded.left) < eps);
-    bool nearRight = (std::fabs(hitPoint.x - (expanded.left + expanded.width)) < eps);
-    bool nearTop = (std::fabs(hitPoint.y - expanded.top) < eps);
-    bool nearBottom = (std::fabs(hitPoint.y - (expanded.top + expanded.height)) < eps);
-
-    // Если близко к двум граням одновременно - это угол
-    if ((nearLeft || nearRight) && (nearTop || nearBottom)) {
-        sf::Vector2f combinedNormal(0, 0);
-        if (nearLeft) combinedNormal.x = -1;
-        if (nearRight) combinedNormal.x = 1;
-        if (nearTop) combinedNormal.y = -1;
-        if (nearBottom) combinedNormal.y = 1;
-
-        // Нормализация
-        float len = std::hypot(combinedNormal.x, combinedNormal.y);
-        if (len != 0) {
-            normal = combinedNormal / len;
-        }
+    else if (tEntryX > tEntryY) {
+        normal.x = (velocity.x < 0) ? 1.f : -1.f;
     }
     else {
-        // Обычные столкновения с гранями
-        if (nearLeft)          normal = { -1, 0 };
-        else if (nearRight)    normal = { 1, 0 };
-        else if (nearTop)      normal = { 0, -1 };
-        else if (nearBottom)   normal = { 0, 1 };
+        normal.y = (velocity.y < 0) ? 1.f : -1.f;
     }
+
+    // Нормализация
+    float len = std::hypot(normal.x, normal.y);
+    if (len > 0) normal /= len;
 
     return { normal, tEntry };
 }
-
 
 void BlockCollision::checkBlockCollisions(
     Ball& ball,
@@ -88,84 +74,82 @@ void BlockCollision::checkBlockCollisions(
     int& score,
     float dt,
     sf::Sound& blockSound,
-    sf::Sound& rockSound
+    sf::Sound& rockSound,
+    SpatialGrid& spatialGrid
 ) {
     const sf::Vector2f startPos = ball.getPosition();
     const sf::Vector2f vel = ball.getVelocity();
     const float radius = ball.getBounds().width * 0.5f;
 
-    // Используем итераторы для безопасного удаления блоков
-    for (auto it = blocks.begin(); it != blocks.end();) {
-        auto& blk = *it;
+    // Broad-phase: границы движения мяча
+    sf::FloatRect broadPhaseBounds(
+        std::min(startPos.x, startPos.x + vel.x * dt) - radius,
+        std::min(startPos.y, startPos.y + vel.y * dt) - radius,
+        std::abs(vel.x * dt) + 2 * radius,
+        std::abs(vel.y * dt) + 2 * radius
+    );
 
-        if (blk->isDestroyed()) {
-            ++it;
-            continue;
+    // Получаем блоки через сетку
+    auto potentialBlocks = spatialGrid.getPotentialCollisions(broadPhaseBounds);
+    std::unordered_set<BaseBlock*> uniqueBlocks(potentialBlocks.begin(), potentialBlocks.end());
+
+    // Сбор и сортировка всех столкновений
+    std::vector<std::pair<BaseBlock*, std::pair<sf::Vector2f, float>>> collisions;
+    for (auto* blk : uniqueBlocks) {
+        if (blk->isDestroyed()) continue;
+
+        auto collision = sweepAABB(startPos, vel, dt, blk->getBounds(), radius);
+        if (collision.first != sf::Vector2f{ 0.f, 0.f }) {
+            collisions.emplace_back(blk, collision);
         }
-
-        // Проверка столкновения с использованием алгоритма Swept AABB
-        auto [normal, tEntry] = sweepAABB(startPos, vel, dt, blk->getBounds(), radius);
-
-        if (normal == sf::Vector2f{ 0.f, 0.f }) {
-            ++it;
-            continue;
-        }
-
-        // Коррекция позиции и отскок
-        const sf::Vector2f correction = vel * dt * tEntry + normal * 1.0f;
-        ball.getSprite().setPosition(startPos + correction);
-        ball.reflect(normal);
-
-        // Динамическое изменение скорости
-        ball.increaseSpeedFactor(SPEED_GROWTH); // Увеличиваем множитель скорости
-
-        // Рассчитываем текущую скорость с учетом множителя
-        const float currentSpeed = ball.getSpeed() * ball.getSpeedFactor();
-
-        // Получаем текущий вектор скорости и нормализуем его
-        sf::Vector2f newVel = ball.getVelocity();
-        const float velocityLength = std::hypot(newVel.x, newVel.y);
-
-        // Если скорость нулевая (защита от деления на ноль)
-        if (velocityLength > 0) {
-            newVel = (newVel / velocityLength) * currentSpeed;
-            ball.setVelocity(newVel.x, newVel.y);
-        }
-
-        // Коррекция минимальной вертикальной скорости 
-        const float minVy = currentSpeed * MIN_VERT_RATIO; // Используем currentSpeed
-        newVel = ball.getVelocity();
-
-        // Если вертикальная скорость слишком мала
-        if (std::abs(newVel.y) < minVy) {
-            // Устанавливаем минимальную вертикальную скорость с сохранением направления
-            newVel.y = (newVel.y < 0.f ? -minVy : minVy);
-
-            // Нормализуем вектор и масштабируем до текущей скорости
-            const float len = std::hypot(newVel.x, newVel.y);
-            if (len > 0) {
-                newVel = (newVel / len) * currentSpeed;
-                ball.setVelocity(newVel.x, newVel.y);
-            }
-        }
-
-        // Воспроизведение звука 
-        if (blk->IsRock()) {
-            rockSound.play();
-        }
-        else {
-            blockSound.play();
-        }
-
-        //Уничтожение блока
-        if (blk->hit()) {
-            score += blk->getPoints();
-            it = blocks.erase(it); // Безопасное удаление через итератор
-        }
-        else {
-            ++it;
-        }
-
-        break; // Обрабатываем только одно столкновение за шаг
     }
+
+    // Сортировка по времени столкновения (tEntry)
+    std::sort(collisions.begin(), collisions.end(),
+        [](const auto& a, const auto& b) {
+            return a.second.second < b.second.second;
+        });
+
+    // Обработка только первого столкновения
+    bool collisionHandled = false;
+    for (auto& [blk, collision] : collisions) {
+        if (blk->isDestroyed() || collisionHandled) continue;
+
+        const auto& [normal, tEntry] = collision;
+
+        // Коррекция позиции
+        const sf::Vector2f correction = vel * tEntry * dt;
+        ball.getSprite().setPosition(startPos + correction);
+
+        // Отражение
+        ball.reflect(normal);
+        ball.getSprite().move(normal * (radius + 1.f));
+
+        // Увеличение скорости мяча (восстановлено!)
+        if (!blk->IsRock()) {
+            ball.increaseSpeedFactor(SPEED_GROWTH);
+        }
+
+        // Звук и уничтожение блока
+        blk->IsRock() ? rockSound.play() : blockSound.play();
+        if (blk->hit()) score += blk->getPoints();
+
+        collisionHandled = true;
+        break;
+    }
+
+    // Обновление сетки после изменений
+    if (collisionHandled) {
+        spatialGrid.clear();
+        for (auto& block : blocks) {
+            if (!block->isDestroyed()) spatialGrid.addBlock(block.get());
+        }
+    }
+
+    // Удаление уничтоженных блоков
+    blocks.erase(
+        std::remove_if(blocks.begin(), blocks.end(),
+            [](const auto& blk) { return blk->isDestroyed(); }),
+        blocks.end()
+    );
 }
