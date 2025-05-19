@@ -13,12 +13,17 @@ set(SOURCES
     src/core/Rock.cpp
 
     src/resource/AssetManager.cpp
-      
+    src/resource/AudioManager.cpp
     src/physics/BlockCollision.cpp  
     src/physics/WallCollision.cpp  
     src/physics/PaddleCollision.cpp  
-
+    src/physics/SpatialGrid.cpp
     src/engine/GameEngine.cpp
+    src/engine/EntityManager.cpp
+    src/engine/UIManager.cpp
+    src/engine/SceneManager.cpp
+    src/engine/PhysicsEngine.cpp
+
 )
 
 # Указываем путь к SFML
@@ -26,7 +31,7 @@ set(SFML_DIR "C:/C++Libraries/SFML-2.6.2/lib/cmake/SFML")
 find_package(SFML 2.6 COMPONENTS graphics window system audio REQUIRED)
 
 # Объявляем цель
-add_executable(${PROJECT_NAME} ${SOURCES} "src/physics/SpatialGrid.cpp" "include/physics/SpatialGrid.h")
+add_executable(${PROJECT_NAME} ${SOURCES})
 
 # Теперь указываем include директории
 target_include_directories(${PROJECT_NAME} PRIVATE

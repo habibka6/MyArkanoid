@@ -7,6 +7,15 @@ SpatialGrid::SpatialGrid(float width, float height, float cellSize)
     cells.resize(cols * rows);
 }
 
+void SpatialGrid::update(const std::vector<std::unique_ptr<BaseBlock>>& blocks) {
+    clear();
+    for (auto& block : blocks) {
+        if (!block->isDestroyed()) {
+            addBlock(block.get());
+        }
+    }
+}
+
 void SpatialGrid::clear() {
     for (auto& cell : cells) cell.clear();
 }

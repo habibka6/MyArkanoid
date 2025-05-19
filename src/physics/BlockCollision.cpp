@@ -121,9 +121,27 @@ void BlockCollision::checkBlockCollisions(
         const sf::Vector2f correction = vel * tEntry * dt;
         ball.getSprite().setPosition(startPos + correction);
 
-        // Отражение
+        // После отражения:
         ball.reflect(normal);
         ball.getSprite().move(normal * (radius + 1.f));
+
+        // Коррекция вертикальной скорости
+        sf::Vector2f newVel = ball.getVelocity();
+        float currentSpeed = std::hypot(newVel.x, newVel.y);
+        float minVy = currentSpeed * BLOCK_MIN_VERT_RATIO;
+
+        // Если вертикальная скорость слишком мала
+        if (std::abs(newVel.y) < minVy) {
+            // Сохраняем направление вертикали
+            newVel.y = (newVel.y < 0 ? -minVy : minVy);
+
+            // Пересчитываем горизонтальную скорость, сохраняя общую скорость
+            float newVx = std::sqrt(currentSpeed * currentSpeed - newVel.y * newVel.y);
+            newVel.x = (newVel.x < 0 ? -newVx : newVx);
+
+            // Устанавливаем новую скорость
+            ball.setVelocity(newVel.x, newVel.y);
+        }
 
         // Увеличение скорости мяча (восстановлено!)
         if (!blk->IsRock()) {
