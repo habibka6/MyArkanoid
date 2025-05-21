@@ -31,7 +31,7 @@ void Paddle::update(float dt, float windowWidth) {
     velocity = (sprite.getPosition() - prevPos) / dt;
 }
 //Отрисовка 
-void Paddle::draw(sf::RenderWindow& window) {
+void Paddle::draw(sf::RenderWindow& window) const {
     window.draw(sprite);
 }
 

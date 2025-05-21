@@ -9,7 +9,7 @@ Rock::Rock(float x, float y)
     shape.setOutlineColor(sf::Color::Black);
 }
 
-void Rock::draw(sf::RenderWindow& wnd) { wnd.draw(shape); }
+void Rock::draw(sf::RenderWindow& wnd) const { wnd.draw(shape); }
 sf::FloatRect Rock::getBounds() const { return shape.getGlobalBounds(); }
 bool Rock::hit() { return false; }
 bool Rock::isDestroyed() const { return false; }

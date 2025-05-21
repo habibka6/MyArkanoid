@@ -6,7 +6,7 @@ public:
     virtual ~BaseBlock() = default;
 
     //Отрисовка блока в окне
-    virtual void draw(sf::RenderWindow& wnd) = 0;
+    virtual void draw(sf::RenderWindow& wnd) const = 0;
 
     // Получение границ блока (для коллизий)
     virtual sf::FloatRect getBounds() const = 0;

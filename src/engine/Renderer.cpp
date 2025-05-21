@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-Renderer::Renderer(sf::RenderWindow& window, GameState& state)
+Renderer::Renderer(sf::RenderWindow& window, const GameState& state)
     : window(window), state(state) {
     initUI();
 }
@@ -36,15 +36,15 @@ void Renderer::render(float alpha) {
         window.draw(gameOverText);
     }
     else {
-        // Отрисовка блоков
-        for (const auto& block : state.blocks) {
-            if (!block->isDestroyed())
-                block->draw(window); // Вызов неконстантного метода
-        }
+        // Отрисовка платформы и мяча через геттеры
+        state.getPaddle().draw(window);
+        state.getBall().draw(window, alpha);
 
-        // Отрисовка платформы и мяча
-        state.paddle.draw(window); // Неконстантный метод
-        state.ball.draw(window, alpha); // Неконстантный метод
+        // Отрисовка блоков
+        for (const auto& block : state.getBlocks()) {
+            if (!block->isDestroyed())
+                block->draw(window);
+        }
 
         // Обновление текста счета
         std::stringstream ss;

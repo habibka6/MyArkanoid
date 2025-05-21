@@ -71,12 +71,12 @@ void Ball::update(float dt) {
     }
 }
 
-void Ball::draw(sf::RenderWindow& window, float alpha) {
-    sf::Vector2f renderPos = m_prevPosition * (1 - alpha) + sprite.getPosition() * alpha;
-    sf::Vector2f originalPos = sprite.getPosition();
-    sprite.setPosition(renderPos);
-    window.draw(sprite);
-    sprite.setPosition(originalPos);
+void Ball::draw(sf::RenderWindow& window, float alpha) const {
+    // »спользовать временный спрайт дл€ интерпол€ции
+    sf::Sprite tempSprite = sprite;
+    sf::Vector2f renderPos = m_prevPosition * (1 - alpha) + tempSprite.getPosition() * alpha;
+    tempSprite.setPosition(renderPos);
+    window.draw(tempSprite);
 }
 
 sf::FloatRect Ball::getBounds() const {

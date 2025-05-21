@@ -10,7 +10,7 @@ public:
     Block(float x, float y, Type type);
 
     // Реализация методов BaseBlock
-    void draw(sf::RenderWindow& wnd) override;
+    void draw(sf::RenderWindow& wnd) const override;
     sf::FloatRect getBounds() const override;
     bool hit() override;
     bool isDestroyed() const override;

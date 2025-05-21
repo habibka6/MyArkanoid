@@ -7,7 +7,7 @@ class Rock : public BaseBlock
 public:
     Rock(float x, float y);
     // Реализация методов BaseBlock
-    void draw(sf::RenderWindow& wnd) override;
+    void draw(sf::RenderWindow& wnd) const override;
     sf::FloatRect getBounds() const override;
     bool hit() override;   // всегда false
     bool isDestroyed() const override;   // никогда

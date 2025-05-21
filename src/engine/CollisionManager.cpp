@@ -11,12 +11,12 @@ CollisionManager::CollisionManager(GameState& state, const sf::RenderWindow& win
 
 void CollisionManager::checkCollisions(float dt) {
     // Столкновение с платформой
-    PaddleCollision::checkPaddleCollision(state.ball, state.paddle, hitPaddleSound);
+    PaddleCollision::checkPaddleCollision(state.getBall(), state.getPaddle(), hitPaddleSound);
 
     // Столкновение с блоками
     BlockCollision::checkBlockCollisions(
-        state.ball,
-        state.blocks,
+        state.getBall(),
+        state.getBlocks(),
         state.score,
         dt,
         hitBlockSound,
@@ -25,10 +25,10 @@ void CollisionManager::checkCollisions(float dt) {
     );
 
     // Столкновение со стенами (передаем окно)
-    WallCollision::checkWallCollisions(state.ball, window); // Исправлено
+    WallCollision::checkWallCollisions(state.getBall(), window); // Исправлено
 
     // Проверка потери мяча
-    if (state.ball.getPosition().y + state.ball.getBounds().height / 2 >= state.getWindowHeight()) {
+    if (state.getBall().getPosition().y + state.getBall().getBounds().height / 2 >= state.getWindowHeight()) {
         state.lives--;
         if (state.lives <= 0) {
             state.gameOver = true;
@@ -41,7 +41,7 @@ void CollisionManager::checkCollisions(float dt) {
 
     // Обновление сетки после изменений
     state.spatialGrid.clear();
-    for (auto& block : state.blocks) {
+    for (auto& block : state.getBlocks()) {
         if (!block->isDestroyed()) state.spatialGrid.addBlock(block.get());
     }
 }

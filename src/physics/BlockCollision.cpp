@@ -96,7 +96,7 @@ void BlockCollision::checkBlockCollisions(
     // Сбор и сортировка всех столкновений
     std::vector<std::pair<BaseBlock*, std::pair<sf::Vector2f, float>>> collisions;
     for (auto* blk : uniqueBlocks) {
-        if (blk->isDestroyed()) continue;
+        if (!blk || blk->isDestroyed()) continue;
 
         auto collision = sweepAABB(startPos, vel, dt, blk->getBounds(), radius);
         if (collision.first != sf::Vector2f{ 0.f, 0.f }) {
@@ -156,13 +156,6 @@ void BlockCollision::checkBlockCollisions(
         break;
     }
 
-    // Обновление сетки после изменений
-    if (collisionHandled) {
-        spatialGrid.clear();
-        for (auto& block : blocks) {
-            if (!block->isDestroyed()) spatialGrid.addBlock(block.get());
-        }
-    }
 
     // Удаление уничтоженных блоков
     blocks.erase(

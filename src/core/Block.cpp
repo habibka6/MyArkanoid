@@ -58,7 +58,7 @@ void Block::updateColor() {
 bool Block::isDestroyed() const { return destroyed; }
 int Block::getPoints() const { return points; }
 sf::FloatRect Block::getBounds() const { return shape.getGlobalBounds(); }
-void Block::draw(sf::RenderWindow& window) {
+void Block::draw(sf::RenderWindow& window) const{
     if (!destroyed) window.draw(shape);
 }
 

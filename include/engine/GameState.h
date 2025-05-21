@@ -13,9 +13,6 @@ public:
     explicit GameState(float width, float height);
 
     // Объекты
-    Paddle paddle;
-    Ball ball;
-    std::vector<std::unique_ptr<BaseBlock>> blocks;
     SpatialGrid spatialGrid;
 
     // Состояние игры
@@ -30,10 +27,23 @@ public:
     void launchBall();
 
     // Геттеры
+    // Геттеры
+    const Paddle& getPaddle() const { return paddle; }
+    Paddle& getPaddle() { return paddle; }
+
+    const Ball& getBall() const { return ball; }
+    Ball& getBall() { return ball; }
+
+    const std::vector<std::unique_ptr<BaseBlock>>& getBlocks() const { return blocks; }
+    std::vector<std::unique_ptr<BaseBlock>>& getBlocks() { return blocks; }
+
     float getWindowWidth() const { return windowWidth; }
     float getWindowHeight() const { return windowHeight; }
 
 private:
+    Paddle paddle;
+    Ball ball;
+    std::vector<std::unique_ptr<BaseBlock>> blocks;
 
     float windowWidth;
     float windowHeight;

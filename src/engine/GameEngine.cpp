@@ -41,19 +41,19 @@ void GameEngine::update(float dt) {
     if (state.gameOver) return;
     
     // Сначала обновляем позицию платформы
-    state.paddle.update(dt, state.getWindowWidth());
+    state.getPaddle().update(dt, state.getWindowWidth());
     
     if (state.waitingLaunch) {
         // Привязываем мяч к платформе КАЖДЫЙ КАДР
         state.resetBallPosition();
-        state.ball.savePrevPosition(); // Сохраняем позицию для интерполяции
+        state.getBall().savePrevPosition(); // Сохраняем позицию для интерполяции
     } else {
         // Обновляем мяч и проверяем столкновения
-        state.ball.update(dt);
+        state.getBall().update(dt);
         collisionManager.checkCollisions(dt);
         
         // Проверка потери мяча
-        if (state.ball.getPosition().y + state.ball.getBounds().height/2 >= state.getWindowHeight()) {
+        if (state.getBall().getPosition().y + state.getBall().getBounds().height/2 >= state.getWindowHeight()) {
             soundManager.loseBallSound.play();
             state.lives--;
             if (state.lives <= 0) {

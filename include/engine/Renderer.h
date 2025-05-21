@@ -5,12 +5,12 @@
 #include <sstream>
 class Renderer {
 public:
-    explicit Renderer(sf::RenderWindow& window, GameState& state); 
+    explicit Renderer(sf::RenderWindow& window, const GameState& state); 
     void render(float alpha);
 
 private:
     sf::RenderWindow& window;
-    GameState& state; 
+    const GameState& state; 
     sf::Text scoreText;
     sf::Sprite backgroundSprite;
     sf::Text gameOverText;

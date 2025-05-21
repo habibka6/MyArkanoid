@@ -27,6 +27,11 @@ void SpatialGrid::addBlock(BaseBlock* block) {
     int top = static_cast<int>(bounds.top / cellSize);
     int bottom = static_cast<int>((bounds.top + bounds.height) / cellSize);
 
+    left = std::clamp(left, 0, cols - 1);
+    right = std::clamp(right, 0, cols - 1);
+    top = std::clamp(top, 0, rows - 1);
+    bottom = std::clamp(bottom, 0, rows - 1);
+
     for (int x = left; x <= right; ++x) {
         for (int y = top; y <= bottom; ++y) {
             int index = y * cols + x;

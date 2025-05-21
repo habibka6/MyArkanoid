@@ -7,7 +7,7 @@ class Paddle {
 public:
     Paddle(float startX, float startY); //Конструктор
     void update(float dt, float windowWidth); //Обновление позиции 
-    void draw(sf::RenderWindow& window); //Отрисовка
+    void draw(sf::RenderWindow& window) const; //Отрисовка
     //Геттеры
     sf::FloatRect getGlobalBounds() const; // Получение границ 
     sf::Vector2f getPosition() const; // Получение позиции платформы
