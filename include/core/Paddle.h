@@ -13,6 +13,8 @@ public:
     sf::Vector2f getPosition() const; // Получение позиции платформы
     sf::Vector2f getSize() const; // Получение размера платформы
     sf::Vector2f getVelocity() const { return velocity; }
+    const float getSpeed() { return speed; }
+    sf::Sprite getSprite() { return sprite; }
 private:
     sf::Sprite sprite; 
     sf::Vector2f velocity;

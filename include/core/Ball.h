@@ -6,7 +6,7 @@
 class Ball {
 public:
     Ball(float startX, float startY); //Конструтктор
-    void update(float dt); //Обновление позиции мяча
+    void update(float dt);//Обновление позиции мяча
     void draw(sf::RenderWindow& window,float alpha); //Отрисовка
     void reflect(const sf::Vector2f& normal); //Отражение мяча от поверхности
     void reset(float x, float y); //Сброс мяча в начальное положение
