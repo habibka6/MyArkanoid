@@ -7,37 +7,79 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Объявляем список исходных файлов
 set(SOURCES
     main.cpp
-    src/core/Ball.cpp
-    src/core/Paddle.cpp
-    src/core/Block.cpp
-    src/core/Rock.cpp
 
-    src/resource/AssetManager.cpp
-    src/physics/BlockCollision.cpp  
-    src/physics/WallCollision.cpp  
-    src/physics/PaddleCollision.cpp  
-    src/physics/SpatialGrid.cpp
-    src/engine/GameEngine.cpp
+    # Движок
+    src/core/GameEngine.cpp
+    src/core/StateMachine.cpp
     
-    
-    
-    
+    # Сущности
+    src/entities/Ball.cpp
+    src/entities/Paddle.cpp
 
+    # Блоки
+    src/entities/blocks/BaseBlock.cpp
+    src/entities/blocks/Block.cpp
+    src/entities/blocks/Rock.cpp
+
+    # Бонусы
+    src/entities/powerups/BasePowerUp.cpp
+    src/entities/powerups/ExtraLifePowerUp.cpp
+    src/entities/powerups/ExpandPaddlePowerUp.cpp
+    src/entities/powerups/SlowBallPowerUp.cpp
+    src/entities/powerups/ShrinkPaddlePowerUp.cpp
+  
+
+    src/entities/powerups/PowerUpEffects/ExtraLifeEffect.cpp;
+    src/entities/powerups/PowerUpEffects/ExpandPaddleEffect.cpp;
+    src/entities/powerups/PowerUpEffects/SlowBallEffect.cpp;
+    src/entities/powerups/PowerUpEffects/ShrinkPaddleEffect.cpp;
+   
+    # Менеджеры систем
+    src/managers/AssetManager.cpp
+    src/managers/LevelManager.cpp
+    src/managers/SoundManager.cpp
+
+    # Физика и коллизии (обработчики)
+    src/systems/solvers/BlockCollisionSolver.cpp  
+    src/systems/solvers/WallCollisionSolver.cpp  
+    src/systems/solvers/PaddleCollisionSolver.cpp  
+    src/systems/SpatialGrid.cpp
+
+    # Системы
+    src/systems/PhysicsSystem.cpp
+    src/systems/RenderSystem.cpp
+    src/systems/InputSystem.cpp
+
+    # Состояния игры
+    src/game_states/MainMenuState.cpp
+    src/game_states/GameState.cpp
+    src/game_states/GameOverState.cpp
+    src/game_states/State.cpp
+    # Утилиты
+    src/utils/MathUtils.cpp
 )
+
+# *** ВАЖНО: СОЗДАЕМ ИСПОЛНЯЕМЫЙ ФАЙЛ ***
+add_executable(${PROJECT_NAME} ${SOURCES}  "include/systems/solvers/PhysicsUtils.h" "src/managers/PowerUpManager.cpp" "include/managers/PowerUpManager.h")
 
 # Указываем путь к SFML
 set(SFML_DIR "C:/C++Libraries/SFML-2.6.2/lib/cmake/SFML")
 find_package(SFML 2.6 COMPONENTS graphics window system audio REQUIRED)
 
-# Объявляем цель
-add_executable(${PROJECT_NAME} ${SOURCES} "include/engine/GameState.h" "src/engine/GameState.cpp" "include/engine/InputHandler.h" "src/engine/InputHandler.cpp" "include/engine/Renderer.h" "src/engine/Renderer.cpp" "include/engine/CollisionManager.h" "src/engine/CollisionManager.cpp" "include/engine/SoundManager.h" "src/engine/SoundManager.cpp")
-
-# Теперь указываем include директории
+# Теперь указываем include директории (ПОСЛЕ создания target)
 target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/include/core
-    ${CMAKE_SOURCE_DIR}/include/physics
-    ${CMAKE_SOURCE_DIR}/include/resource
-    ${CMAKE_SOURCE_DIR}/include/engine
+    ${CMAKE_SOURCE_DIR}/include/entities
+    ${CMAKE_SOURCE_DIR}/include/entities/blocks
+    ${CMAKE_SOURCE_DIR}/include/entities/powerups
+    ${CMAKE_SOURCE_DIR}/include/entities/powerups/PowerUpEffects
+    ${CMAKE_SOURCE_DIR}/include/game_states
+    ${CMAKE_SOURCE_DIR}/include/managers
+    ${CMAKE_SOURCE_DIR}/include/systems
+    ${CMAKE_SOURCE_DIR}/include/systems
+    ${CMAKE_SOURCE_DIR}/include/systems/solvers
+    ${CMAKE_SOURCE_DIR}/include/utils
 )
 
 # Линкуем SFML
