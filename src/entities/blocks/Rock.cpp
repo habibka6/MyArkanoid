@@ -44,10 +44,7 @@ namespace Arkanoid {
         this->active = active;
     }
 
-    bool Rock::hit() {
-        // Камень не разрушается
-        return false;
-    }
+    void Rock::hit() { }
 
     bool Rock::isDestroyed() const {
         return false;

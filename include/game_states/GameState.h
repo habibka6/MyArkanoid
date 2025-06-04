@@ -12,15 +12,10 @@
 #include <vector>
 #include <memory>
 #include <random>
+
 namespace Arkanoid {
 
-    enum class GameStatus {
-        Playing,
-        Paused,
-        LevelComplete,
-        GameOver,
-        Victory
-    };
+    enum class GameStatus;
 
     class GameState : public State {
     public:
@@ -56,12 +51,6 @@ namespace Arkanoid {
         int currentLevel;
         float gameTimer;
 
-        // UI элементы
-        sf::Font font;
-        sf::Text pauseText;
-        sf::Text gameOverText;
-        sf::Text levelCompleteText;
-
         // Настройки
         bool debugMode;
 
@@ -69,14 +58,12 @@ namespace Arkanoid {
         void initializeGame();
         void initializeInputBindings();
         void initializePhysics();
-        void initializeUI();
         void loadLevel(int levelNumber);
 
         // Игровая логика
         void updateGame(float deltaTime);
-        void updatePowerUps(float deltaTime);
+    
         void checkGameConditions();
-        void handleCollisions();
 
         // Управление состоянием
         void pauseGame();
@@ -84,19 +71,6 @@ namespace Arkanoid {
         void restartLevel();
         void nextLevel();
         void gameOver();
-
-        // Рендеринг
-        void renderGame(sf::RenderWindow& window);
-        void renderPauseScreen(sf::RenderWindow& window);
-        void renderGameOverScreen(sf::RenderWindow& window);
-        void renderLevelCompleteScreen(sf::RenderWindow& window);
-        void renderDebugInfo(sf::RenderWindow& window);
-
-        // Колбэки физики
-        void onBallBlockCollision(Ball& ball, BaseBlock& block);
-        void onBallPaddleCollision(Ball& ball, Paddle& paddle);
-        void onBallWallCollision(Ball& ball);
-        void onPowerUpCollected(BasePowerUp& powerup);
 
         // Утилиты
         void resetBall();

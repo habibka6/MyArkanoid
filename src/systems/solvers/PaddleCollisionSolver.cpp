@@ -1,5 +1,4 @@
 #include "PaddleCollisionSolver.h"
-#include "SoundManager.h"
 
 namespace Arkanoid {
     bool PaddleCollisionSolver::checkCollision(Ball& ball, const sf::FloatRect& bounds) const {
@@ -21,7 +20,6 @@ namespace Arkanoid {
         PhysicsUtils::PaddleCollision::applyPaddleInfluence(ball, paddle);
         PhysicsUtils::PaddleCollision::correctPosition(ball, paddle.getBounds());
 
-        SoundManager::getInstance().playSound(SoundType::PaddleHit);
-        ball.increaseSpeedFactor(0.02f);
+        ball.increaseSpeedFactor(Config::Ball::SPEED_INCREASE_PER_HIT);
     }
 }

@@ -1,5 +1,4 @@
 #include "WallCollisionSolver.h"
-#include "SoundManager.h"
 
 namespace Arkanoid {
     WallCollisionSolver::WallCollisionSolver(float windowWidth, float windowHeight)
@@ -16,7 +15,6 @@ namespace Arkanoid {
 
         ball.reflect(normal);
         PhysicsUtils::WallCollision::correctPosition(ball, radius, worldBounds);
-        SoundManager::getInstance().playSound(SoundType::WallHit);
     }
 
     bool WallCollisionSolver::checkWallCollisions(Ball& ball) const {

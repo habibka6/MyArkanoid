@@ -17,7 +17,7 @@ namespace Arkanoid {
         EntityType getType() const override;
 
         // Block specific interface
-        virtual bool hit() = 0;
+        virtual void hit() = 0;
         virtual bool isDestroyed() const = 0;
         virtual int getPoints() const = 0;
         virtual BlockType getBlockType() const = 0;

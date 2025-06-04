@@ -1,62 +1,92 @@
-#pragma once
+п»ї#pragma once
 #include <SFML/Graphics.hpp>
 #include "Ball.h"
 #include "Paddle.h"
 #include "BaseBlock.h"
+#include "BasePowerUp.h"
+#include "PowerUpEffect.h"
 #include <vector>
 #include <memory>
-#include"PowerUpEffect.h"
+
 namespace Arkanoid {
+
+    enum class GameStatus {
+        Playing,
+        Paused,
+        LevelComplete,
+        GameOver,
+        Victory
+    };
 
     class RenderSystem {
     public:
         RenderSystem(sf::RenderWindow& window);
         ~RenderSystem() = default;
 
-        // Основные методы рендеринга
+        // РћСЃРЅРѕРІРЅС‹Рµ РјРµС‚РѕРґС‹ СЂРµРЅРґРµСЂРёРЅРіР° (РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ GameEngine)
         void render(float interpolationFactor = 1.0f);
         void clear(const sf::Color& color = sf::Color::Black);
         void display();
 
-        // Рендеринг отдельных типов объектов
+        // Р РµРЅРґРµСЂРёРЅРі РёРіСЂРѕРІС‹С… РѕР±СЉРµРєС‚РѕРІ
         void renderBalls(const std::vector<std::unique_ptr<Ball>>& balls, float alpha = 1.0f);
         void renderPaddles(const std::vector<std::unique_ptr<Paddle>>& paddles);
         void renderBlocks(const std::vector<std::unique_ptr<BaseBlock>>& blocks);
+        void renderPowerUps(const std::vector<std::unique_ptr<BasePowerUp>>& powerups);
         void renderActiveEffects(const std::vector<std::unique_ptr<PowerUpEffect>>& effects);
 
-        // UI и эффекты
+        // Р РµРЅРґРµСЂРёРЅРі UI
         void renderUI(int score, int lives, int level);
         void renderBackground();
-        void renderParticles(); // Для будущих эффектов
+        void renderParticles();
 
-        // Настройки рендеринга
+        // Р РµРЅРґРµСЂРёРЅРі РёРіСЂРѕРІРѕРіРѕ РєРѕРЅС‚РµРЅС‚Р° (Р‘Р•Р— clear/display)
+        void renderGameContent(
+            const Ball& ball,
+            const Paddle& paddle,
+            const std::vector<std::unique_ptr<BaseBlock>>& blocks,
+            const std::vector<std::unique_ptr<BasePowerUp>>& powerups,
+            const std::vector<std::unique_ptr<PowerUpEffect>>& activeEffects,
+            int score, int lives, int level
+        );
+
+        // Р РµРЅРґРµСЂРёРЅРі РѕРІРµСЂР»РµРµРІ СЃРѕСЃС‚РѕСЏРЅРёР№
+        void renderPauseOverlay();
+        void renderGameOverOverlay();
+        void renderLevelCompleteOverlay();
+        void renderDebugInfo(const Ball& ball, const Paddle& paddle, float gameTimer);
+
+        // РќР°СЃС‚СЂРѕР№РєРё
         void setVSync(bool enabled);
         void setInterpolation(bool enabled);
         bool isInterpolationEnabled() const;
 
-        // Получение размеров окна
         sf::Vector2u getWindowSize() const;
 
     private:
         sf::RenderWindow& window;
         bool interpolationEnabled;
 
-        // UI элементы
+        // UI СЌР»РµРјРµРЅС‚С‹
         sf::Font font;
         sf::Text scoreText;
         sf::Text livesText;
         sf::Text levelText;
 
-        // Фон
+        // РўРµРєСЃС‚С‹ СЃРѕСЃС‚РѕСЏРЅРёР№
+        sf::Text pauseText;
+        sf::Text gameOverText;
+        sf::Text levelCompleteText;
+
+        // Р¤РѕРЅ
         sf::Sprite backgroundSprite;
         bool hasBackground;
 
-        // Методы инициализации
+        // РџСЂРёРІР°С‚РЅС‹Рµ РјРµС‚РѕРґС‹ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё
         void initializeUI();
         void loadBackground();
-
-        // Вспомогательные методы
         void setupText(sf::Text& text, const std::string& content, float x, float y, int size = 24);
+        void centerText(sf::Text& text);
     };
 
 } // namespace Arkanoid

@@ -63,15 +63,14 @@ namespace Arkanoid {
         this->active = active;
     }
 
-    bool Block::hit() {
+    void Block::hit() {
         currentHealth--;
         updateAppearance();
 
         if (currentHealth <= 0) {
             destroyed = true;
-            return true;
         }
-        return false;
+        
     }
 
     bool Block::isDestroyed() const {

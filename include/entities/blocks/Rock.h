@@ -18,7 +18,7 @@ namespace Arkanoid {
         void setActive(bool active) override;
 
         // BaseBlock interface
-        bool hit() override;
+        void hit() override;
         bool isDestroyed() const override;
         int getPoints() const override;
         BlockType getBlockType() const override;

@@ -66,15 +66,8 @@ namespace Arkanoid {
             Paddle& paddle);
         void checkWallCollisions(Ball& ball, float deltaTime);
 
-        // Обработчики конкретных коллизий
-        void handleBallBlockCollision(Ball& ball, BaseBlock& block, float deltaTime);
-        void handleBallPaddleCollision(Ball& ball, Paddle& paddle, float deltaTime);
-        void handlePaddlePowerUpCollision(Paddle& paddle, BasePowerUp& powerup);
-
         // Утилиты
         void constrainPaddleToWindow(Paddle& paddle);
-        void updatePowerUps(std::vector<std::unique_ptr<BasePowerUp>>& powerups, float deltaTime);
-        void removeInactivePowerUps(std::vector<std::unique_ptr<BasePowerUp>>& powerups);
     };
 
 } // namespace Arkanoid

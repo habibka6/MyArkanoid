@@ -94,8 +94,12 @@ namespace Arkanoid {
     }
 
     void GameEngine::render() {
-        renderSystem->clear(); 
+        renderSystem->clear();
+
+        // ѕередаем управление рендерингом состо€нию
         stateMachine.render(window);
+
+        // “олько если состо€ние не использует renderSystem
         renderSystem->display();
     }
 

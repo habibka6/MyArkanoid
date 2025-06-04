@@ -1,5 +1,4 @@
 #include "BlockCollisionSolver.h"
-#include "SoundManager.h"
 
 namespace Arkanoid {
     bool BlockCollisionSolver::checkCollision(Ball& ball, const sf::FloatRect& bounds) const {
@@ -32,8 +31,5 @@ namespace Arkanoid {
         ball.reflect(normal);
         PhysicsUtils::BlockCollision::correctPosition(ball, block.getBounds(), normal);
         PhysicsUtils::Common::ensureMinimumVerticalVelocity(ball);
-
-        SoundManager::getInstance().playSound(
-            block.getBlockType() == BlockType::Rock ? SoundType::RockHit : SoundType::BlockHit);
     }
 }

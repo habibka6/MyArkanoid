@@ -34,11 +34,8 @@ namespace Arkanoid {
         checkWallCollisions(ball, deltaTime);
 
         // Обновляем и проверяем коллизии бонусов
-        updatePowerUps(powerups, deltaTime);
+        
         checkPowerUpCollisions(powerups, paddle);
-
-        // Удаляем неактивные бонусы
-        removeInactivePowerUps(powerups);
 
         // Проверяем, не потерян ли мяч
         if (isBallLost(ball)) {
@@ -55,7 +52,11 @@ namespace Arkanoid {
 
         // Коллизия с платформой (проверяем первой для приоритета)
         if (paddleSolver->checkPaddleCollision(ball, paddle)) {
-            handleBallPaddleCollision(ball, paddle, deltaTime);
+            paddleSolver->resolvePaddleCollision(ball, paddle, deltaTime);
+
+            if (collisionCallback) {
+                collisionCallback(CollisionType::BallPaddle, &ball, &paddle);
+            }
             return; // Обрабатываем только одну коллизию за кадр
         }
 
@@ -63,7 +64,11 @@ namespace Arkanoid {
         auto potentialBlocks = spatialGrid.getPotentialCollisions(ballBounds);
         for (auto* block : potentialBlocks) {
             if (blockSolver->checkBlockCollision(ball, *block)) {
-                handleBallBlockCollision(ball, *block, deltaTime);
+                blockSolver->resolveBlockCollision(ball, *block, deltaTime);
+
+                if (collisionCallback) {
+                    collisionCallback(CollisionType::BallBlock, &ball, &*block);
+                }
                 break; // Обрабатываем только одну коллизию за кадр
             }
         }
@@ -75,7 +80,11 @@ namespace Arkanoid {
 
         for (auto& powerup : powerups) {
             if (powerup->isActive() && paddleBounds.intersects(powerup->getBounds())) {
-                handlePaddlePowerUpCollision(paddle, *powerup);
+                powerup->setActive(false);
+
+                if (collisionCallback) {
+                    collisionCallback(CollisionType::PaddlePowerUp, &paddle, &*powerup);
+                }
             }
         }
     }
@@ -90,56 +99,10 @@ namespace Arkanoid {
         }
     }
 
-    void PhysicsSystem::handleBallBlockCollision(Ball& ball, BaseBlock& block, float deltaTime) {
-        blockSolver->resolveBlockCollision(ball, block, deltaTime);
-
-        if (collisionCallback) {
-            collisionCallback(CollisionType::BallBlock, &ball, &block);
-        }
-    }
-
-    void PhysicsSystem::handleBallPaddleCollision(Ball& ball, Paddle& paddle, float deltaTime) {
-        paddleSolver->resolvePaddleCollision(ball, paddle, deltaTime);
-
-        if (collisionCallback) {
-            collisionCallback(CollisionType::BallPaddle, &ball, &paddle);
-        }
-    }
-
-    void PhysicsSystem::handlePaddlePowerUpCollision(Paddle& paddle, BasePowerUp& powerup) {
-        powerup.setActive(false);
-
-        if (collisionCallback) {
-            collisionCallback(CollisionType::PaddlePowerUp, &paddle, &powerup);
-        }
-    }
-
     void PhysicsSystem::constrainPaddleToWindow(Paddle& paddle) {
         paddle.constrainToWindow(worldBounds.width);
     }
 
-    void PhysicsSystem::updatePowerUps(std::vector<std::unique_ptr<BasePowerUp>>& powerups, float deltaTime) {
-        for (auto& powerup : powerups) {
-            if (powerup->isActive()) {
-                powerup->update(deltaTime);
-
-                // Деактивируем бонусы, вышедшие за пределы экрана
-                if (powerup->isOutOfBounds(worldBounds.height)) {
-                    powerup->setActive(false);
-                }
-            }
-        }
-    }
-
-    void PhysicsSystem::removeInactivePowerUps(std::vector<std::unique_ptr<BasePowerUp>>& powerups) {
-        powerups.erase(
-            std::remove_if(powerups.begin(), powerups.end(),
-                [](const std::unique_ptr<BasePowerUp>& powerup) {
-                    return !powerup->isActive();
-                }),
-            powerups.end()
-        );
-    }
 
     bool PhysicsSystem::isBallLost(const Ball& ball) const {
         return wallSolver->isBallLost(ball);

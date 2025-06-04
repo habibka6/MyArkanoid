@@ -13,24 +13,33 @@ namespace Arkanoid
 
     void PowerUpManager::spawnPowerUp(const sf::Vector2f& position)
     {
+        // Генерация бонуса только если нет активных временных эффектов
         static std::random_device rd;
         static std::mt19937 gen(rd());
-        static std::uniform_int_distribution<int> dist(0, 3);
+        static std::uniform_real_distribution<float> dis(0.0f, 1.0f);
 
-        switch (dist(gen))
+        // Если нет активных временных эффектов и выпал шанс
+        if (!isTemporaryEffectActive() && dis(gen) < Config::Block::DROP_CHANCE)
         {
-        case 0:
-            powerups.push_back(std::make_unique<ExtraLifePowerUp>(position.x, position.y));
-            break;
-        case 1:
-            powerups.push_back(std::make_unique<ExpandPaddlePowerUp>(position.x, position.y));
-            break;
-        case 2:
-            powerups.push_back(std::make_unique<ShrinkPaddlePowerUp>(position.x, position.y));
-            break;
-        case 3:
-            powerups.push_back(std::make_unique<SlowBallPowerUp>(position.x, position.y));
-            break;
+            static std::random_device rd;
+            static std::mt19937 gen(rd());
+            static std::uniform_int_distribution<int> dist(0, 3);
+
+            switch (dist(gen))
+            {
+            case 0:
+                powerups.push_back(std::make_unique<ExtraLifePowerUp>(position.x, position.y));
+                break;
+            case 1:
+                powerups.push_back(std::make_unique<ExpandPaddlePowerUp>(position.x, position.y));
+                break;
+            case 2:
+                powerups.push_back(std::make_unique<ShrinkPaddlePowerUp>(position.x, position.y));
+                break;
+            case 3:
+                powerups.push_back(std::make_unique<SlowBallPowerUp>(position.x, position.y));
+                break;
+            }
         }
     }
 

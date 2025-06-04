@@ -1,5 +1,7 @@
-#include "RenderSystem.h"
+п»ї#include "RenderSystem.h"
 #include "AssetManager.h"
+#include "Config.h"
+#include <iostream>
 
 namespace Arkanoid {
 
@@ -14,13 +16,9 @@ namespace Arkanoid {
     }
 
     void RenderSystem::render(float interpolationFactor) {
-        // Очищаем экран
-        clear();
-
-        // Рендерим фон
+        // Р‘Р°Р·РѕРІС‹Р№ СЂРµРЅРґРµСЂРёРЅРі - С‚РѕР»СЊРєРѕ С„РѕРЅ
+        // РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РєРѕРіРґР° РЅРµС‚ СЃРїРµС†РёС„РёС‡РЅРѕРіРѕ РєРѕРЅС‚РµРЅС‚Р°
         renderBackground();
-
-        // Здесь будет рендеринг игровых объектов через вызовы из GameState
     }
 
     void RenderSystem::clear(const sf::Color& color) {
@@ -29,6 +27,40 @@ namespace Arkanoid {
 
     void RenderSystem::display() {
         window.display();
+    }
+
+    void RenderSystem::renderGameContent(
+        const Ball& ball,
+        const Paddle& paddle,
+        const std::vector<std::unique_ptr<BaseBlock>>& blocks,
+        const std::vector<std::unique_ptr<BasePowerUp>>& powerups,
+        const std::vector<std::unique_ptr<PowerUpEffect>>& activeEffects,
+        int score, int lives, int level) {
+
+        // Р РµРЅРґРµСЂРёРЅРі С„РѕРЅР°
+        renderBackground();
+
+        // Р РµРЅРґРµСЂРёРЅРі РёРіСЂРѕРІС‹С… РѕР±СЉРµРєС‚РѕРІ
+        ball.draw(window);
+        paddle.draw(window);
+
+        for (const auto& block : blocks) {
+            if (block->isActive()) {
+                block->draw(window);
+            }
+        }
+
+        for (const auto& powerup : powerups) {
+            if (powerup->isActive()) {
+                powerup->draw(window);
+            }
+        }
+
+        // Р РµРЅРґРµСЂРёРЅРі Р°РєС‚РёРІРЅС‹С… СЌС„С„РµРєС‚РѕРІ
+        renderActiveEffects(activeEffects);
+
+        // Р РµРЅРґРµСЂРёРЅРі UI
+        renderUI(score, lives, level);
     }
 
     void RenderSystem::renderBalls(const std::vector<std::unique_ptr<Ball>>& balls, float alpha) {
@@ -60,31 +92,36 @@ namespace Arkanoid {
         }
     }
 
+    void RenderSystem::renderPowerUps(const std::vector<std::unique_ptr<BasePowerUp>>& powerups) {
+        for (const auto& powerup : powerups) {
+            if (powerup->isActive()) {
+                powerup->draw(window);
+            }
+        }
+    }
+
     sf::Color getEffectColor(const PowerUpEffect& effect) {
         switch (effect.getType()) {
         case PowerUpType::ExtraLife: return sf::Color::Red;
         case PowerUpType::ExpandPaddle: return sf::Color::Green;
         case PowerUpType::ShrinkPaddle: return sf::Color::Yellow;
         case PowerUpType::SlowBall: return sf::Color::Blue;
-        default: return sf::Color::White; // Всегда добавляйте default case!
+        default: return sf::Color::White;
         }
     }
-    void RenderSystem::renderActiveEffects(const std::vector<std::unique_ptr<PowerUpEffect>>& effects)
-    {
+
+    void RenderSystem::renderActiveEffects(const std::vector<std::unique_ptr<PowerUpEffect>>& effects) {
         float x = Config::Window::WIDTH - 50.0f;
         float y = 20.0f;
 
-        for (const auto& effect : effects)
-        {
-            // Используем оператор * для получения ссылки на объект
+        for (const auto& effect : effects) {
             sf::RectangleShape icon(sf::Vector2f(30, 30));
             icon.setPosition(x, y);
-            icon.setFillColor(getEffectColor(*effect)); // Здесь разыменовываем unique_ptr
+            icon.setFillColor(getEffectColor(*effect));
             icon.setOutlineThickness(1);
             icon.setOutlineColor(sf::Color::White);
             window.draw(icon);
 
-            // Дополнительно: добавьте отображение таймера, как в предыдущих примерах
             if (effect->isTemporary()) {
                 int seconds = static_cast<int>(std::ceil(effect->getRemainingTime()));
 
@@ -101,12 +138,10 @@ namespace Arkanoid {
     }
 
     void RenderSystem::renderUI(int score, int lives, int level) {
-        // Обновляем тексты
         scoreText.setString("Score: " + std::to_string(score));
         livesText.setString("Lives: " + std::to_string(lives));
         levelText.setString("Level: " + std::to_string(level));
 
-        // Рендерим UI элементы
         window.draw(scoreText);
         window.draw(livesText);
         window.draw(levelText);
@@ -119,7 +154,41 @@ namespace Arkanoid {
     }
 
     void RenderSystem::renderParticles() {
-        // Заглушка для будущей системы частиц
+        // Р—Р°РіР»СѓС€РєР° РґР»СЏ Р±СѓРґСѓС‰РµР№ СЃРёСЃС‚РµРјС‹ С‡Р°СЃС‚РёС†
+    }
+
+    void RenderSystem::renderPauseOverlay() {
+        sf::RectangleShape overlay;
+        overlay.setSize(sf::Vector2f(Config::Window::WIDTH, Config::Window::HEIGHT));
+        overlay.setFillColor(sf::Color(0, 0, 0, 128));
+        window.draw(overlay);
+
+        centerText(pauseText);
+        window.draw(pauseText);
+    }
+
+    void RenderSystem::renderGameOverOverlay() {
+        sf::RectangleShape overlay;
+        overlay.setSize(sf::Vector2f(Config::Window::WIDTH, Config::Window::HEIGHT));
+        overlay.setFillColor(sf::Color(0, 0, 0, 180));
+        window.draw(overlay);
+
+        centerText(gameOverText);
+        window.draw(gameOverText);
+    }
+
+    void RenderSystem::renderLevelCompleteOverlay() {
+        sf::RectangleShape overlay;
+        overlay.setSize(sf::Vector2f(Config::Window::WIDTH, Config::Window::HEIGHT));
+        overlay.setFillColor(sf::Color(0, 0, 0, 100));
+        window.draw(overlay);
+
+        centerText(levelCompleteText);
+        window.draw(levelCompleteText);
+    }
+
+    void RenderSystem::renderDebugInfo(const Ball& ball, const Paddle& paddle, float gameTimer) {
+        // Р—РґРµСЃСЊ РјРѕР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ РѕС‚Р»Р°РґРѕС‡РЅСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ
     }
 
     void RenderSystem::setVSync(bool enabled) {
@@ -146,11 +215,26 @@ namespace Arkanoid {
             setupText(livesText, "Lives: 3", 10, 40);
             setupText(levelText, "Level: 1", 10, 70);
 
+            // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚РµРєСЃС‚РѕРІ СЃРѕСЃС‚РѕСЏРЅРёР№
+            pauseText.setFont(font);
+            pauseText.setString("PAUSED");
+            pauseText.setCharacterSize(72);
+            pauseText.setFillColor(sf::Color::Yellow);
+
+            gameOverText.setFont(font);
+            gameOverText.setString("GAME OVER");
+            gameOverText.setCharacterSize(72);
+            gameOverText.setFillColor(sf::Color::Red);
+
+            levelCompleteText.setFont(font);
+            levelCompleteText.setString("LEVEL COMPLETE!");
+            levelCompleteText.setCharacterSize(48);
+            levelCompleteText.setFillColor(sf::Color::Green);
+
         }
         catch (const std::exception& e) {
-            // Если не удалось загрузить шрифт, используем системный
             if (!font.loadFromFile("C:/Windows/Fonts/arial.ttf")) {
-                // Создаем fallback UI без шрифта
+                // РЎРѕР·РґР°РµРј fallback UI Р±РµР· С€СЂРёС„С‚Р°
             }
         }
     }
@@ -160,7 +244,6 @@ namespace Arkanoid {
             sf::Texture& bgTexture = AssetManager::getInstance().getTexture("background.png");
             backgroundSprite.setTexture(bgTexture);
 
-            // Масштабируем фон под размер окна
             sf::Vector2u windowSize = window.getSize();
             sf::Vector2u textureSize = bgTexture.getSize();
 
@@ -173,7 +256,7 @@ namespace Arkanoid {
 
         }
         catch (const std::exception& e) {
-            hasBackground = false; // Используем просто цветной фон
+            hasBackground = false;
         }
     }
 
@@ -184,9 +267,16 @@ namespace Arkanoid {
         text.setFillColor(sf::Color::White);
         text.setPosition(x, y);
 
-        // Добавляем контур для лучшей читаемости
         text.setOutlineColor(sf::Color::Black);
         text.setOutlineThickness(1);
+    }
+
+    void RenderSystem::centerText(sf::Text& text) {
+        sf::FloatRect textBounds = text.getLocalBounds();
+        text.setPosition(
+            (Config::Window::WIDTH - textBounds.width) / 2,
+            (Config::Window::HEIGHT - textBounds.height) / 2
+        );
     }
 
 } // namespace Arkanoid

@@ -35,13 +35,20 @@ namespace Arkanoid {
         sf::Sprite& getSprite();
         void draw(sf::RenderWindow& window, float alpha) const;
 
+        bool getIsOnPaddle() const { return isOnPaddle; }
+        void attachToPaddle(float paddleCenterX, float paddleY);
+        void updateOnPaddle(float paddleCenterX, float paddleY);
+        void launch();
+
     private:
         sf::Sprite sprite;
         sf::Vector2f velocity;
         sf::Vector2f previousPosition;
         float baseSpeed;
         float speedFactor;
+        bool isOnPaddle;
         bool active;
+
 
         void savePreviousPosition();
         void normalizeVelocity();
