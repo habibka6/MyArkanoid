@@ -47,14 +47,11 @@ namespace Arkanoid {
         window.setFramerateLimit(static_cast<unsigned int>(TARGET_FPS));
         window.setVerticalSyncEnabled(true);
 
-        // Установка иконки окна (если есть)
         try {
             sf::Image icon = AssetManager::getInstance().getImage("icon.png");
             window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
         }
-        catch (...) {
-            // Игнорируем если иконка не найдена
-        }
+        catch (...) {}
     }
 
     void GameEngine::loadAssets() {
@@ -133,4 +130,4 @@ namespace Arkanoid {
         return deltaTime;
     }
 
-} // namespace Arkanoid
+} 

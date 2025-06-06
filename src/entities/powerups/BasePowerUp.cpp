@@ -20,7 +20,7 @@ namespace Arkanoid {
             shape.setFillColor(sf::Color::Yellow);
             break;
         case PowerUpType::SlowBall:
-            shape.setFillColor(sf::Color::Magenta);
+            shape.setFillColor(sf::Color::Blue);
             break;
         default:
             shape.setFillColor(sf::Color::Cyan);

@@ -23,7 +23,7 @@ namespace Arkanoid {
         bool isActive() const override;
         void setActive(bool active) override;
 
-        // BaseBlock interface
+ 
         void hit() override;
         bool isDestroyed() const override;
         int getPoints() const override;
@@ -44,4 +44,4 @@ namespace Arkanoid {
         sf::Color getColorForType(Type type, int health, int maxHealth);
     };
 
-} // namespace Arkanoid
+} 

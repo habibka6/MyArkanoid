@@ -16,8 +16,7 @@ namespace Arkanoid {
     }
 
     void RenderSystem::render(float interpolationFactor) {
-        // Базовый рендеринг - только фон
-        // Используется когда нет специфичного контента
+    
         renderBackground();
     }
 
@@ -279,4 +278,4 @@ namespace Arkanoid {
         );
     }
 
-} // namespace Arkanoid
+} 

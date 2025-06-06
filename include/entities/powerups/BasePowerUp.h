@@ -11,7 +11,6 @@ namespace Arkanoid {
         BasePowerUp(float x, float y, PowerUpType type);
         virtual ~BasePowerUp() = default;
 
-        // Entity interface
         void update(float deltaTime) override;
         void draw(sf::RenderWindow& window) const override;
         sf::Vector2f getPosition() const override;
@@ -21,12 +20,11 @@ namespace Arkanoid {
         bool isActive() const override;
         void setActive(bool active) override;
 
-        // MovableEntity interface
+      
         sf::Vector2f getVelocity() const override;
         void setVelocity(const sf::Vector2f& velocity) override;
         void move(const sf::Vector2f& offset) override;
 
-        // PowerUp specific methods
         PowerUpType getPowerUpType() const;
         virtual std::unique_ptr<PowerUpEffect> createEffect() = 0;
         bool isOutOfBounds(float windowHeight) const;

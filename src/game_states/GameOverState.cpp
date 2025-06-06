@@ -1,9 +1,11 @@
-#include "GameOverState.h"
+п»ї#include "GameOverState.h"
 #include "MainMenuState.h"
 #include "GameState.h"
 #include "GameEngine.h"
 #include "AssetManager.h"
 #include "SoundManager.h"
+#include "Config.h"
+#include <algorithm>
 
 namespace Arkanoid {
 
@@ -20,82 +22,68 @@ namespace Arkanoid {
     void GameOverState::enter() {
         loadAssets();
         initializeUI();
+        initializeInputBindings(); 
 
-        // Запускаем соответствующую музыку
-        if (gameResult == GameOverReason::Victory) {
-            SoundManager::getInstance().playMusic("victory_music.ogg", false);
+        try {
+            if (gameResult == GameOverReason::Victory) {
+                SoundManager::getInstance().playMusic("victory_music.ogg", false);
+            }
+            else {
+                SoundManager::getInstance().playMusic("defeat_music.ogg", false);
+            }
         }
-        else {
-            SoundManager::getInstance().playMusic("defeat_music.ogg", false);
+        catch (...) {
+           
         }
     }
 
     void GameOverState::exit() {
-        SoundManager::getInstance().stopMusic();
+        try {
+            SoundManager::getInstance().stopMusic();
+        }
+        catch (...) {
+        }
     }
 
     void GameOverState::update(float deltaTime) {
         inputSystem.update();
         stateTimer += deltaTime;
 
-        // Анимация появления
         if (overlayAlpha < 1.0f) {
-            overlayAlpha += deltaTime * 2.0f; // Появление за 0.5 секунды
+            overlayAlpha += deltaTime * 2.0f; 
             overlayAlpha = std::min(overlayAlpha, 1.0f);
 
-            // Обновляем прозрачность оверлея
             overlayColor.a = static_cast<sf::Uint8>(overlayAlpha * 180);
-        }
-
-        // Разрешаем ввод только после небольшой задержки
-        if (stateTimer > 1.0f) {
-            handleInput();
         }
     }
 
     void GameOverState::render(sf::RenderWindow& window) {
-        // Рендерим фон если есть
         if (backgroundSprite.getTexture()) {
             window.draw(backgroundSprite);
         }
 
-        // Полупрозрачный оверлей
         sf::RectangleShape overlay;
-        overlay.setSize(sf::Vector2f(
-            static_cast<float>(Config::Window::WIDTH),
-            static_cast<float>(Config::Window::HEIGHT)
-        ));
+        overlay.setSize(sf::Vector2f(static_cast<float>(Config::Window::WIDTH), static_cast<float>(Config::Window::HEIGHT)));
         overlay.setFillColor(overlayColor);
         window.draw(overlay);
 
-        // Рендерим UI элементы
+        
         window.draw(titleText);
         window.draw(scoreText);
         window.draw(levelText);
 
-        // Показываем инструкции только после задержки
+       
         if (stateTimer > 2.0f) {
             window.draw(instructionText);
         }
     }
 
-    void GameOverState::handleEvent(const sf::Event& event) {
+    void GameOverState::handleEvent(const sf::Event& event) {  
+        
         inputSystem.processEvent(event);
 
-        if (stateTimer < 1.0f) return; // Блокируем ввод в начале
-
-        if (event.type == sf::Event::KeyPressed) {
-            switch (event.key.code) {
-            case sf::Keyboard::Enter:
-            case sf::Keyboard::Space:
-                restartGame();
-                break;
-            case sf::Keyboard::Escape:
-            case sf::Keyboard::M:
-                returnToMenu();
-                break;
-            }
-        }
+        
+        if (stateTimer < 1.0f) return; 
 
         if (event.type == sf::Event::MouseButtonPressed) {
             if (event.mouseButton.button == sf::Mouse::Left) {
@@ -111,24 +99,25 @@ namespace Arkanoid {
         try {
             font = AssetManager::getInstance().getFont("retro.ttf");
 
-            // Загружаем фон (опционально)
-            sf::Texture& bgTexture = AssetManager::getInstance().getTexture("background.jpg");
-            backgroundSprite.setTexture(bgTexture);
+            try {
+                sf::Texture& bgTexture = AssetManager::getInstance().getTexture("background.png");
+                backgroundSprite.setTexture(bgTexture);
 
-            // Масштабируем фон
-            sf::Vector2u windowSize = engine.getWindow().getSize();
-            sf::Vector2u textureSize = bgTexture.getSize();
-            backgroundSprite.setScale(
-                static_cast<float>(windowSize.x) / textureSize.x,
-                static_cast<float>(windowSize.y) / textureSize.y
-            );
-
+                sf::Vector2u windowSize = engine.getWindow().getSize();
+                sf::Vector2u textureSize = bgTexture.getSize();
+                if (textureSize.x > 0 && textureSize.y > 0) {
+                    backgroundSprite.setScale(static_cast<float>(windowSize.x) / textureSize.x, static_cast<float>(windowSize.y) / textureSize.y );
+                }
+            }
+            catch (...) {
+                
+            }
         }
-        catch (const std::exception& e) {
-            // Фон не критичен
+        catch (...) {
+            
         }
 
-        // Инициализируем цвет оверлея
+      
         overlayColor = sf::Color(0, 0, 0, 0);
     }
 
@@ -136,29 +125,61 @@ namespace Arkanoid {
         setupTexts();
     }
 
+    void GameOverState::initializeInputBindings() {
+        // РџРµСЂРµР·Р°РїСѓСЃРє РёРіСЂС‹
+        inputSystem.bindKeyPress(sf::Keyboard::Enter,
+            std::make_unique<LambdaCommand>([this]() {
+                if (stateTimer > 1.0f) {
+                    restartGame();
+                }
+                }));
+
+        inputSystem.bindKeyPress(sf::Keyboard::Space,
+            std::make_unique<LambdaCommand>([this]() {
+                if (stateTimer > 1.0f) {
+                    restartGame();
+                }
+                }));
+
+        // Р’РѕР·РІСЂР°С‚ РІ РјРµРЅСЋ
+        inputSystem.bindKeyPress(sf::Keyboard::Escape,
+            std::make_unique<LambdaCommand>([this]() {
+                if (stateTimer > 1.0f) {
+                    returnToMenu();
+                }
+                }));
+
+        inputSystem.bindKeyPress(sf::Keyboard::M,
+            std::make_unique<LambdaCommand>([this]() {
+                if (stateTimer > 1.0f) {
+                    returnToMenu();
+                }
+                }));
+    }
+
     void GameOverState::setupTexts() {
-        // Заголовок (Victory/Defeat)
+
         setupText(titleText, getResultMessage(), 0, 200, 64);
         centerText(titleText, 200);
         titleText.setFillColor(getResultColor());
         titleText.setOutlineColor(sf::Color::Black);
         titleText.setOutlineThickness(3);
 
-        // Счет
+     
         setupText(scoreText, "Final Score: " + std::to_string(finalScore), 0, 300, 36);
         centerText(scoreText, 300);
 
-        // Уровни
+       
         setupText(levelText, "Levels Completed: " + std::to_string(levelsCompleted), 0, 350, 36);
         centerText(levelText, 350);
 
-        // Инструкции
+        
         std::string instructions;
         if (gameResult == GameOverReason::Victory) {
-            instructions = "ENTER - Play Again    ESC - Main Menu";
+            instructions = "ENTER - Play Again    ESC - Main Menu    LMB - Restart    RMB - Menu";
         }
         else {
-            instructions = "ENTER - Retry    ESC - Main Menu";
+            instructions = "ENTER - Retry    ESC - Main Menu    LMB - Restart    RMB - Menu";
         }
 
         setupText(instructionText, instructions, 0, 500, 24);
@@ -166,25 +187,31 @@ namespace Arkanoid {
         instructionText.setFillColor(sf::Color::Yellow);
     }
 
-    void GameOverState::handleInput() {
-        // Обработка происходит в handleEvent
-    }
-
     void GameOverState::returnToMenu() {
-        SoundManager::getInstance().playSound(SoundType::ButtonClick);
+        try {
+            SoundManager::getInstance().playSound(SoundType::ButtonClick);
+        }
+        catch (...) {}
+
         auto mainMenu = std::make_unique<MainMenuState>(engine);
         engine.getStateMachine().changeState(std::move(mainMenu));
     }
 
     void GameOverState::restartGame() {
-        SoundManager::getInstance().playSound(SoundType::ButtonClick);
+        try {
+            SoundManager::getInstance().playSound(SoundType::ButtonClick);
+        }
+        catch (...) {}
+
         auto playState = std::make_unique<GameState>(engine, 1);
         engine.getStateMachine().changeState(std::move(playState));
     }
 
     void GameOverState::setupText(sf::Text& text, const std::string& content,
         float x, float y, int size) {
-        text.setFont(font);
+        if (!font.getInfo().family.empty()) {
+            text.setFont(font);
+        }
         text.setString(content);
         text.setCharacterSize(size);
         text.setFillColor(sf::Color::White);
@@ -221,4 +248,4 @@ namespace Arkanoid {
         }
     }
 
-} // namespace Arkanoid
+} 

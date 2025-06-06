@@ -8,7 +8,7 @@ namespace Arkanoid {
         Rock(float x, float y);
         ~Rock() = default;
 
-        // Entity interface
+   
         void update(float deltaTime) override;
         void draw(sf::RenderWindow& window) const override;
         sf::Vector2f getPosition() const override;
@@ -17,7 +17,6 @@ namespace Arkanoid {
         bool isActive() const override;
         void setActive(bool active) override;
 
-        // BaseBlock interface
         void hit() override;
         bool isDestroyed() const override;
         int getPoints() const override;
@@ -31,4 +30,4 @@ namespace Arkanoid {
         void setupRock();
     };
 
-} // namespace Arkanoid
+} 

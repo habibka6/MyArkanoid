@@ -25,4 +25,4 @@ namespace Arkanoid {
         GameEngine& engine;
     };
 
-} // namespace Arkanoid
+} 

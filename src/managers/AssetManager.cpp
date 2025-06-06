@@ -132,4 +132,4 @@ namespace Arkanoid {
         return images.find(filename) != images.end();
     }
 
-} // namespace Arkanoid
+} 

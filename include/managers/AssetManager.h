@@ -66,4 +66,4 @@ namespace Arkanoid {
         bool loadResource(T& resource, const std::string& filepath);
     };
 
-} // namespace Arkanoid
+} 

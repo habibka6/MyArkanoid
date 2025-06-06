@@ -2,79 +2,82 @@
 #include "BaseBlock.h"
 #include "Block.h"
 #include "Rock.h"
+#include <SFML/Graphics.hpp>
 #include <vector>
 #include <memory>
 #include <string>
+#include <nlohmann/json.hpp>
 
 namespace Arkanoid {
 
     struct LevelData {
         int levelNumber;
         std::string name;
+        std::string description;
         int rows;
         int cols;
-        std::vector<std::vector<int>> layout; // 0=empty, 1=green, 2=yellow, 3=red, 9=rock
-        float blockSpacing;
+        std::vector<std::vector<int>> layout;
         sf::Vector2f startPosition;
+        float blockSpacing;
+
+        // Новые параметры для центрирования
+        bool centerHorizontally;
+        bool centerVertically;
+        float marginTop;
+        float marginSides;
     };
 
     class LevelManager {
+    private:
+        std::vector<LevelData> predefinedLevels;
+        LevelData currentLevel;
+
+        float blockWidth;
+        float blockHeight;
+        float defaultSpacing;
+        int maxLevels;
+
     public:
         LevelManager();
         ~LevelManager() = default;
 
-        // Управление уровнями
+        // Основные методы
         bool loadLevel(int levelNumber);
-        bool loadLevelFromFile(const std::string& filename);
         std::vector<std::unique_ptr<BaseBlock>> generateBlocks() const;
 
-        // Информация о текущем уровне
-        const LevelData& getCurrentLevel() const;
-        int getCurrentLevelNumber() const;
+        // Геттеры
+        const LevelData& getCurrentLevel() const { return currentLevel; }
+        int getCurrentLevelNumber() const { return currentLevel.levelNumber; }
+        int getMaxLevels() const { return maxLevels; }
+
+        // Навигация
         bool hasNextLevel() const;
         bool hasPreviousLevel() const;
-
-        // Навигация по уровням
         bool nextLevel();
         bool previousLevel();
         void resetToFirstLevel();
 
-        // Генерация уровней
-        LevelData generateRandomLevel(int levelNumber, int difficulty) const;
-
-        // Проверка завершения уровня
+        // Проверка завершения
         bool isLevelComplete(const std::vector<std::unique_ptr<BaseBlock>>& blocks) const;
 
-        // Настройки генерации
+        // Настройки
         void setBlockSize(float width, float height);
-        void setStartPosition(float x, float y);
-        void setSpacing(float spacing);
+        void setDefaultSpacing(float spacing);
 
     private:
-        LevelData currentLevel;
-        int maxLevels;
+        // JSON методы
+        void loadLevelsFromJSON();
+        bool loadSingleLevel(const std::string& filepath, int levelNumber);
+        LevelData parseJSONLevel(const nlohmann::json& json, int levelNumber);
 
-        // Настройки размещения блоков
-        float blockWidth;
-        float blockHeight;
-        float blockSpacing;
-        sf::Vector2f levelStartPosition;
-
-        // Предопределенные уровни
-        void initializePredefinedLevels();
-        std::vector<LevelData> predefinedLevels;
-
-        // Вспомогательные методы
+        // Утилиты создания блоков
         std::unique_ptr<BaseBlock> createBlock(int blockType, float x, float y) const;
-        sf::Vector2f calculateBlockPosition(int row, int col) const;
-        LevelData createDefaultLevel() const;
-        bool validateLevelData(const LevelData& level) const;
+        sf::Vector2f calculateBlockPosition(int row, int col, const LevelData& level) const;
+        sf::Vector2f calculateCenteredStartPosition(const LevelData& level) const;
 
-        // Генерация паттернов
-        std::vector<std::vector<int>> generatePattern(int rows, int cols, int difficulty) const;
-        std::vector<std::vector<int>> generateWavePattern(int rows, int cols) const;
-        std::vector<std::vector<int>> generateCheckerPattern(int rows, int cols) const;
-        std::vector<std::vector<int>> generatePyramidPattern(int rows, int cols) const;
+        // Валидация
+        bool validateLevelData(const LevelData& level) const;
+        LevelData createDefaultLevel() const;
     };
 
 } // namespace Arkanoid

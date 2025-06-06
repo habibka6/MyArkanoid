@@ -24,10 +24,10 @@ namespace Arkanoid {
         void exit() override;
 
     private:
-        // Данные об игре
         GameOverReason gameResult;
         int finalScore;
         int levelsCompleted;
+
 
         // UI элементы
         sf::Font font;
@@ -48,14 +48,14 @@ namespace Arkanoid {
         // Методы инициализации
         void initializeUI();
         void loadAssets();
+        void initializeInputBindings();
         void setupTexts();
 
-        // Обработка ввода
-        void handleInput();
+      
         void returnToMenu();
         void restartGame();
 
-        // Утилиты
+     
         void setupText(sf::Text& text, const std::string& content,
             float x, float y, int size = 36);
         void centerText(sf::Text& text, float y);
@@ -63,4 +63,4 @@ namespace Arkanoid {
         sf::Color getResultColor() const;
     };
 
-} // namespace Arkanoid
+} 

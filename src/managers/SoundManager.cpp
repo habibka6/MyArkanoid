@@ -30,6 +30,8 @@ namespace Arkanoid {
         soundMap[SoundType::LevelComplete] = "level_complete.wav";
         soundMap[SoundType::PowerUpCollect] = "powerup_collect.wav";
         soundMap[SoundType::ButtonClick] = "button_click.wav";
+        soundMap[SoundType::Error] = "error_sound.wav";
+        soundMap[SoundType::LoseBall] = "lose_ball.wav";
     }
 
     void SoundManager::playSound(SoundType soundType) {
@@ -53,21 +55,17 @@ namespace Arkanoid {
                 sound->play();
             }
         }
-        catch (const std::exception& e) {
-            // Логирование ошибки, но не прерывание игры
-            // std::cerr << "Error playing sound: " << e.what() << std::endl;
-        }
+        catch (const std::exception& e) {}
     }
 
     sf::Sound* SoundManager::getAvailableSound() {
-        // Ищем свободный звуковой объект
+
         for (auto& sound : soundPool) {
             if (sound->getStatus() != sf::Sound::Playing) {
                 return sound.get();
             }
         }
 
-        // Если все заняты, используем первый (прерываем самый старый)
         return soundPool[0].get();
     }
 
@@ -146,4 +144,4 @@ namespace Arkanoid {
         }
     }
 
-} // namespace Arkanoid
+} 

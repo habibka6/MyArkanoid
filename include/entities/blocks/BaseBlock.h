@@ -13,10 +13,10 @@ namespace Arkanoid {
     public:
         virtual ~BaseBlock() = default;
 
-        // Entity interface
+     
         EntityType getType() const override;
 
-        // Block specific interface
+      
         virtual void hit() = 0;
         virtual bool isDestroyed() const = 0;
         virtual int getPoints() const = 0;
@@ -27,4 +27,4 @@ namespace Arkanoid {
         BaseBlock() = default;
     };
 
-} // namespace Arkanoid
+} 

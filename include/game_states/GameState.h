@@ -8,6 +8,7 @@
 #include "PhysicsSystem.h"
 #include "PowerUpManager.h"
 #include "InputSystem.h"
+#include "MainMenuState.h"
 #include "SoundManager.h"
 #include <vector>
 #include <memory>
@@ -59,18 +60,21 @@ namespace Arkanoid {
         void initializeInputBindings();
         void initializePhysics();
         void loadLevel(int levelNumber);
+        
 
         // Игровая логика
         void updateGame(float deltaTime);
-    
+
         void checkGameConditions();
 
         // Управление состоянием
         void pauseGame();
         void resumeGame();
         void restartLevel();
+        void handleLevelRestart();
         void nextLevel();
         void gameOver();
+        void returnToMainMenu();
 
         // Утилиты
         void resetBall();
@@ -80,4 +84,4 @@ namespace Arkanoid {
         void cleanupInactiveObjects();
     };
 
-} // namespace Arkanoid
+}

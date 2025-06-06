@@ -1,16 +1,15 @@
 #pragma once
-#include "ControllableEntity.h"
+#include "MovableEntity.h"
 #include "AssetManager.h"
 #include "Config.h"
 
 namespace Arkanoid {
 
-    class Paddle : public ControllableEntity {
+    class Paddle : public MovableEntity {
     public:
         Paddle(float startX, float startY);
         ~Paddle() = default;
 
-        // Entity interface
         void update(float deltaTime) override;
         void draw(sf::RenderWindow& window) const override;
         sf::Vector2f getPosition() const override;
@@ -20,15 +19,10 @@ namespace Arkanoid {
         bool isActive() const override;
         void setActive(bool active) override;
 
-        // MovableEntity interface
         sf::Vector2f getVelocity() const override;
         void setVelocity(const sf::Vector2f& velocity) override;
         void move(const sf::Vector2f& offset) override;
 
-        // ControllableEntity interface
-        void handleInput(float deltaTime) override;
-
-        // Paddle specific methods
         sf::FloatRect getGlobalBounds() const;
         sf::Vector2f getSize() const;
         float getSpeed() const;
@@ -48,4 +42,4 @@ namespace Arkanoid {
         void updateVelocity(const sf::Vector2f& prevPos, float deltaTime);
     };
 
-} // namespace Arkanoid
+} 

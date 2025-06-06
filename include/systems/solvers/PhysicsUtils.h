@@ -9,12 +9,6 @@
 namespace Arkanoid {
     namespace PhysicsUtils {
 
-        // Общие константы
-        constexpr float MIN_VERTICAL_RATIO = 0.3f;
-        constexpr float DEFAULT_SEPARATION = 2.0f;
-        constexpr float PADDLE_INFLUENCE = 0.3f;
-        constexpr float MAX_PADDLE_ANGLE = 75.0f;
-
         // Общие утилиты
         namespace Common {
             inline float calculateSpeed(const sf::Vector2f& velocity) {
@@ -28,7 +22,7 @@ namespace Arkanoid {
                 }
             }
 
-            inline void ensureMinimumVerticalVelocity(Ball& ball, float minRatio = MIN_VERTICAL_RATIO) {
+            inline void ensureMinimumVerticalVelocity(Ball& ball, float minRatio = Config::Physics::MIN_VERTICAL_RATIO) {
                 auto velocity = ball.getVelocity();
                 float speed = calculateSpeed(velocity);
                 float minVertical = speed * minRatio;
@@ -52,7 +46,6 @@ namespace Arkanoid {
 
                 if (ballPos.y - radius <= worldBounds.top) normal.y = 1.0f;
 
-                // Нормализация для диагональных столкновений
                 if (normal.x != 0 && normal.y != 0) {
                     float len = std::sqrt(normal.x * normal.x + normal.y * normal.y);
                     normal.x /= len;
@@ -105,7 +98,7 @@ namespace Arkanoid {
             }
 
             inline void correctPosition(Ball& ball, const sf::FloatRect& blockBounds,
-                const sf::Vector2f& normal, float separation = DEFAULT_SEPARATION) {
+                const sf::Vector2f& normal, float separation = Config::Physics::DEFAULT_SEPARATION) {
                 auto ballBounds = ball.getBounds();
                 auto ballCenter = ball.getPosition();
                 sf::Vector2f correction(0, 0);
@@ -154,17 +147,7 @@ namespace Arkanoid {
                 }
 
                 sf::Vector2f normal(0, 0);
-                bool isCorner = std::abs(tNearX - tNearY) < epsilon;
-
-                if (isCorner) {
-                    sf::Vector2f ballCenter = startPos + velocity * tNear;
-                    sf::Vector2f blockCenter(blockBounds.left + blockBounds.width / 2,
-                        blockBounds.top + blockBounds.height / 2);
-                    sf::Vector2f dir = ballCenter - blockCenter;
-                    normal.x = std::abs(dir.x) > std::abs(dir.y) ? (dir.x > 0 ? 1.0f : -1.0f) : 0;
-                    normal.y = std::abs(dir.y) > std::abs(dir.x) ? (dir.y > 0 ? 1.0f : -1.0f) : 0;
-                }
-                else if (tNearX > tNearY) {
+                if (tNearX > tNearY) {
                     normal.x = (velocity.x > 0) ? -1.0f : 1.0f;
                 }
                 else {
@@ -172,54 +155,47 @@ namespace Arkanoid {
                 }
 
                 return { normal, std::max(0.0f, tNear) };
+
             }
         }
+
 
         // Столкновения с платформой
         namespace PaddleCollision {
             inline void calculateAndApplyPaddleReflection(Ball& ball, const Paddle& paddle)  {
-                // hitOffset в диапазоне [-1..1]
                 float halfW = paddle.getSize().x * 0.5f;
                 float paddleCX = paddle.getPosition().x + halfW;
                 float hitOffset = (ball.getPosition().x - paddleCX) / halfW;
                 hitOffset = std::clamp(hitOffset, -1.0f, 1.0f);
 
-                // Константы углов
-                const float MIN_ANGLE_DEG = 15.0f;  // Минимальный угол
-                const float MAX_ANGLE_DEG = 75.0f;  // Максимальный угол
+                const float MIN_ANGLE_DEG = 15.0f;  
+                const float MAX_ANGLE_DEG = 75.0f;  
 
-                // Интерполируем угол между MIN_ANGLE и MAX_ANGLE
                 float t = std::abs(hitOffset);
                 float angleDeg = MIN_ANGLE_DEG + (MAX_ANGLE_DEG - MIN_ANGLE_DEG) * t;
                 angleDeg *= (hitOffset < 0 ? -1.0f : 1.0f);
 
-                // Переводим в радианы
-                float angleRad = angleDeg * (3.14159f / 180.0f);
+                float angleRad = angleDeg * (Config::Physics::DEG_TO_RAD);
 
-                // Новая скорость постоянного модуля
                 float speed = ball.getBaseSpeed() * ball.getSpeedFactor();
                 sf::Vector2f newVel;
                 newVel.x = std::sin(angleRad) * speed;
                 newVel.y = -std::cos(angleRad) * speed;
 
-                // Устанавливаем новую скорость
                 ball.setVelocity(newVel);
             }
             inline sf::Vector2f calculateReflectionNormal(const sf::Vector2f& ballPos, const sf::FloatRect& paddleBounds)  {
-                // Рассчитываем позицию на платформе (от 0 до 1)
+
                 float relativeX = (ballPos.x - paddleBounds.left) / paddleBounds.width;
                 relativeX = std::clamp(relativeX, 0.0f, 1.0f);
-
-                // Преобразуем в угол отражения (-60 до 60 градусов)
-                float maxAngle = 60.0f; // Максимальный угол отражения
+                float maxAngle = 60.0f; 
                 float angle = (relativeX - 0.5f) * maxAngle * 2.0f;
-                float angleRad = angle * 3.14159f / 180.0f;
+                float angleRad = angle * Config::Physics::DEG_TO_RAD;
 
-                // Гарантируем, что мяч всегда отражается вверх
                 return sf::Vector2f(std::sin(angleRad), -std::abs(std::cos(angleRad)));
             }
 
-            inline void applyPaddleInfluence(Ball& ball, const Paddle& paddle, float influence = PADDLE_INFLUENCE) {
+            inline void applyPaddleInfluence(Ball& ball, const Paddle& paddle, float influence = Config::Physics::PADDLE_INFLUENCE) {
                 auto vel = ball.getVelocity();
                 vel.x += paddle.getVelocity().x * influence;
                 ball.setVelocity(vel);
@@ -228,11 +204,10 @@ namespace Arkanoid {
             inline void correctPosition(Ball& ball, const sf::FloatRect& paddleBounds) {
                 auto ballBounds = ball.getBounds();
                 if (ballBounds.top + ballBounds.height > paddleBounds.top) {
-                    ball.setPosition({ ball.getPosition().x,
-                                    paddleBounds.top - ballBounds.height / 2 - 2.0f });
+                    ball.setPosition({ ball.getPosition().x, paddleBounds.top - ballBounds.height / 2 - 2.0f });
                 }
             }
         }
 
-    } // namespace PhysicsUtils
-} // namespace Arkanoid
+    } 
+} 

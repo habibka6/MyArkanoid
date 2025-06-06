@@ -23,7 +23,7 @@ namespace Arkanoid {
         RenderSystem(sf::RenderWindow& window);
         ~RenderSystem() = default;
 
-        // Основные методы рендеринга (используются GameEngine)
+        // Основные методы рендеринга
         void render(float interpolationFactor = 1.0f);
         void clear(const sf::Color& color = sf::Color::Black);
         void display();
@@ -40,7 +40,7 @@ namespace Arkanoid {
         void renderBackground();
         void renderParticles();
 
-        // Рендеринг игрового контента (БЕЗ clear/display)
+        // Рендеринг игрового контента
         void renderGameContent(
             const Ball& ball,
             const Paddle& paddle,
@@ -89,4 +89,4 @@ namespace Arkanoid {
         void centerText(sf::Text& text);
     };
 
-} // namespace Arkanoid
+} 

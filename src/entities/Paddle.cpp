@@ -21,7 +21,6 @@ namespace Arkanoid {
         if (!active) return;
 
         sf::Vector2f prevPos = getPosition();
-        handleInput(deltaTime);
         updateVelocity(prevPos, deltaTime);
     }
 
@@ -65,15 +64,6 @@ namespace Arkanoid {
 
     void Paddle::move(const sf::Vector2f& offset) {
         sprite.move(offset);
-    }
-
-    void Paddle::handleInput(float deltaTime) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-            move({ -speed * deltaTime, 0 });
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            move({ speed * deltaTime, 0 });
-        }
     }
 
     sf::FloatRect Paddle::getGlobalBounds() const {

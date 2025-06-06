@@ -13,12 +13,10 @@ namespace Arkanoid
 
     void PowerUpManager::spawnPowerUp(const sf::Vector2f& position)
     {
-        // Генерация бонуса только если нет активных временных эффектов
         static std::random_device rd;
         static std::mt19937 gen(rd());
         static std::uniform_real_distribution<float> dis(0.0f, 1.0f);
 
-        // Если нет активных временных эффектов и выпал шанс
         if (!isTemporaryEffectActive() && dis(gen) < Config::Block::DROP_CHANCE)
         {
             static std::random_device rd;
@@ -45,7 +43,7 @@ namespace Arkanoid
 
     void PowerUpManager::update(float deltaTime, Paddle& paddle, Ball& ball)
     {
-        // Update active powerups
+
         for (auto it = powerups.begin(); it != powerups.end();)
         {
             auto& powerup = *it;
@@ -54,7 +52,6 @@ namespace Arkanoid
             {
                 powerup->update(deltaTime);
 
-                // Check collision with paddle
                 if (paddle.getBounds().intersects(powerup->getBounds()))
                 {
                     applyPowerUpEffect(*powerup, paddle, ball);
@@ -62,7 +59,6 @@ namespace Arkanoid
                     continue;
                 }
 
-                // Remove if out of screen
                 if (powerup->isOutOfBounds(Config::Window::HEIGHT))
                 {
                     it = powerups.erase(it);
@@ -72,7 +68,6 @@ namespace Arkanoid
             ++it;
         }
 
-        // Update active effects
         for (auto it = activeEffects.begin(); it != activeEffects.end();)
         {
             auto& effect = *it;
@@ -102,21 +97,21 @@ namespace Arkanoid
 
     void PowerUpManager::applyPowerUpEffect(BasePowerUp& powerup, Paddle& paddle, Ball& ball)
     {
-        // Handle conflicting effects
         switch (powerup.getPowerUpType())
         {
         case PowerUpType::ExpandPaddle:
             cancelEffect(PowerUpType::ShrinkPaddle);
+            cancelEffect(PowerUpType::ExpandPaddle);
             break;
         case PowerUpType::ShrinkPaddle:
             cancelEffect(PowerUpType::ExpandPaddle);
+            cancelEffect(PowerUpType::ShrinkPaddle);
             break;
         }
 
-        // Create and apply effect
+ 
         auto effect = powerup.createEffect();
 
-        // Special handling for ExtraLife
         if (powerup.getPowerUpType() == PowerUpType::ExtraLife && extraLifeCallback)
         {
             effect->apply(ball, paddle, extraLifeCallback);

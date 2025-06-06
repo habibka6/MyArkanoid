@@ -7,7 +7,9 @@ namespace Arkanoid {
     Ball::Ball(float startX, float startY)
         : baseSpeed(Config::Ball::BASE_SPEED),
         speedFactor(1.0f),
-        active(true) {
+        active(true),
+        isOnPaddle(true)        
+    {  
         setupSprite();
         reset(startX, startY);
     }
@@ -24,9 +26,20 @@ namespace Arkanoid {
     void Ball::update(float deltaTime) {
         if (!active) return;
 
-        savePreviousPosition();
-        move(velocity * deltaTime);
+        // Обновляем только если мяч НЕ на платформе
+        if (!isOnPaddle) {
+            savePreviousPosition();
+            move(velocity * deltaTime);
+        }
     }
+
+    void Ball::reset(float paddleCenterX, float paddleY) {
+        isOnPaddle = true;
+        setPosition({ paddleCenterX, paddleY - getBounds().height });
+        velocity = { 0.0f, 0.0f }; // Останавливаем мяч
+        resetSpeedFactor();
+    }
+
 
     void Ball::draw(sf::RenderWindow& window) const {
         if (active) {
@@ -80,22 +93,6 @@ namespace Arkanoid {
         sprite.move(offset);
     }
 
-    void Ball::reset(float x, float y) {
-        setPosition({ x, y });
-        savePreviousPosition();
-
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_real_distribution<float> angleDist(-45.0f, 45.0f);
-        float angleRad = angleDist(gen) * 3.14159f / 180.0f;
-
-        resetSpeedFactor();
-        float speed = baseSpeed;
-        velocity = {
-            speed * std::sin(angleRad),
-            -speed * std::cos(angleRad)
-        };
-    }
 
     void Ball::reflect(const sf::Vector2f& normal) {
         float dot = velocity.x * normal.x + velocity.y * normal.y;
@@ -135,6 +132,30 @@ namespace Arkanoid {
         if (currentSpeed > 0.0f) {
             float targetSpeed = baseSpeed * speedFactor;
             velocity = (velocity / currentSpeed) * targetSpeed;
+        }
+    }
+    
+    bool Ball::getIsOnPaddle() const { return isOnPaddle; }
+    void Ball::updateOnPaddle(float paddleCenterX, float paddleY) {
+        if (isOnPaddle) {
+            setPosition({ paddleCenterX , paddleY - getBounds().height });
+        }
+    }
+
+    void Ball::launch() {
+        if (isOnPaddle) {
+            isOnPaddle = false;
+
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_real_distribution<float> angleDist(-45.0f, 45.0f);
+            float angleRad = angleDist(gen) * Config::Physics::DEG_TO_RAD;
+
+            float speed = baseSpeed * speedFactor;
+            velocity = {
+                speed * std::sin(angleRad),
+                -speed * std::cos(angleRad)
+            };
         }
     }
 

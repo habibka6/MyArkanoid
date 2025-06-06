@@ -28,4 +28,4 @@ namespace Arkanoid {
         Entity() = default;
     };
 
-} // namespace Arkanoid
+} 

@@ -15,14 +15,16 @@ namespace Arkanoid {
         GameOver,
         LevelComplete,
         PowerUpCollect,
-        ButtonClick
+        ButtonClick,
+        Error,
+        LoseBall
     };
 
     class SoundManager {
     public:
         static SoundManager& getInstance();
 
-        // Воспроизведение звуков
+    
         void playSound(SoundType soundType);
         void playSound(const std::string& filename);
 
@@ -63,10 +65,8 @@ namespace Arkanoid {
         float musicVolume;
         bool muted;
 
-        // Константы
         static const size_t MAX_CONCURRENT_SOUNDS = 10;
 
-        // Вспомогательные методы
         void initializeSoundMap();
         sf::Sound* getAvailableSound();
         std::string getSoundFilename(SoundType soundType) const;

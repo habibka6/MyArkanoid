@@ -1,5 +1,5 @@
 #include "State.h"
-#include "GameEngine.h" // Теперь включаем здесь
+#include "GameEngine.h" 
 
 namespace Arkanoid {
     State::State(GameEngine& engine)

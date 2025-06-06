@@ -22,7 +22,6 @@ namespace Arkanoid {
         void clear();
         void addBlock(BaseBlock* block);
 
-        // ИСПРАВЛЕНИЕ: Добавляем метод update
         void update(const std::vector<std::unique_ptr<BaseBlock>>& blocks);
 
         std::vector<BaseBlock*> getPotentialCollisions(const sf::FloatRect& bounds);
@@ -36,4 +35,4 @@ namespace Arkanoid {
         std::vector<std::pair<int, int>> getCellsForBounds(const sf::FloatRect& bounds);
     };
 
-} // namespace Arkanoid
+} 

@@ -16,9 +16,7 @@ namespace Arkanoid {
         gameTimer(0.0f),
         debugMode(false)
     {
-        powerUpManager.setExtraLifeCallback([this]() {
-            lives = lives + 1;
-            });
+        powerUpManager.setExtraLifeCallback([this]() {lives = lives + 1;});
     }
 
     void GameState::enter() {
@@ -47,15 +45,16 @@ namespace Arkanoid {
     }
 
     void GameState::update(float deltaTime) {
-        inputSystem.update();
+
         if (gameStatus == GameStatus::Playing) {
+            inputSystem.update();
             updateGame(deltaTime);
             gameTimer += deltaTime;
         }
     }
 
     void GameState::render(sf::RenderWindow& window) {
-        // Используем RenderSystem для отрисовки игрового контента
+        
         engine.getRenderSystem().renderGameContent(
             *ball,
             *paddle,
@@ -68,7 +67,7 @@ namespace Arkanoid {
         );
         powerUpManager.render(window);
 
-        // Рендеринг оверлеев состояний поверх игрового контента
+
         switch (gameStatus) {
         case GameStatus::Paused:
             engine.getRenderSystem().renderPauseOverlay();
@@ -82,64 +81,55 @@ namespace Arkanoid {
         case GameStatus::Playing:
         case GameStatus::Victory:
         default:
-            // Никаких дополнительных оверлеев
             break;
-        }
-
-        // Отладочная информация
-        if (debugMode) {
-            engine.getRenderSystem().renderDebugInfo(*ball, *paddle, gameTimer);
         }
     }
 
-    // Остальные методы остаются без изменений...
     void GameState::handleEvent(const sf::Event& event) {
         inputSystem.processEvent(event);
-
-        if (event.type == sf::Event::KeyPressed) {
-            switch (event.key.code) {
-            case sf::Keyboard::Escape:
-                pauseGame();
-                break;
-            case sf::Keyboard::R:
-                if (gameStatus == GameStatus::GameOver) {
-                    restartLevel();
-                }
-                break;
-            case sf::Keyboard::Enter:
-                if (gameStatus == GameStatus::LevelComplete) {
-                    nextLevel();
-                }
-                break;
-            case sf::Keyboard::F1:
-                debugMode = !debugMode;
-                break;
-            }
-        }
     }
 
     void GameState::initializeGame() {
-        ball = std::make_unique<Ball>(
-            Config::Window::WIDTH / 2.0f,
-            Config::Window::HEIGHT - 150.0f
-        );
+        ball = std::make_unique<Ball>(Config::Window::WIDTH / 2.0f,  Config::Window::HEIGHT - 150.0f );
 
-        paddle = std::make_unique<Paddle>(
-            Config::Window::WIDTH / 2.0f - Config::Paddle::WIDTH / 2.0f,
-            Config::Window::HEIGHT - 50.0f
-        );
+        paddle = std::make_unique<Paddle>(Config::Window::WIDTH / 2.0f - Config::Paddle::WIDTH / 2.0f,Config::Window::HEIGHT - 50.0f);
 
         levelManager = std::make_unique<LevelManager>();
     }
 
     void GameState::initializeInputBindings() {
+
         inputSystem.bindKey(sf::Keyboard::Left,
-            std::make_unique<PaddleMoveLeftCommand>(*paddle, engine.getDeltaTime()));
+            std::make_unique<LambdaCommand>([this]() {
+                paddle->move({ -paddle->getSpeed() * engine.getDeltaTime(), 0.0f });
+                }));
+
         inputSystem.bindKey(sf::Keyboard::Right,
-            std::make_unique<PaddleMoveRightCommand>(*paddle, engine.getDeltaTime()));
+            std::make_unique<LambdaCommand>([this]() {
+                paddle->move({ paddle->getSpeed() * engine.getDeltaTime(), 0.0f });
+                }));
+
+        inputSystem.bindKeyPress(sf::Keyboard::Space,
+            std::make_unique<LaunchBallCommand>(*ball));
 
         inputSystem.bindKeyPress(sf::Keyboard::P,
             std::make_unique<PauseGameCommand>([this]() { pauseGame(); }));
+
+        inputSystem.bindKeyPress(sf::Keyboard::Escape,
+            std::make_unique<LambdaCommand>([this]() {
+                returnToMainMenu();
+                }));;
+
+
+        inputSystem.bindKeyPress(sf::Keyboard::R,
+            std::make_unique<RestartLevelCommand>([this]() { handleLevelRestart(); }));
+
+        inputSystem.bindKeyPress(sf::Keyboard::Enter,
+            std::make_unique<LambdaCommand>([this]() {
+                if (gameStatus == GameStatus::LevelComplete) {
+                    nextLevel();
+                }
+                }));
     }
 
     void GameState::initializePhysics() {
@@ -190,18 +180,26 @@ namespace Arkanoid {
     }
 
     void GameState::updateGame(float deltaTime) {
-        ball->update(deltaTime);
+        if (ball->getIsOnPaddle()) {
+            sf::Vector2f paddlePos = paddle->getPosition();
+            float paddleCenterX = paddlePos.x + paddle->getBounds().width / 2.0f;
+            ball->updateOnPaddle(paddleCenterX, paddlePos.y);
+        }
+        ball->update(deltaTime);  
         paddle->update(deltaTime);
         powerUpManager.update(deltaTime, *paddle, *ball);
         paddle->constrainToWindow(static_cast<float>(Config::Window::WIDTH));
-        physicsSystem->update(*ball, *paddle, blocks, powerups, deltaTime);
+
+        if (!ball->getIsOnPaddle()) {
+            physicsSystem->update(*ball, *paddle, blocks, powerups, deltaTime);
+        }
         checkGameConditions();
         cleanupInactiveObjects();
     }
 
     
     void GameState::checkGameConditions() {
-        if (ball->getPosition().y > Config::Window::HEIGHT) {
+        if (!ball->getIsOnPaddle() && ball->getPosition().y > Config::Window::HEIGHT) {
             loseLife();
         }
 
@@ -224,14 +222,30 @@ namespace Arkanoid {
     }
 
     void GameState::restartLevel() {
+        powerUpManager.reset();
         loadLevel(currentLevel);
         gameStatus = GameStatus::Playing;
-        powerUpManager.reset();
+        
     }
+
+    void GameState::handleLevelRestart() {
+        if (gameStatus == GameStatus::GameOver) {
+            restartLevel();
+        }
+    }
+
+    void GameState::returnToMainMenu() {
+        SoundManager::getInstance().playSound(SoundType::ButtonClick);
+        auto mainMenu = std::make_unique<MainMenuState>(engine);
+        engine.getStateMachine().changeState(std::move(mainMenu));
+    }
+
+
 
     void GameState::nextLevel() {
         if (levelManager->hasNextLevel()) {
             levelManager->nextLevel();
+            powerUpManager.reset();
             loadLevel(levelManager->getCurrentLevelNumber());
             gameStatus = GameStatus::Playing;
         }
@@ -252,7 +266,9 @@ namespace Arkanoid {
     }
 
     void GameState::resetBall() {
-        ball->reset(Config::Window::WIDTH / 2.0f, Config::Window::HEIGHT - 150.0f);
+        sf::Vector2f paddlePos = paddle->getPosition();
+        float paddleCenterX = paddlePos.x + paddle->getBounds().width / 2.0f;
+        ball->reset(paddleCenterX, paddlePos.y);
     }
 
     void GameState::updateScore(int points) {
@@ -265,6 +281,7 @@ namespace Arkanoid {
             gameOver();
         }
         else {
+            SoundManager::getInstance().playSound(SoundType::LoseBall);
             resetBall();
         }
     }
@@ -274,21 +291,37 @@ namespace Arkanoid {
     }
 
     void GameState::cleanupInactiveObjects() {
-        powerups.erase(
-            std::remove_if(powerups.begin(), powerups.end(),
-                [](const std::unique_ptr<BasePowerUp>& powerup) {
-                    return !powerup->isActive();
-                }),
-            powerups.end()
-        );
+        auto powerupIt = powerups.begin();
+        while (powerupIt != powerups.end()) {
+            try {
+                if (*powerupIt && !(*powerupIt)->isActive()) {
+                    powerupIt = powerups.erase(powerupIt);
+                }
+                else {
+                    ++powerupIt;
+                }
+            }
+            catch (const std::exception& e) {
+                std::cerr << "Error checking powerup state: " << e.what() << std::endl;
+                powerupIt = powerups.erase(powerupIt);
+            }
+        }
 
-        blocks.erase(
-            std::remove_if(blocks.begin(), blocks.end(),
-                [](const std::unique_ptr<BaseBlock>& block) {
-                    return !block->isActive();
-                }),
-            blocks.end()
-        );
+        auto blockIt = blocks.begin();
+        while (blockIt != blocks.end()) {
+            try {
+                if (*blockIt && !(*blockIt)->isActive()) {
+                    blockIt = blocks.erase(blockIt);
+                }
+                else {
+                    ++blockIt;
+                }
+            }
+            catch (const std::exception& e) {
+                std::cerr << "Error checking block state: " << e.what() << std::endl;
+                blockIt = blocks.erase(blockIt); 
+            }
+        }
     }
 
-} // namespace Arkanoid
+} 

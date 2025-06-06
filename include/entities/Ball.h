@@ -10,7 +10,6 @@ namespace Arkanoid {
         Ball(float startX, float startY);
         ~Ball() = default;
 
-        // Entity interface
         void update(float deltaTime) override;
         void draw(sf::RenderWindow& window) const override;
         sf::Vector2f getPosition() const override;
@@ -20,13 +19,13 @@ namespace Arkanoid {
         bool isActive() const override;
         void setActive(bool active) override;
 
-        // MovableEntity interface
+        
         sf::Vector2f getVelocity() const override;
         void setVelocity(const sf::Vector2f& velocity) override;
         void move(const sf::Vector2f& offset) override;
 
-        // Ball specific methods
-        void reset(float x, float y);
+       
+        void reset(float paddleCenterX, float paddleY);
         void reflect(const sf::Vector2f& normal);
         void increaseSpeedFactor(float value);
         void resetSpeedFactor();
@@ -35,8 +34,7 @@ namespace Arkanoid {
         sf::Sprite& getSprite();
         void draw(sf::RenderWindow& window, float alpha) const;
 
-        bool getIsOnPaddle() const { return isOnPaddle; }
-        void attachToPaddle(float paddleCenterX, float paddleY);
+        bool getIsOnPaddle() const;
         void updateOnPaddle(float paddleCenterX, float paddleY);
         void launch();
 
@@ -55,4 +53,5 @@ namespace Arkanoid {
         void setupSprite();
     };
 
-} // namespace Arkanoid
+} 
+  

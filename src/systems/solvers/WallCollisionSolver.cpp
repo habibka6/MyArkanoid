@@ -5,9 +5,6 @@ namespace Arkanoid {
         : worldBounds{ 0, 0, windowWidth, windowHeight } {
     }
 
-    bool WallCollisionSolver::checkCollision(Ball& ball, const sf::FloatRect&) const {
-        return checkWallCollisions(ball);
-    }
 
     void WallCollisionSolver::resolveCollision(Ball& ball, const sf::FloatRect&, float) {
         float radius = ball.getBounds().width * 0.5f;

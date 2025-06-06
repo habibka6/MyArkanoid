@@ -1,16 +1,7 @@
 #include "BlockCollisionSolver.h"
 
 namespace Arkanoid {
-    bool BlockCollisionSolver::checkCollision(Ball& ball, const sf::FloatRect& bounds) const {
-        return ball.getBounds().intersects(bounds);
-    }
-
-    void BlockCollisionSolver::resolveCollision(Ball& ball, const sf::FloatRect& bounds, float deltaTime) {
-        auto normal = PhysicsUtils::BlockCollision::calculateNormal(ball.getPosition(), bounds);
-        ball.reflect(normal);
-        PhysicsUtils::BlockCollision::correctPosition(ball, bounds, normal);
-    }
-
+   
     bool BlockCollisionSolver::checkBlockCollision(Ball& ball, BaseBlock& block) const {
         return ball.getBounds().intersects(block.getBounds()) && block.isActive();
     }

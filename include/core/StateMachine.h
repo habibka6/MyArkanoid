@@ -30,4 +30,4 @@ namespace Arkanoid {
         std::stack<std::unique_ptr<State>> states;
     };
 
-} // namespace Arkanoid
+}

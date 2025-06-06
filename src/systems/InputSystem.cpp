@@ -1,12 +1,16 @@
 #include "InputSystem.h"
 #include "Paddle.h"
+#include "Ball.h"
+#include <algorithm>
 
 namespace Arkanoid {
 
-    // --- InputSystem Implementation ---
-
     void InputSystem::update() {
-        updateKeyStates();
+        if (!inputEnabled) {
+            return;
+        }
+
+        updateKeyStates();;
 
         // ¬ыполн€ем команды дл€ зажатых клавиш
         for (const auto& [key, command] : keyHoldCommands) {
@@ -17,30 +21,46 @@ namespace Arkanoid {
     }
 
     void InputSystem::processEvent(const sf::Event& event) {
-        if (event.type == sf::Event::KeyPressed) {
+        if (!inputEnabled) {
+            return;
+        }
+
+        switch (event.type) {
+        case sf::Event::KeyPressed: {
             auto it = keyPressCommands.find(event.key.code);
             if (it != keyPressCommands.end()) {
                 it->second->execute();
             }
+            break;
         }
-        else if (event.type == sf::Event::KeyReleased) {
+        case sf::Event::KeyReleased: {
             auto it = keyReleaseCommands.find(event.key.code);
             if (it != keyReleaseCommands.end()) {
                 it->second->execute();
             }
+            break;
+        }
+        default:
+            break;
         }
     }
 
     void InputSystem::bindKey(sf::Keyboard::Key key, std::unique_ptr<InputCommand> command) {
-        keyHoldCommands[key] = std::move(command);
+        if (command) {
+            keyHoldCommands[key] = std::move(command);
+        }
     }
 
     void InputSystem::bindKeyPress(sf::Keyboard::Key key, std::unique_ptr<InputCommand> command) {
-        keyPressCommands[key] = std::move(command);
+        if (command) {
+            keyPressCommands[key] = std::move(command);
+        }
     }
 
     void InputSystem::bindKeyRelease(sf::Keyboard::Key key, std::unique_ptr<InputCommand> command) {
-        keyReleaseCommands[key] = std::move(command);
+        if (command) {
+            keyReleaseCommands[key] = std::move(command);
+        }
     }
 
     void InputSystem::unbindKey(sf::Keyboard::Key key) {
@@ -49,8 +69,14 @@ namespace Arkanoid {
         keyReleaseCommands.erase(key);
     }
 
+    void InputSystem::unbindAllKeys() {
+        keyHoldCommands.clear();
+        keyPressCommands.clear();
+        keyReleaseCommands.clear();
+    }
+
     bool InputSystem::isKeyPressed(sf::Keyboard::Key key) const {
-        return sf::Keyboard::isKeyPressed(key);
+        return getKeyState(key);
     }
 
     bool InputSystem::wasKeyJustPressed(sf::Keyboard::Key key) const {
@@ -73,53 +99,68 @@ namespace Arkanoid {
         return !currentPressed && previousPressed;
     }
 
-    sf::Vector2i InputSystem::getMousePosition(const sf::RenderWindow& window) const {
-        return sf::Mouse::getPosition(window);
-    }
-
-    bool InputSystem::isMouseButtonPressed(sf::Mouse::Button button) const {
-        return sf::Mouse::isButtonPressed(button);
-    }
-
     void InputSystem::reset() {
         previousKeyStates.clear();
         currentKeyStates.clear();
+        inputEnabled = true;
     }
 
     void InputSystem::updateKeyStates() {
         previousKeyStates = currentKeyStates;
+        currentKeyStates.clear();
 
-        // ќбновл€ем состо€ни€ всех отслеживаемых клавиш
-        for (int key = 0; key < sf::Keyboard::KeyCount; ++key) {
-            sf::Keyboard::Key keyCode = static_cast<sf::Keyboard::Key>(key);
-            currentKeyStates[keyCode] = sf::Keyboard::isKeyPressed(keyCode);
+        // ќбновл€ем только отслеживаемые клавиши дл€ производительности
+        for (const auto& [key, _] : keyHoldCommands) {
+            currentKeyStates[key] = sf::Keyboard::isKeyPressed(key);
+        }
+        for (const auto& [key, _] : keyPressCommands) {
+            currentKeyStates[key] = sf::Keyboard::isKeyPressed(key);
+        }
+        for (const auto& [key, _] : keyReleaseCommands) {
+            currentKeyStates[key] = sf::Keyboard::isKeyPressed(key);
         }
     }
+
 
     bool InputSystem::getKeyState(sf::Keyboard::Key key) const {
         return sf::Keyboard::isKeyPressed(key);
     }
 
-    // --- Command Implementations ---
 
-    PaddleMoveLeftCommand::PaddleMoveLeftCommand(Paddle& paddle, float deltaTime)
-        : paddle(paddle), deltaTime(deltaTime) {
+
+    LambdaCommand::LambdaCommand(std::function<void()> action)
+        : action(std::move(action)) {
     }
 
-    void PaddleMoveLeftCommand::execute() {
-        paddle.move({ -paddle.getSpeed() * deltaTime, 0 });
+    void LambdaCommand::execute() {
+        if (action) {
+            action();
+        }
     }
 
-    PaddleMoveRightCommand::PaddleMoveRightCommand(Paddle& paddle, float deltaTime)
-        : paddle(paddle), deltaTime(deltaTime) {
+    std::unique_ptr<InputCommand> LambdaCommand::clone() const {
+        return std::make_unique<LambdaCommand>(action);
+    }
+    
+
+    
+    LaunchBallCommand::LaunchBallCommand(Ball& ball)
+        : ball(ball) {
     }
 
-    void PaddleMoveRightCommand::execute() {
-        paddle.move({ paddle.getSpeed() * deltaTime, 0 });
+    void LaunchBallCommand::execute() {
+        if (ball.getIsOnPaddle()) {
+            ball.launch();
+        }
     }
 
+    std::unique_ptr<InputCommand> LaunchBallCommand::clone() const {
+        return std::make_unique<LaunchBallCommand>(ball);
+    }
+
+  
     PauseGameCommand::PauseGameCommand(std::function<void()> pauseCallback)
-        : callback(pauseCallback) {
+        : callback(std::move(pauseCallback)) {
     }
 
     void PauseGameCommand::execute() {
@@ -128,4 +169,26 @@ namespace Arkanoid {
         }
     }
 
-} // namespace Arkanoid
+    std::unique_ptr<InputCommand> PauseGameCommand::clone() const {
+        return std::make_unique<PauseGameCommand>(callback);
+    }
+
+    
+
+  
+    RestartLevelCommand::RestartLevelCommand(std::function<void()> restartCallback)
+        : callback(std::move(restartCallback)) {
+    }
+
+    void RestartLevelCommand::execute() {
+        if (callback) {
+            callback();
+        }
+    }
+
+    std::unique_ptr<InputCommand> RestartLevelCommand::clone() const {
+        return std::make_unique<RestartLevelCommand>(callback);
+    }
+
+
+} 

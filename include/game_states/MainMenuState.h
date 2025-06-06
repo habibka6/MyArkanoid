@@ -17,52 +17,47 @@ namespace Arkanoid {
     };
 
     class MainMenuState : public State {
-    public:
-        MainMenuState(GameEngine& engine);
-        ~MainMenuState() = default;
+    private:
+        InputSystem inputSystem;
+        sf::Font font;
+        sf::Text titleText;
+        sf::Sprite backgroundSprite;
 
+        std::vector<MenuItem> menuItems;
+        int selectedItemIndex;
+        bool assetsLoaded;
+
+    public:
+        explicit MainMenuState(GameEngine& engine);
+
+        void enter() override;
+        void exit() override;
         void update(float deltaTime) override;
         void render(sf::RenderWindow& window) override;
         void handleEvent(const sf::Event& event) override;
 
-        void enter() override;
-        void exit() override;
-
     private:
-        // UI элементы
-        sf::Font font;
-        sf::Text titleText;
-        sf::Sprite backgroundSprite;
-        std::vector<MenuItem> menuItems;
-
-        // Управление меню
-        int selectedItemIndex;
-        InputSystem inputSystem;
-
-        // Состояние
-        bool assetsLoaded;
-
-        // Методы инициализации
+        void loadAssets();
         void initializeUI();
         void initializeMenuItems();
-        void loadAssets();
+        void initializeInputBindings();
 
-        // Управление меню
         void navigateUp();
         void navigateDown();
         void selectItem();
         void updateHighlight();
         void handleMouseInput(const sf::Event& event);
 
-        // Колбэки меню
+        // Действия меню
         void startGame();
+        void showLevelSelect();
         void showOptions();
         void exitGame();
 
         // Утилиты
         void setupText(sf::Text& text, const std::string& content,
-            float x, float y, int size = 36);
+            float x, float y, int size = 24);
         void centerText(sf::Text& text, float y);
     };
 
-} // namespace Arkanoid
+} 

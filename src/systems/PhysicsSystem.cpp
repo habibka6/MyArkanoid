@@ -50,17 +50,16 @@ namespace Arkanoid {
         float deltaTime) {
         sf::FloatRect ballBounds = ball.getBounds();
 
-        // Коллизия с платформой (проверяем первой для приоритета)
+        // Коллизия с платформой 
         if (paddleSolver->checkPaddleCollision(ball, paddle)) {
             paddleSolver->resolvePaddleCollision(ball, paddle, deltaTime);
 
             if (collisionCallback) {
                 collisionCallback(CollisionType::BallPaddle, &ball, &paddle);
             }
-            return; // Обрабатываем только одну коллизию за кадр
+            return; 
         }
 
-        // Коллизии с блоками (используем пространственную оптимизацию)
         auto potentialBlocks = spatialGrid.getPotentialCollisions(ballBounds);
         for (auto* block : potentialBlocks) {
             if (blockSolver->checkBlockCollision(ball, *block)) {
@@ -117,4 +116,4 @@ namespace Arkanoid {
         wallSolver = std::make_unique<WallCollisionSolver>(bounds.width, bounds.height);
     }
 
-} // namespace Arkanoid
+} 

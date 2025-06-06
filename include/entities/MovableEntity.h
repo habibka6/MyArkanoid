@@ -15,4 +15,4 @@ namespace Arkanoid {
         MovableEntity() = default;
     };
 
-} // namespace Arkanoid
+} 

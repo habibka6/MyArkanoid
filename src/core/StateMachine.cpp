@@ -66,4 +66,4 @@ namespace Arkanoid {
         return states.empty() ? nullptr : states.top().get();
     }
 
-} // namespace Arkanoid
+} 
