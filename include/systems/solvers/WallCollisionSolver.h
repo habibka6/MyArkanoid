@@ -1,16 +1,18 @@
 #pragma once
-#include "PhysicsUtils.h"
+#include "Ball.h"
+#include <SFML/Graphics.hpp>
 
 namespace Arkanoid {
-    class WallCollisionSolver{
+
+    class WallCollisionSolver {
     public:
         WallCollisionSolver(float windowWidth, float windowHeight);
         void resolveCollision(Ball& ball, const sf::FloatRect& bounds, float deltaTime);
-
         bool checkWallCollisions(Ball& ball) const;
-        bool isBallLost(const Ball& ball) const;
+        static bool isBallLost(const Ball& ball, float worldHeight);
 
     private:
         sf::FloatRect worldBounds;
     };
+
 }

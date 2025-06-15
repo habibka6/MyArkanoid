@@ -9,14 +9,12 @@ namespace Arkanoid {
 
     void Rock::setupRock() {
         shape.setSize(sf::Vector2f(Config::Block::WIDTH, Config::Block::HEIGHT));
-        shape.setFillColor(sf::Color(128, 128, 128)); // Серый
+        shape.setFillColor(sf::Color(128, 128, 128)); 
         shape.setOutlineThickness(2);
         shape.setOutlineColor(sf::Color::Black);
     }
 
-    void Rock::update(float deltaTime) {
-        // Камни не требуют обновления
-    }
+    void Rock::update(float deltaTime) { }
 
     void Rock::draw(sf::RenderWindow& window) const {
         if (active) {

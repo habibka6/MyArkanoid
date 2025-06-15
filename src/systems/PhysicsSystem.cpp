@@ -10,38 +10,45 @@ namespace Arkanoid {
 
         worldBounds = sf::FloatRect(0, 0, Config::Window::WIDTH, Config::Window::HEIGHT);
 
-        // Инициализируем солверы коллизий
         blockSolver = std::make_unique<BlockCollisionSolver>();
         paddleSolver = std::make_unique<PaddleCollisionSolver>();
         wallSolver = std::make_unique<WallCollisionSolver>(Config::Window::WIDTH, Config::Window::HEIGHT);
     }
 
+
+    void PhysicsSystem::addObserver(ICollisionObserver* observer) {
+        observers.push_back(observer);
+    }
+
+    void PhysicsSystem::removeObserver(ICollisionObserver* observer) {
+        observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
+    }
+
+    void PhysicsSystem::notifyObservers(CollisionType type, Entity* obj1, Entity* obj2) {
+        for (auto* observer : observers) {
+            observer->onCollision(type, obj1, obj2);
+        }
+    }
+
+
+
     void PhysicsSystem::update(Ball& ball, Paddle& paddle,
         std::vector<std::unique_ptr<BaseBlock>>& blocks,
-        std::vector<std::unique_ptr<BasePowerUp>>& powerups,
+        std::vector<std::unique_ptr<PowerUp>>& powerups,
         float deltaTime) {
 
-        // Обновляем пространственную сетку
         spatialGrid.update(blocks);
 
-        // Ограничиваем движение платформы
         constrainPaddleToWindow(paddle);
 
-        // Проверяем коллизии мяча
         checkBallCollisions(ball, paddle, blocks, deltaTime);
 
-        // Проверяем коллизии со стенами
         checkWallCollisions(ball, deltaTime);
 
-        // Обновляем и проверяем коллизии бонусов
-        
         checkPowerUpCollisions(powerups, paddle);
 
-        // Проверяем, не потерян ли мяч
         if (isBallLost(ball)) {
-            if (collisionCallback) {
-                collisionCallback(CollisionType::BallLost, &ball, nullptr);
-            }
+            notifyObservers(CollisionType::BallLost, &ball, nullptr);
         }
     }
 
@@ -50,40 +57,34 @@ namespace Arkanoid {
         float deltaTime) {
         sf::FloatRect ballBounds = ball.getBounds();
 
-        // Коллизия с платформой 
+        // Paddle collision
         if (paddleSolver->checkPaddleCollision(ball, paddle)) {
             paddleSolver->resolvePaddleCollision(ball, paddle, deltaTime);
 
-            if (collisionCallback) {
-                collisionCallback(CollisionType::BallPaddle, &ball, &paddle);
-            }
-            return; 
+            notifyObservers(CollisionType::BallPaddle, &ball, &paddle);
+            return;
         }
 
+        // Block collisions
         auto potentialBlocks = spatialGrid.getPotentialCollisions(ballBounds);
         for (auto* block : potentialBlocks) {
             if (blockSolver->checkBlockCollision(ball, *block)) {
                 blockSolver->resolveBlockCollision(ball, *block, deltaTime);
 
-                if (collisionCallback) {
-                    collisionCallback(CollisionType::BallBlock, &ball, &*block);
-                }
-                break; // Обрабатываем только одну коллизию за кадр
+                notifyObservers(CollisionType::BallBlock, &ball, &*block);
+                break; 
             }
         }
     }
 
-    void PhysicsSystem::checkPowerUpCollisions(std::vector<std::unique_ptr<BasePowerUp>>& powerups,
+    void PhysicsSystem::checkPowerUpCollisions(std::vector<std::unique_ptr<PowerUp>>& powerups,
         Paddle& paddle) {
         sf::FloatRect paddleBounds = paddle.getBounds();
 
         for (auto& powerup : powerups) {
-            if (powerup->isActive() && paddleBounds.intersects(powerup->getBounds())) {
-                powerup->setActive(false);
-
-                if (collisionCallback) {
-                    collisionCallback(CollisionType::PaddlePowerUp, &paddle, &*powerup);
-                }
+            if (powerup->isActive() && paddle.getBounds().intersects(powerup->getBounds())) {
+                powerup->setActive(false); 
+                notifyObservers(CollisionType::PaddlePowerUp, &paddle, &*powerup);
             }
         }
     }
@@ -92,9 +93,7 @@ namespace Arkanoid {
         if (wallSolver->checkWallCollisions(ball)) {
             wallSolver->resolveCollision(ball, sf::FloatRect(), deltaTime);
 
-            if (collisionCallback) {
-                collisionCallback(CollisionType::BallWall, &ball, nullptr);
-            }
+            notifyObservers(CollisionType::BallWall, &ball, nullptr);
         }
     }
 
@@ -102,13 +101,8 @@ namespace Arkanoid {
         paddle.constrainToWindow(worldBounds.width);
     }
 
-
     bool PhysicsSystem::isBallLost(const Ball& ball) const {
-        return wallSolver->isBallLost(ball);
-    }
-
-    void PhysicsSystem::setCollisionCallback(CollisionCallback callback) {
-        collisionCallback = callback;
+        return wallSolver->isBallLost(ball,worldBounds.height);
     }
 
     void PhysicsSystem::setWorldBounds(const sf::FloatRect& bounds) {
@@ -116,4 +110,5 @@ namespace Arkanoid {
         wallSolver = std::make_unique<WallCollisionSolver>(bounds.width, bounds.height);
     }
 
-} 
+} // namespace Arkanoid
+ 

@@ -2,72 +2,57 @@
 #include "Ball.h"
 #include "Paddle.h"
 #include "BaseBlock.h"
-#include "BasePowerUp.h"
+#include "PowerUp.h"
 #include "SpatialGrid.h"
 #include "BlockCollisionSolver.h"
 #include "PaddleCollisionSolver.h"
 #include "WallCollisionSolver.h"
-#include "PhysicsUtils.h"
+#include "ICollisionObserver.h" 
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <memory>
-#include <functional>
 
 namespace Arkanoid {
-
-    // Типы коллизий для уведомлений
-    enum class CollisionType {
-        BallBlock,
-        BallPaddle,
-        BallWall,
-        PaddlePowerUp,
-        BallLost
-    };
-
-    // Функция обратного вызова для обработки коллизий
-    using CollisionCallback = std::function<void(CollisionType, Entity*, Entity*)>;
 
     class PhysicsSystem {
     public:
         PhysicsSystem(sf::RenderWindow& window);
         ~PhysicsSystem() = default;
 
-        // Основной метод обновления физики
         void update(Ball& ball, Paddle& paddle,
             std::vector<std::unique_ptr<BaseBlock>>& blocks,
-            std::vector<std::unique_ptr<BasePowerUp>>& powerups,
+            std::vector<std::unique_ptr<PowerUp>>& powerups,
             float deltaTime);
 
-        // Регистрация колбэков для обработки коллизий
-        void setCollisionCallback(CollisionCallback callback);
+        // Observer methods
+        void addObserver(ICollisionObserver* observer);
+        void removeObserver(ICollisionObserver* observer);
 
-        // Настройка границ мира
         void setWorldBounds(const sf::FloatRect& bounds);
-
-        // Проверка потери мяча
         bool isBallLost(const Ball& ball) const;
 
     private:
         sf::RenderWindow& window;
         SpatialGrid spatialGrid;
-        CollisionCallback collisionCallback;
         sf::FloatRect worldBounds;
 
-        // Солверы коллизий
         std::unique_ptr<BlockCollisionSolver> blockSolver;
         std::unique_ptr<PaddleCollisionSolver> paddleSolver;
         std::unique_ptr<WallCollisionSolver> wallSolver;
 
-        // Методы обнаружения коллизий
+        // Observer storage
+        std::vector<ICollisionObserver*> observers;
+
+        // Notify all observers
+        void notifyObservers(CollisionType type, Entity* obj1, Entity* obj2);
+
         void checkBallCollisions(Ball& ball, Paddle& paddle,
             std::vector<std::unique_ptr<BaseBlock>>& blocks,
             float deltaTime);
-        void checkPowerUpCollisions(std::vector<std::unique_ptr<BasePowerUp>>& powerups,
+        void checkPowerUpCollisions(std::vector<std::unique_ptr<PowerUp>>& powerups,
             Paddle& paddle);
         void checkWallCollisions(Ball& ball, float deltaTime);
-
-        // Утилиты
         void constrainPaddleToWindow(Paddle& paddle);
     };
 
-} // namespace Arkanoid
+}

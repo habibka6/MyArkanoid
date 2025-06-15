@@ -1,6 +1,7 @@
 #pragma once
-#include "BasePowerUp.h"
+#include "PowerUp.h"
 #include "PowerUpEffect.h"
+#include "PowerUpFactory.h"
 #include "Paddle.h"
 #include "Ball.h"
 #include <vector>
@@ -13,10 +14,11 @@ namespace Arkanoid
     class PowerUpManager
     {
     public:
-        PowerUpManager();
+        explicit PowerUpManager(std::vector<std::unique_ptr<PowerUp>>& powerups);
         ~PowerUpManager() = default;
 
         void spawnPowerUp(const sf::Vector2f& position);
+        void applyPowerUpEffect(PowerUp& powerup, Paddle& paddle, Ball& ball);
         void update(float deltaTime, Paddle& paddle, Ball& ball);
         void render(sf::RenderWindow& window);
         void reset();
@@ -27,15 +29,13 @@ namespace Arkanoid
         bool isTemporaryEffectActive() const;
 
     private:
-        std::vector<std::unique_ptr<BasePowerUp>> powerups;
+        std::vector<std::unique_ptr<PowerUp>>* powerups;
         std::vector<std::unique_ptr<PowerUpEffect>> activeEffects;
         std::function<void()> extraLifeCallback;
 
-        void applyPowerUpEffect(BasePowerUp& powerup, Paddle& paddle, Ball& ball);
-        void cancelEffect(PowerUpType type);
+        PowerUpFactory factory; 
 
         
-
-
+        void cancelEffect(PowerUpType type);
     };
 }

@@ -22,22 +22,24 @@ set(SOURCES
     src/entities/blocks/Rock.cpp
 
     # Бонусы
-    src/entities/powerups/BasePowerUp.cpp
+    src/entities/powerups/PowerUp.cpp
     src/entities/powerups/ExtraLifePowerUp.cpp
     src/entities/powerups/ExpandPaddlePowerUp.cpp
     src/entities/powerups/SlowBallPowerUp.cpp
     src/entities/powerups/ShrinkPaddlePowerUp.cpp
+    src/entities/powerups/PowerUpFactory.cpp
   
 
     src/entities/powerups/PowerUpEffects/ExtraLifeEffect.cpp;
-    src/entities/powerups/PowerUpEffects/ExpandPaddleEffect.cpp;
+  
     src/entities/powerups/PowerUpEffects/SlowBallEffect.cpp;
-    src/entities/powerups/PowerUpEffects/ShrinkPaddleEffect.cpp;
+    src/entities/powerups/PowerUpEffects/ScalePaddleEffect.cpp;
    
     # Менеджеры систем
     src/managers/AssetManager.cpp
     src/managers/LevelManager.cpp
     src/managers/SoundManager.cpp
+    src/managers/PowerUpManager.cpp
 
     # Физика и коллизии (обработчики)
     src/systems/solvers/BlockCollisionSolver.cpp  
@@ -48,20 +50,21 @@ set(SOURCES
     # Системы
     src/systems/PhysicsSystem.cpp
     src/systems/RenderSystem.cpp
-    src/systems/InputSystem.cpp
+    
 
     # Состояния игры
-    src/game_states/MainMenuState.cpp
     src/game_states/GameState.cpp
     src/game_states/GameOverState.cpp
     src/game_states/State.cpp
+    src/game_states/MenuState/MenuStateBase.cpp
+    src/game_states/MenuState/MainMenuState.cpp
+    src/game_states/MenuState/OptionsState.cpp
+    src/game_states/MenuState/LevelSelectState.cpp
     # Утилиты
     src/utils/MathUtils.cpp
 )
 
-# *** ВАЖНО: СОЗДАЕМ ИСПОЛНЯЕМЫЙ ФАЙЛ ***
-add_executable(${PROJECT_NAME} ${SOURCES}  "include/systems/solvers/PhysicsUtils.h" "src/managers/PowerUpManager.cpp" "include/managers/PowerUpManager.h")
-
+add_executable(${PROJECT_NAME} ${SOURCES})
 # Указываем путь к SFML
 set(SFML_DIR "C:/C++Libraries/SFML-2.6.2/lib/cmake/SFML")
 find_package(SFML 2.6 COMPONENTS graphics window system audio REQUIRED)
@@ -75,6 +78,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/include/entities/powerups
     ${CMAKE_SOURCE_DIR}/include/entities/powerups/PowerUpEffects
     ${CMAKE_SOURCE_DIR}/include/game_states
+    ${CMAKE_SOURCE_DIR}/include/game_states/MenuState
     ${CMAKE_SOURCE_DIR}/include/managers
     ${CMAKE_SOURCE_DIR}/include/systems
     ${CMAKE_SOURCE_DIR}/include/systems

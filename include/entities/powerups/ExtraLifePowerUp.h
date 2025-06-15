@@ -1,17 +1,16 @@
 #pragma once
-#include "BasePowerUp.h"
+#include "PowerUp.h"
+#include "ExtraLifeEffect.h"
 
 namespace Arkanoid {
 
-    class ExtraLifePowerUp : public BasePowerUp {
+    class ExtraLifePowerUp : public PowerUp {
     public:
         ExtraLifePowerUp(float x, float y);
-        ~ExtraLifePowerUp() = default;
 
-        std::unique_ptr<PowerUpEffect> createEffect() override;
-
-    protected:
         void setupAppearance() override;
+        PowerUpType getPowerUpType() const override;
+        std::unique_ptr<PowerUpEffect> createEffect() override;
     };
 
 } // namespace Arkanoid

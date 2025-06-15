@@ -4,7 +4,7 @@
 
 namespace Arkanoid {
 
-    const float GameEngine::TARGET_FPS = 60.0f;
+    const float GameEngine::TARGET_FPS = Config::Game::TARGET_FPS;
     const float GameEngine::TIME_STEP = 1.0f / TARGET_FPS;
 
     GameEngine::GameEngine()
@@ -17,7 +17,6 @@ namespace Arkanoid {
         while (running && window.isOpen()) {
             deltaTime = clock.restart().asSeconds();
 
-            // Ограничиваем deltaTime для стабильности
             deltaTime = std::min(deltaTime, TIME_STEP * 3.0f);
 
             processEvents();
@@ -45,7 +44,7 @@ namespace Arkanoid {
         );
 
         window.setFramerateLimit(static_cast<unsigned int>(TARGET_FPS));
-        window.setVerticalSyncEnabled(true);
+        //window.setVerticalSyncEnabled(true);
 
         try {
             sf::Image icon = AssetManager::getInstance().getImage("icon.png");

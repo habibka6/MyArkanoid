@@ -7,7 +7,7 @@
 namespace Arkanoid {
 
     LevelManager::LevelManager()
-        : maxLevels(50),
+        : maxLevels(13),
         blockWidth(Config::Block::WIDTH),
         blockHeight(Config::Block::HEIGHT),
         defaultSpacing(5.0f) {
@@ -248,14 +248,18 @@ namespace Arkanoid {
     }
 
     bool LevelManager::isLevelComplete(const std::vector<std::unique_ptr<BaseBlock>>& blocks) const {
+       
         for (const auto& block : blocks) {
-            if (block->isActive() && block->getBlockType() != BlockType::Rock) {
-                return false; // Есть ещё разрушимые блоки
+            // Усиленная проверка
+            if (!block || !block->isActive()) continue;
+
+            // Только разрушимые блоки (не Rock) учитываются
+            if (block->getBlockType() != BlockType::Rock) {
+                return false;
             }
         }
         return true;
     }
-
     bool LevelManager::validateLevelData(const LevelData& level) const {
         if (level.rows <= 0 || level.cols <= 0) return false;
         if (level.layout.size() != static_cast<size_t>(level.rows)) return false;

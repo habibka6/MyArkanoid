@@ -4,10 +4,10 @@
 
 namespace Arkanoid {
 
-    class ExpandPaddleEffect : public PowerUpEffect {
+    class ScalePaddleEffect : public PowerUpEffect {
     public:
-        ExpandPaddleEffect(float duration = 10.0f, float expansionFactor = 1.5f);
-        ~ExpandPaddleEffect() = default;
+        ScalePaddleEffect(float duration = 8.0f, float scaleFactor= 1.0f);
+        ~ScalePaddleEffect() = default;
 
         void apply(Ball& ball, Paddle& paddle, std::function<void()> gameCallback) override;
         void update(float deltaTime) override;
@@ -17,15 +17,14 @@ namespace Arkanoid {
         bool isFinished() const override;
         std::string getDescription() const override;
         PowerUpType getType() const override;
+        float getRemainingTime() const override;
 
-        // Дополнительные методы
         void reset();
-        float getRemainingTime() const;
 
     private:
         float duration;
         float timeRemaining;
-        float expansionFactor;
+        float scaleFactor;
         bool applied;
         bool finished;
 

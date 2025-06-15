@@ -26,7 +26,6 @@ namespace Arkanoid {
     void Ball::update(float deltaTime) {
         if (!active) return;
 
-        // Обновляем только если мяч НЕ на платформе
         if (!isOnPaddle) {
             savePreviousPosition();
             move(velocity * deltaTime);
@@ -36,7 +35,7 @@ namespace Arkanoid {
     void Ball::reset(float paddleCenterX, float paddleY) {
         isOnPaddle = true;
         setPosition({ paddleCenterX, paddleY - getBounds().height });
-        velocity = { 0.0f, 0.0f }; // Останавливаем мяч
+        velocity = { 0.0f, 0.0f }; 
         resetSpeedFactor();
     }
 
@@ -109,6 +108,10 @@ namespace Arkanoid {
     void Ball::resetSpeedFactor() {
         speedFactor = 1.0f;
         normalizeVelocity();
+    }
+
+    void Ball::setSpeedFactor(float newSpeedFactor) {
+        speedFactor = newSpeedFactor;
     }
 
     float Ball::getSpeedFactor() const {

@@ -8,7 +8,7 @@ namespace Arkanoid {
 
     class SlowBallEffect : public PowerUpEffect {
     public:
-        SlowBallEffect(float duration = 8.0f, float slowFactor = 0.5f);
+        SlowBallEffect(float duration = 8.0f, float slowFactor = 0.8f);
         ~SlowBallEffect() = default;
 
         void apply(Ball& ball, Paddle& paddle, std::function<void()> gameCallback) override;
@@ -19,19 +19,15 @@ namespace Arkanoid {
         bool isFinished() const override;
         std::string getDescription() const override;
         PowerUpType getType() const override;
-
-        // Дополнительные методы
         void reset();
-        float getRemainingTime()  const override;
+        float getRemainingTime() const override;
 
     private:
         float duration;
         float timeRemaining;
         float slowFactor;
-        float originalSpeedFactor;
-        bool applied;
+        float savedSpeedFactor;
         bool finished;
-
         Ball* affectedBall;
     };
 

@@ -12,7 +12,7 @@ namespace Arkanoid {
 
     void Block::setupBlock() {
         shape.setSize(sf::Vector2f(Config::Block::WIDTH, Config::Block::HEIGHT));
-        shape.setOutlineThickness(2);
+        shape.setOutlineThickness(3);
         shape.setOutlineColor(sf::Color::Black);
 
         switch (blockType) {
@@ -33,9 +33,7 @@ namespace Arkanoid {
         updateAppearance();
     }
 
-    void Block::update(float deltaTime) {
-        // Блоки не требуют обновления по времени
-    }
+    void Block::update(float deltaTime) {}
 
     void Block::draw(sf::RenderWindow& window) const {
         if (active && !destroyed) {
@@ -104,7 +102,7 @@ namespace Arkanoid {
                 return sf::Color::Yellow;
             }
             else {
-                return sf::Color(205, 164, 52); // Темно-желтый
+                return sf::Color(205, 160, 50); 
             }
         case Type::Red:
             return sf::Color(255 * ratio, 0, 0);

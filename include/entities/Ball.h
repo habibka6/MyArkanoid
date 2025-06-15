@@ -30,6 +30,7 @@ namespace Arkanoid {
         void increaseSpeedFactor(float value);
         void resetSpeedFactor();
         float getSpeedFactor() const;
+        void setSpeedFactor(float newSpeedFactor);
         float getBaseSpeed() const;
         sf::Sprite& getSprite();
         void draw(sf::RenderWindow& window, float alpha) const;

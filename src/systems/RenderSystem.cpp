@@ -32,7 +32,7 @@ namespace Arkanoid {
         const Ball& ball,
         const Paddle& paddle,
         const std::vector<std::unique_ptr<BaseBlock>>& blocks,
-        const std::vector<std::unique_ptr<BasePowerUp>>& powerups,
+        const std::vector<std::unique_ptr<PowerUp>>& powerups,
         const std::vector<std::unique_ptr<PowerUpEffect>>& activeEffects,
         int score, int lives, int level) {
 
@@ -55,85 +55,8 @@ namespace Arkanoid {
             }
         }
 
-        // Рендеринг активных эффектов
-        renderActiveEffects(activeEffects);
-
         // Рендеринг UI
         renderUI(score, lives, level);
-    }
-
-    void RenderSystem::renderBalls(const std::vector<std::unique_ptr<Ball>>& balls, float alpha) {
-        for (const auto& ball : balls) {
-            if (ball->isActive()) {
-                if (interpolationEnabled && alpha < 1.0f) {
-                    ball->draw(window, alpha);
-                }
-                else {
-                    ball->draw(window);
-                }
-            }
-        }
-    }
-
-    void RenderSystem::renderPaddles(const std::vector<std::unique_ptr<Paddle>>& paddles) {
-        for (const auto& paddle : paddles) {
-            if (paddle->isActive()) {
-                paddle->draw(window);
-            }
-        }
-    }
-
-    void RenderSystem::renderBlocks(const std::vector<std::unique_ptr<BaseBlock>>& blocks) {
-        for (const auto& block : blocks) {
-            if (block->isActive()) {
-                block->draw(window);
-            }
-        }
-    }
-
-    void RenderSystem::renderPowerUps(const std::vector<std::unique_ptr<BasePowerUp>>& powerups) {
-        for (const auto& powerup : powerups) {
-            if (powerup->isActive()) {
-                powerup->draw(window);
-            }
-        }
-    }
-
-    sf::Color getEffectColor(const PowerUpEffect& effect) {
-        switch (effect.getType()) {
-        case PowerUpType::ExtraLife: return sf::Color::Red;
-        case PowerUpType::ExpandPaddle: return sf::Color::Green;
-        case PowerUpType::ShrinkPaddle: return sf::Color::Yellow;
-        case PowerUpType::SlowBall: return sf::Color::Blue;
-        default: return sf::Color::White;
-        }
-    }
-
-    void RenderSystem::renderActiveEffects(const std::vector<std::unique_ptr<PowerUpEffect>>& effects) {
-        float x = Config::Window::WIDTH - 50.0f;
-        float y = 20.0f;
-
-        for (const auto& effect : effects) {
-            sf::RectangleShape icon(sf::Vector2f(30, 30));
-            icon.setPosition(x, y);
-            icon.setFillColor(getEffectColor(*effect));
-            icon.setOutlineThickness(1);
-            icon.setOutlineColor(sf::Color::White);
-            window.draw(icon);
-
-            if (effect->isTemporary()) {
-                int seconds = static_cast<int>(std::ceil(effect->getRemainingTime()));
-
-                sf::Text timer;
-                timer.setFont(font);
-                timer.setString(std::to_string(seconds));
-                timer.setCharacterSize(14);
-                timer.setPosition(x + 35, y + 5);
-                window.draw(timer);
-            }
-
-            y += 40.0f;
-        }
     }
 
     void RenderSystem::renderUI(int score, int lives, int level) {
@@ -152,9 +75,6 @@ namespace Arkanoid {
         }
     }
 
-    void RenderSystem::renderParticles() {
-        // Заглушка для будущей системы частиц
-    }
 
     void RenderSystem::renderPauseOverlay() {
         sf::RectangleShape overlay;
@@ -164,16 +84,6 @@ namespace Arkanoid {
 
         centerText(pauseText);
         window.draw(pauseText);
-    }
-
-    void RenderSystem::renderGameOverOverlay() {
-        sf::RectangleShape overlay;
-        overlay.setSize(sf::Vector2f(Config::Window::WIDTH, Config::Window::HEIGHT));
-        overlay.setFillColor(sf::Color(0, 0, 0, 180));
-        window.draw(overlay);
-
-        centerText(gameOverText);
-        window.draw(gameOverText);
     }
 
     void RenderSystem::renderLevelCompleteOverlay() {
@@ -186,9 +96,6 @@ namespace Arkanoid {
         window.draw(levelCompleteText);
     }
 
-    void RenderSystem::renderDebugInfo(const Ball& ball, const Paddle& paddle, float gameTimer) {
-        // Здесь можно добавить отладочную информацию
-    }
 
     void RenderSystem::setVSync(bool enabled) {
         window.setVerticalSyncEnabled(enabled);
@@ -220,10 +127,6 @@ namespace Arkanoid {
             pauseText.setCharacterSize(72);
             pauseText.setFillColor(sf::Color::Yellow);
 
-            gameOverText.setFont(font);
-            gameOverText.setString("GAME OVER");
-            gameOverText.setCharacterSize(72);
-            gameOverText.setFillColor(sf::Color::Red);
 
             levelCompleteText.setFont(font);
             levelCompleteText.setString("LEVEL COMPLETE!");
@@ -233,7 +136,6 @@ namespace Arkanoid {
         }
         catch (const std::exception& e) {
             if (!font.loadFromFile("C:/Windows/Fonts/arial.ttf")) {
-                // Создаем fallback UI без шрифта
             }
         }
     }

@@ -1,17 +1,16 @@
 #pragma once
-#include "BasePowerUp.h"
+#include "PowerUp.h"
+#include "SlowBallEffect.h"
 
 namespace Arkanoid {
 
-    class SlowBallPowerUp : public BasePowerUp {
+    class SlowBallPowerUp : public PowerUp {
     public:
         SlowBallPowerUp(float x, float y);
-        ~SlowBallPowerUp() = default;
 
-        std::unique_ptr<PowerUpEffect> createEffect() override;
-
-    protected:
         void setupAppearance() override;
+        PowerUpType getPowerUpType() const override;
+        std::unique_ptr<PowerUpEffect> createEffect() override;
     };
 
 } // namespace Arkanoid

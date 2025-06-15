@@ -16,8 +16,6 @@ namespace Arkanoid {
         if (it != container.end()) {
             return it->second;
         }
-
-        // Ресурс не найден, загружаем его
         T resource;
         if (loadResource(resource, path + filename)) {
             auto result = container.emplace(filename, std::move(resource));

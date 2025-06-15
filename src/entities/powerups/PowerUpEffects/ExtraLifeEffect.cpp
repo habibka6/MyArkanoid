@@ -7,28 +7,22 @@ namespace Arkanoid {
     }
 
     void ExtraLifeEffect::apply(Ball& ball, Paddle& paddle, std::function<void()> gameCallback) {
-        // Вызываем колбэк для добавления жизни в игре
         if (gameCallback) {
             gameCallback();
         }
         finished = true;
     }
 
-    void ExtraLifeEffect::update(float deltaTime) {
-        // Мгновенный эффект, не требует обновления
-    }
+    void ExtraLifeEffect::update(float deltaTime) {}
 
-    void ExtraLifeEffect::remove() {
-        // Нечего удалять, эффект мгновенный
-        finished = true;
-    }
+    void ExtraLifeEffect::remove() { finished = true; }
 
     bool ExtraLifeEffect::isTemporary() const {
-        return false; // Мгновенный эффект
+        return false; 
     }
 
     float ExtraLifeEffect::getDuration() const {
-        return 0.0f; // Мгновенный эффект
+        return 0.0f;
     }
 
     bool ExtraLifeEffect::isFinished() const {

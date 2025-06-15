@@ -1,17 +1,16 @@
 #pragma once
-#include "BasePowerUp.h"
+#include "PowerUp.h"
+#include "ScalePaddleEffect.h"
 
 namespace Arkanoid {
 
-    class ShrinkPaddlePowerUp : public BasePowerUp {
+    class ShrinkPaddlePowerUp : public PowerUp {
     public:
         ShrinkPaddlePowerUp(float x, float y);
-        ~ShrinkPaddlePowerUp() = default;
 
-        std::unique_ptr<PowerUpEffect> createEffect() override;
-
-    protected:
         void setupAppearance() override;
+        PowerUpType getPowerUpType() const override;
+        std::unique_ptr<PowerUpEffect> createEffect() override;
     };
 
 } // namespace Arkanoid

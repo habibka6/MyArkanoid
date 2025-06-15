@@ -1,5 +1,5 @@
 #pragma once
-#include "StaticEntity.h"
+#include "Entity.h"
 
 namespace Arkanoid {
 
@@ -9,7 +9,7 @@ namespace Arkanoid {
         Special
     };
 
-    class BaseBlock : public StaticEntity {
+    class BaseBlock : public Entity {
     public:
         virtual ~BaseBlock() = default;
 

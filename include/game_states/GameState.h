@@ -3,85 +3,81 @@
 #include "Ball.h"
 #include "Paddle.h"
 #include "BaseBlock.h"
-#include "BasePowerUp.h"
+#include "PowerUp.h"
 #include "LevelManager.h"
 #include "PhysicsSystem.h"
 #include "PowerUpManager.h"
-#include "InputSystem.h"
 #include "MainMenuState.h"
 #include "SoundManager.h"
+#include "ICollisionObserver.h"
 #include <vector>
 #include <memory>
-#include <random>
 
 namespace Arkanoid {
 
-    enum class GameStatus;
-
-    class GameState : public State {
+    class GameState : public State, public ICollisionObserver {
     public:
         GameState(GameEngine& engine, int startingLevel = 1);
-        ~GameState() = default;
+        ~GameState() override = default;
 
-        void update(float deltaTime) override;
-        void render(sf::RenderWindow& window) override;
-        void handleEvent(const sf::Event& event) override;
-
+     
         void enter() override;
         void exit() override;
         void pause() override;
         void resume() override;
+        void update(float deltaTime) override;
+        void render(sf::RenderWindow& window) override;
+        void handleEvent(const sf::Event& event) override;
+
+        void onCollision(CollisionType type, Entity* obj1, Entity* obj2) override;
 
     private:
-        // Игровые объекты
+    
         std::unique_ptr<Ball> ball;
         std::unique_ptr<Paddle> paddle;
         std::vector<std::unique_ptr<BaseBlock>> blocks;
-        std::vector<std::unique_ptr<BasePowerUp>> powerups;
+        std::vector<std::unique_ptr<PowerUp>> powerups;
 
-        // Системы
         std::unique_ptr<PhysicsSystem> physicsSystem;
         std::unique_ptr<LevelManager> levelManager;
-        InputSystem inputSystem;
         PowerUpManager powerUpManager;
 
-        // Игровое состояние
-        GameStatus gameStatus;
-        int score;
-        int lives;
-        int currentLevel;
-        float gameTimer;
+     
+        GameStatus gameStatus = GameStatus::Playing;
+        int score = 0;
+        int lives = Config::Game::LIVES;
+        int currentLevel = 1;
+        float gameTimer = 0.0f;
+        bool debugMode = false;
 
-        // Настройки
-        bool debugMode;
 
-        // Методы инициализации
+        bool leftPressed = false;
+        bool rightPressed = false;
+        bool launchPressed = false;
+
         void initializeGame();
-        void initializeInputBindings();
         void initializePhysics();
         void loadLevel(int levelNumber);
-        
 
-        // Игровая логика
+      
         void updateGame(float deltaTime);
-
         void checkGameConditions();
 
-        // Управление состоянием
+
         void pauseGame();
-        void resumeGame();
         void restartLevel();
-        void handleLevelRestart();
         void nextLevel();
         void gameOver();
         void returnToMainMenu();
 
-        // Утилиты
+
         void resetBall();
         void updateScore(int points);
         void loseLife();
         bool isLevelComplete() const;
         void cleanupInactiveObjects();
+
+        void processKeyboardInput(float deltaTime);
     };
 
 }

@@ -1,15 +1,14 @@
 #include "PowerUpManager.h"
-#include "ExtraLifePowerUp.h"
-#include "ExpandPaddlePowerUp.h"
-#include "ShrinkPaddlePowerUp.h"
-#include "SlowBallPowerUp.h"
 #include "Config.h"
 #include "SoundManager.h"
 #include <algorithm>
+#include <random>
 
 namespace Arkanoid
 {
-    PowerUpManager::PowerUpManager() = default;
+    PowerUpManager::PowerUpManager(std::vector<std::unique_ptr<PowerUp>>& powerups)
+        : powerups(&powerups) {
+    }
 
     void PowerUpManager::spawnPowerUp(const sf::Vector2f& position)
     {
@@ -17,68 +16,39 @@ namespace Arkanoid
         static std::mt19937 gen(rd());
         static std::uniform_real_distribution<float> dis(0.0f, 1.0f);
 
-        if (!isTemporaryEffectActive() && dis(gen) < Config::Block::DROP_CHANCE)
+        if (!isTemporaryEffectActive() && dis(gen) < Config::PowerUp::SPAWN_CHANCE)
         {
-            static std::random_device rd;
-            static std::mt19937 gen(rd());
             static std::uniform_int_distribution<int> dist(0, 3);
-
-            switch (dist(gen))
-            {
-            case 0:
-                powerups.push_back(std::make_unique<ExtraLifePowerUp>(position.x, position.y));
-                break;
-            case 1:
-                powerups.push_back(std::make_unique<ExpandPaddlePowerUp>(position.x, position.y));
-                break;
-            case 2:
-                powerups.push_back(std::make_unique<ShrinkPaddlePowerUp>(position.x, position.y));
-                break;
-            case 3:
-                powerups.push_back(std::make_unique<SlowBallPowerUp>(position.x, position.y));
-                break;
-            }
+            PowerUpType type = static_cast<PowerUpType>(dist(gen));
+            auto powerup = factory.createPowerUp(type, position.x, position.y);
+            if (powerup)
+                powerups->push_back(std::move(powerup));
         }
     }
 
-    void PowerUpManager::update(float deltaTime, Paddle& paddle, Ball& ball)
-    {
-
-        for (auto it = powerups.begin(); it != powerups.end();)
-        {
+    void PowerUpManager::update(float deltaTime, Paddle& paddle, Ball& ball) {
+        for (auto it = powerups->begin(); it != powerups->end(); ) {
             auto& powerup = *it;
 
-            if (powerup->isActive())
-            {
-                powerup->update(deltaTime);
-
-                if (paddle.getBounds().intersects(powerup->getBounds()))
-                {
-                    applyPowerUpEffect(*powerup, paddle, ball);
-                    it = powerups.erase(it);
-                    continue;
-                }
-
-                if (powerup->isOutOfBounds(Config::Window::HEIGHT))
-                {
-                    it = powerups.erase(it);
-                    continue;
-                }
+            if (powerup->isActive()) {
+                powerup->update(deltaTime);  
             }
-            ++it;
+
+            if (!powerup->isActive() || powerup->getPosition().y > Config::Window::HEIGHT) {
+                it = powerups->erase(it);
+            }
+            else {
+                ++it;
+            }
         }
 
-        for (auto it = activeEffects.begin(); it != activeEffects.end();)
-        {
+        for (auto it = activeEffects.begin(); it != activeEffects.end(); ) {
             auto& effect = *it;
             effect->update(deltaTime);
-
-            if (effect->isFinished())
-            {
+            if (effect->isFinished()) {
                 it = activeEffects.erase(it);
             }
-            else
-            {
+            else {
                 ++it;
             }
         }
@@ -86,7 +56,7 @@ namespace Arkanoid
 
     void PowerUpManager::render(sf::RenderWindow& window)
     {
-        for (auto& powerup : powerups)
+        for (auto& powerup : *powerups)
         {
             if (powerup->isActive())
             {
@@ -95,7 +65,7 @@ namespace Arkanoid
         }
     }
 
-    void PowerUpManager::applyPowerUpEffect(BasePowerUp& powerup, Paddle& paddle, Ball& ball)
+    void PowerUpManager::applyPowerUpEffect(PowerUp& powerup, Paddle& paddle, Ball& ball)
     {
         switch (powerup.getPowerUpType())
         {
@@ -107,9 +77,13 @@ namespace Arkanoid
             cancelEffect(PowerUpType::ExpandPaddle);
             cancelEffect(PowerUpType::ShrinkPaddle);
             break;
+        case PowerUpType::SlowBall:
+            cancelEffect(PowerUpType::SlowBall);
+            break;
+        default:
+            break;
         }
 
- 
         auto effect = powerup.createEffect();
 
         if (powerup.getPowerUpType() == PowerUpType::ExtraLife && extraLifeCallback)
@@ -122,7 +96,6 @@ namespace Arkanoid
         }
 
         activeEffects.push_back(std::move(effect));
-        SoundManager::getInstance().playSound(SoundType::PowerUpCollect);
     }
 
     void PowerUpManager::cancelEffect(PowerUpType type)
@@ -143,7 +116,7 @@ namespace Arkanoid
 
     void PowerUpManager::reset()
     {
-        powerups.clear();
+        powerups->clear();
 
         for (auto& effect : activeEffects)
         {
