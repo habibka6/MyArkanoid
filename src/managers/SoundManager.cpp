@@ -1,4 +1,4 @@
-#include "SoundManager.h"
+п»ї#include "SoundManager.h"
 #include "AssetManager.h"
 #include <algorithm>
 
@@ -10,7 +10,7 @@ namespace Arkanoid {
         muted(false) {
         initializeSoundMap();
 
-        // Инициализация пула звуков
+        // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїСѓР»Р° Р·РІСѓРєРѕРІ
         for (size_t i = 0; i < MAX_CONCURRENT_SOUNDS; ++i) {
             soundPool.push_back(std::make_unique<sf::Sound>());
         }
@@ -120,10 +120,10 @@ namespace Arkanoid {
     void SoundManager::setMuted(bool muted) {
         this->muted = muted;
 
-        // Устанавливаем громкость музыки
+        // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РіСЂРѕРјРєРѕСЃС‚СЊ РјСѓР·С‹РєРё
         music.setVolume(muted ? 0.0f : musicVolume);
 
-        // Останавливаем все звуки если включена мутация
+        // РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІСЃРµ Р·РІСѓРєРё РµСЃР»Рё РІРєР»СЋС‡РµРЅР° РјСѓС‚Р°С†РёСЏ
         if (muted) {
             for (auto& sound : soundPool) {
                 if (sound->getStatus() == sf::Sound::Playing) {

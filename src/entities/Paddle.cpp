@@ -1,4 +1,4 @@
-#include "Paddle.h"
+﻿#include "Paddle.h"
 #include <algorithm>
 
 namespace Arkanoid {

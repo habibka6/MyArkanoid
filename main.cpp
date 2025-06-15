@@ -1,4 +1,4 @@
-// main.cpp (необходимо создать)
+п»ї// main.cpp (РЅРµРѕР±С…РѕРґРёРјРѕ СЃРѕР·РґР°С‚СЊ)
 #include "GameEngine.h"
 
 int main() {

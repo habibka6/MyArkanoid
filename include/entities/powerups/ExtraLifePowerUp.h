@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "PowerUp.h"
 #include "ExtraLifeEffect.h"
 

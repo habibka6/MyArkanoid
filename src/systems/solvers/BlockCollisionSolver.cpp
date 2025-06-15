@@ -1,4 +1,4 @@
-#include "BlockCollisionSolver.h"
+﻿#include "BlockCollisionSolver.h"
 #include <cmath>
 #include <algorithm>
 #include "Config.h"

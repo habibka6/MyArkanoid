@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <memory>
 #include <stack>
 #include <SFML/Graphics.hpp>
@@ -11,18 +11,18 @@ namespace Arkanoid {
         StateMachine() = default;
         ~StateMachine() = default;
 
-        // Управление состояниями
+        // РЈРїСЂР°РІР»РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏРјРё
         void pushState(std::unique_ptr<State> state);
         void popState();
         void changeState(std::unique_ptr<State> state);
         void clearStates();
 
-        // Основные методы
+        // РћСЃРЅРѕРІРЅС‹Рµ РјРµС‚РѕРґС‹
         void update(float deltaTime);
         void render(sf::RenderWindow& window);
         void handleEvent(const sf::Event& event);
 
-        // Проверка состояний
+        // РџСЂРѕРІРµСЂРєР° СЃРѕСЃС‚РѕСЏРЅРёР№
         bool isEmpty() const;
         State* getCurrentState() const;
 

@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "BaseBlock.h"
 #include "Block.h"
 #include "Rock.h"
@@ -20,7 +20,7 @@ namespace Arkanoid {
         sf::Vector2f startPosition;
         float blockSpacing;
 
-        // Новые параметры для центрирования
+        // РќРѕРІС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ С†РµРЅС‚СЂРёСЂРѕРІР°РЅРёСЏ
         bool centerHorizontally;
         bool centerVertically;
         float marginTop;
@@ -41,41 +41,41 @@ namespace Arkanoid {
         LevelManager();
         ~LevelManager() = default;
 
-        // Основные методы
+        // РћСЃРЅРѕРІРЅС‹Рµ РјРµС‚РѕРґС‹
         bool loadLevel(int levelNumber);
         std::vector<std::unique_ptr<BaseBlock>> generateBlocks() const;
 
-        // Геттеры
+        // Р“РµС‚С‚РµСЂС‹
         const LevelData& getCurrentLevel() const { return currentLevel; }
         int getCurrentLevelNumber() const { return currentLevel.levelNumber; }
         int getMaxLevels() const { return maxLevels; }
 
-        // Навигация
+        // РќР°РІРёРіР°С†РёСЏ
         bool hasNextLevel() const;
         bool hasPreviousLevel() const;
         bool nextLevel();
         bool previousLevel();
         void resetToFirstLevel();
 
-        // Проверка завершения
+        // РџСЂРѕРІРµСЂРєР° Р·Р°РІРµСЂС€РµРЅРёСЏ
         bool isLevelComplete(const std::vector<std::unique_ptr<BaseBlock>>& blocks) const;
 
-        // Настройки
+        // РќР°СЃС‚СЂРѕР№РєРё
         void setBlockSize(float width, float height);
         void setDefaultSpacing(float spacing);
 
     private:
-        // JSON методы
+        // JSON РјРµС‚РѕРґС‹
         void loadLevelsFromJSON();
         bool loadSingleLevel(const std::string& filepath, int levelNumber);
         LevelData parseJSONLevel(const nlohmann::json& json, int levelNumber);
 
-        // Утилиты создания блоков
+        // РЈС‚РёР»РёС‚С‹ СЃРѕР·РґР°РЅРёСЏ Р±Р»РѕРєРѕРІ
         std::unique_ptr<BaseBlock> createBlock(int blockType, float x, float y) const;
         sf::Vector2f calculateBlockPosition(int row, int col, const LevelData& level) const;
         sf::Vector2f calculateCenteredStartPosition(const LevelData& level) const;
 
-        // Валидация
+        // Р’Р°Р»РёРґР°С†РёСЏ
         bool validateLevelData(const LevelData& level) const;
         LevelData createDefaultLevel() const;
     };

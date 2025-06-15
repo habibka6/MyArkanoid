@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <unordered_map>
@@ -11,32 +11,32 @@ namespace Arkanoid {
     public:
         static AssetManager& getInstance();
 
-        // Загрузка и получение ресурсов
+        // Р—Р°РіСЂСѓР·РєР° Рё РїРѕР»СѓС‡РµРЅРёРµ СЂРµСЃСѓСЂСЃРѕРІ
         sf::Texture& getTexture(const std::string& filename);
         sf::Font& getFont(const std::string& filename);
         sf::SoundBuffer& getSoundBuffer(const std::string& filename);
         sf::Image& getImage(const std::string& filename);
 
-        // Предзагрузка ресурсов
+        // РџСЂРµРґР·Р°РіСЂСѓР·РєР° СЂРµСЃСѓСЂСЃРѕРІ
         bool preloadTextures();
         bool preloadFonts();
         bool preloadSounds();
         bool preloadAll();
 
-        // Управление памятью
+        // РЈРїСЂР°РІР»РµРЅРёРµ РїР°РјСЏС‚СЊСЋ
         void clear();
         void clearTextures();
         void clearFonts();
         void clearSounds();
         void clearImages();
 
-        // Проверка наличия ресурсов
+        // РџСЂРѕРІРµСЂРєР° РЅР°Р»РёС‡РёСЏ СЂРµСЃСѓСЂСЃРѕРІ
         bool hasTexture(const std::string& filename) const;
         bool hasFont(const std::string& filename) const;
         bool hasSoundBuffer(const std::string& filename) const;
         bool hasImage(const std::string& filename) const;
 
-        // Удаление копирования
+        // РЈРґР°Р»РµРЅРёРµ РєРѕРїРёСЂРѕРІР°РЅРёСЏ
         AssetManager(const AssetManager&) = delete;
         AssetManager& operator=(const AssetManager&) = delete;
 
@@ -44,19 +44,19 @@ namespace Arkanoid {
         AssetManager() = default;
         ~AssetManager() = default;
 
-        // Контейнеры для ресурсов
+        // РљРѕРЅС‚РµР№РЅРµСЂС‹ РґР»СЏ СЂРµСЃСѓСЂСЃРѕРІ
         std::unordered_map<std::string, sf::Texture> textures;
         std::unordered_map<std::string, sf::Font> fonts;
         std::unordered_map<std::string, sf::SoundBuffer> soundBuffers;
         std::unordered_map<std::string, sf::Image> images;
 
-        // Пути к ресурсам
+        // РџСѓС‚Рё Рє СЂРµСЃСѓСЂСЃР°Рј
         const std::string TEXTURE_PATH = "assets/textures/";
         const std::string FONT_PATH = "assets/fonts/";
         const std::string SOUND_PATH = "assets/sounds/";
         const std::string IMAGE_PATH = "assets/images/";
 
-        // Вспомогательные методы
+        // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ РјРµС‚РѕРґС‹
         template<typename T>
         T& getResource(std::unordered_map<std::string, T>& container,
             const std::string& filename,

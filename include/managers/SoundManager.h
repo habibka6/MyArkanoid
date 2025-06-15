@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <SFML/Audio.hpp>
 #include <unordered_map>
 #include <vector>
@@ -28,27 +28,27 @@ namespace Arkanoid {
         void playSound(SoundType soundType);
         void playSound(const std::string& filename);
 
-        // Управление громкостью
+        // РЈРїСЂР°РІР»РµРЅРёРµ РіСЂРѕРјРєРѕСЃС‚СЊСЋ
         void setSoundVolume(float volume);
         void setMusicVolume(float volume);
         float getSoundVolume() const;
         float getMusicVolume() const;
 
-        // Управление музыкой
+        // РЈРїСЂР°РІР»РµРЅРёРµ РјСѓР·С‹РєРѕР№
         void playMusic(const std::string& filename, bool loop = true);
         void pauseMusic();
         void stopMusic();
         void resumeMusic();
         bool isMusicPlaying() const;
 
-        // Глобальные настройки
+        // Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё
         void setMuted(bool muted);
         bool isMuted() const;
 
-        // Очистка ресурсов
+        // РћС‡РёСЃС‚РєР° СЂРµСЃСѓСЂСЃРѕРІ
         void cleanup();
 
-        // Удаление копирования
+        // РЈРґР°Р»РµРЅРёРµ РєРѕРїРёСЂРѕРІР°РЅРёСЏ
         SoundManager(const SoundManager&) = delete;
         SoundManager& operator=(const SoundManager&) = delete;
 
@@ -56,7 +56,7 @@ namespace Arkanoid {
         SoundManager();
         ~SoundManager() = default;
 
-        // Пулы звуков для избежания прерывания
+        // РџСѓР»С‹ Р·РІСѓРєРѕРІ РґР»СЏ РёР·Р±РµР¶Р°РЅРёСЏ РїСЂРµСЂС‹РІР°РЅРёСЏ
         std::vector<std::unique_ptr<sf::Sound>> soundPool;
         std::unordered_map<SoundType, std::string> soundMap;
 

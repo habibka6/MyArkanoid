@@ -1,4 +1,4 @@
-#include "SlowBallEffect.h"
+﻿#include "SlowBallEffect.h"
 
 namespace Arkanoid {
 

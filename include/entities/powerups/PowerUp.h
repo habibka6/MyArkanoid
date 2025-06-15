@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "MovableEntity.h"
 #include "PowerUpEffect.h"
 #include "Config.h"

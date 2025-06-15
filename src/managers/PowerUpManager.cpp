@@ -1,4 +1,4 @@
-#include "PowerUpManager.h"
+﻿#include "PowerUpManager.h"
 #include "Config.h"
 #include "SoundManager.h"
 #include <algorithm>

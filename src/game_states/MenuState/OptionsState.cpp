@@ -1,4 +1,4 @@
-#include "OptionsState.h"
+﻿#include "OptionsState.h"
 #include "SoundManager.h"
 
 namespace Arkanoid {

@@ -1,4 +1,4 @@
-#include "PowerUpFactory.h"
+п»ї#include "PowerUpFactory.h"
 #include "ShrinkPaddlePowerUp.h"
 #include "ExpandPaddlePowerUp.h"
 #include "SlowBallPowerUp.h"
@@ -33,7 +33,7 @@ namespace Arkanoid {
         if (it != creators.end()) {
             return it->second(x, y);
         }
-        return nullptr; // Или бросить исключение
+        return nullptr; // РР»Рё Р±СЂРѕСЃРёС‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ
     }
 
 } // namespace Arkanoid

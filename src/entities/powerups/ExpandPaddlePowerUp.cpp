@@ -1,4 +1,4 @@
-#include "ExpandPaddlePowerUp.h"
+﻿#include "ExpandPaddlePowerUp.h"
 
 namespace Arkanoid {
 

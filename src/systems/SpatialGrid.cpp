@@ -1,4 +1,4 @@
-#include "SpatialGrid.h"
+﻿#include "SpatialGrid.h"
 #include <cmath>
 
 namespace Arkanoid {

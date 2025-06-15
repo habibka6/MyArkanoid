@@ -1,4 +1,4 @@
-#include "GameEngine.h"
+ï»¿#include "GameEngine.h"
 #include "MainMenuState.h"
 #include <iostream>
 
@@ -62,7 +62,7 @@ namespace Arkanoid {
     void GameEngine::initializeSystems() {
         renderSystem = std::make_unique<RenderSystem>(window);
 
-        // Èíèöèàëèçàöèÿ çâóêîâîé ñèñòåìû
+        // Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ Ð·Ð²ÑƒÐºÐ¾Ð²Ð¾Ð¹ ÑÐ¸ÑÑ‚ÐµÐ¼Ñ‹
         SoundManager::getInstance().setMusicVolume(50.0f);
         SoundManager::getInstance().setSoundVolume(70.0f);
     }
@@ -92,10 +92,10 @@ namespace Arkanoid {
     void GameEngine::render() {
         renderSystem->clear();
 
-        // Ïåðåäàåì óïðàâëåíèå ðåíäåðèíãîì ñîñòîÿíèþ
+        // ÐŸÐµÑ€ÐµÐ´Ð°ÐµÐ¼ ÑƒÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ñ€ÐµÐ½Ð´ÐµÑ€Ð¸Ð½Ð³Ð¾Ð¼ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸ÑŽ
         stateMachine.render(window);
 
-        // Òîëüêî åñëè ñîñòîÿíèå íå èñïîëüçóåò renderSystem
+        // Ð¢Ð¾Ð»ÑŒÐºÐ¾ ÐµÑÐ»Ð¸ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð½Ðµ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ renderSystem
         renderSystem->display();
     }
 

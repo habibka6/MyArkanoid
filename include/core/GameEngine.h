@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <SFML/Graphics.hpp>
 #include "StateMachine.h"
 #include "RenderSystem.h"
@@ -14,21 +14,21 @@ namespace Arkanoid {
         GameEngine();
         ~GameEngine() = default;
 
-        // Основные методы
+        // РћСЃРЅРѕРІРЅС‹Рµ РјРµС‚РѕРґС‹
         void run();
         void initialize();
         void cleanup();
 
-        // Управление игрой
+        // РЈРїСЂР°РІР»РµРЅРёРµ РёРіСЂРѕР№
         void quit();
         bool isRunning() const;
 
-        // Доступ к системам
+        // Р”РѕСЃС‚СѓРї Рє СЃРёСЃС‚РµРјР°Рј
         StateMachine& getStateMachine();
         RenderSystem& getRenderSystem();
         sf::RenderWindow& getWindow();
 
-        // Управление временем
+        // РЈРїСЂР°РІР»РµРЅРёРµ РІСЂРµРјРµРЅРµРј
         float getDeltaTime() const;
 
     private:
@@ -40,16 +40,16 @@ namespace Arkanoid {
         sf::Clock clock;
         float deltaTime;
 
-        // Константы
+        // РљРѕРЅСЃС‚Р°РЅС‚С‹
         static const float TARGET_FPS;
         static const float TIME_STEP;
 
-        // Методы игрового цикла
+        // РњРµС‚РѕРґС‹ РёРіСЂРѕРІРѕРіРѕ С†РёРєР»Р°
         void processEvents();
         void update();
         void render();
 
-        // Инициализация
+        // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
         void initializeWindow();
         void initializeSystems();
         void initializeStates();

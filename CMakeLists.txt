@@ -1,27 +1,27 @@
-cmake_minimum_required(VERSION 3.17)
+п»їcmake_minimum_required(VERSION 3.17)
 project(MyArkanoid LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Объявляем список исходных файлов
+# РћР±СЉСЏРІР»СЏРµРј СЃРїРёСЃРѕРє РёСЃС…РѕРґРЅС‹С… С„Р°Р№Р»РѕРІ
 set(SOURCES
     main.cpp
 
-    # Движок
+    # Р”РІРёР¶РѕРє
     src/core/GameEngine.cpp
     src/core/StateMachine.cpp
     
-    # Сущности
+    # РЎСѓС‰РЅРѕСЃС‚Рё
     src/entities/Ball.cpp
     src/entities/Paddle.cpp
 
-    # Блоки
+    # Р‘Р»РѕРєРё
     src/entities/blocks/BaseBlock.cpp
     src/entities/blocks/Block.cpp
     src/entities/blocks/Rock.cpp
 
-    # Бонусы
+    # Р‘РѕРЅСѓСЃС‹
     src/entities/powerups/PowerUp.cpp
     src/entities/powerups/ExtraLifePowerUp.cpp
     src/entities/powerups/ExpandPaddlePowerUp.cpp
@@ -35,24 +35,24 @@ set(SOURCES
     src/entities/powerups/PowerUpEffects/SlowBallEffect.cpp;
     src/entities/powerups/PowerUpEffects/ScalePaddleEffect.cpp;
    
-    # Менеджеры систем
+    # РњРµРЅРµРґР¶РµСЂС‹ СЃРёСЃС‚РµРј
     src/managers/AssetManager.cpp
     src/managers/LevelManager.cpp
     src/managers/SoundManager.cpp
     src/managers/PowerUpManager.cpp
 
-    # Физика и коллизии (обработчики)
+    # Р¤РёР·РёРєР° Рё РєРѕР»Р»РёР·РёРё (РѕР±СЂР°Р±РѕС‚С‡РёРєРё)
     src/systems/solvers/BlockCollisionSolver.cpp  
     src/systems/solvers/WallCollisionSolver.cpp  
     src/systems/solvers/PaddleCollisionSolver.cpp  
     src/systems/SpatialGrid.cpp
 
-    # Системы
+    # РЎРёСЃС‚РµРјС‹
     src/systems/PhysicsSystem.cpp
     src/systems/RenderSystem.cpp
     
 
-    # Состояния игры
+    # РЎРѕСЃС‚РѕСЏРЅРёСЏ РёРіСЂС‹
     src/game_states/GameState.cpp
     src/game_states/GameOverState.cpp
     src/game_states/State.cpp
@@ -60,16 +60,15 @@ set(SOURCES
     src/game_states/MenuState/MainMenuState.cpp
     src/game_states/MenuState/OptionsState.cpp
     src/game_states/MenuState/LevelSelectState.cpp
-    # Утилиты
-    src/utils/MathUtils.cpp
+  
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
-# Указываем путь к SFML
+# РЈРєР°Р·С‹РІР°РµРј РїСѓС‚СЊ Рє SFML
 set(SFML_DIR "C:/C++Libraries/SFML-2.6.2/lib/cmake/SFML")
 find_package(SFML 2.6 COMPONENTS graphics window system audio REQUIRED)
 
-# Теперь указываем include директории (ПОСЛЕ создания target)
+# РўРµРїРµСЂСЊ СѓРєР°Р·С‹РІР°РµРј include РґРёСЂРµРєС‚РѕСЂРёРё (РџРћРЎР›Р• СЃРѕР·РґР°РЅРёСЏ target)
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/include/core
@@ -83,10 +82,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/include/systems
     ${CMAKE_SOURCE_DIR}/include/systems
     ${CMAKE_SOURCE_DIR}/include/systems/solvers
-    ${CMAKE_SOURCE_DIR}/include/utils
+
 )
 
-# Линкуем SFML
+# Р›РёРЅРєСѓРµРј SFML
 target_link_libraries(${PROJECT_NAME} PRIVATE
     sfml-graphics
     sfml-window
@@ -95,9 +94,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 )
 
 
-# Копирование DLL и ассетов
+# РљРѕРїРёСЂРѕРІР°РЅРёРµ DLL Рё Р°СЃСЃРµС‚РѕРІ
 if(WIN32)
-    # Список всех необходимых DLL
+    # РЎРїРёСЃРѕРє РІСЃРµС… РЅРµРѕР±С…РѕРґРёРјС‹С… DLL
     set(NEEDED_DLLS
         sfml-graphics-2.dll
         sfml-graphics-d-2.dll
@@ -110,7 +109,7 @@ if(WIN32)
         openal32.dll
     )
     
-    # Копируем каждый файл
+    # РљРѕРїРёСЂСѓРµРј РєР°Р¶РґС‹Р№ С„Р°Р№Р»
     foreach(DLL ${NEEDED_DLLS})
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy
@@ -119,7 +118,7 @@ if(WIN32)
         )
     endforeach()
     
-    # Копирование папки assets
+    # РљРѕРїРёСЂРѕРІР°РЅРёРµ РїР°РїРєРё assets
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_SOURCE_DIR}/assets"

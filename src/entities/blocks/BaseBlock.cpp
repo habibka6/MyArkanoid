@@ -1,4 +1,4 @@
-#include "BaseBlock.h"
+﻿#include "BaseBlock.h"
 
 namespace Arkanoid {
     EntityType BaseBlock::getType() const {

@@ -1,4 +1,4 @@
-#include "MenuStateBase.h"
+Ôªø#include "MenuStateBase.h"
 #include "AssetManager.h"
 #include "SoundManager.h"
 
@@ -14,7 +14,7 @@ namespace Arkanoid {
     }
 
     void MenuStateBase::enter() {
-        // ‘ÓÌ
+        // –§–æ–Ω
         try {
             sf::Texture& bgTexture = AssetManager::getInstance().getTexture("menu_background.jpg");
             backgroundSprite.setTexture(bgTexture);

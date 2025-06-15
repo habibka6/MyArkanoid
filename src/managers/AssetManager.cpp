@@ -1,4 +1,4 @@
-#include "AssetManager.h"
+﻿#include "AssetManager.h"
 #include <iostream>
 
 namespace Arkanoid {

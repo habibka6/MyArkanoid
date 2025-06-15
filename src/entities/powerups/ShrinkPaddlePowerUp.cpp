@@ -1,4 +1,4 @@
-// ShrinkPaddlePowerUp.cpp
+﻿// ShrinkPaddlePowerUp.cpp
 #include "ShrinkPaddlePowerUp.h"
 
 namespace Arkanoid {

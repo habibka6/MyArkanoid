@@ -1,4 +1,4 @@
-#include "WallCollisionSolver.h"
+﻿#include "WallCollisionSolver.h"
 #include <cmath>
 
 namespace Arkanoid {

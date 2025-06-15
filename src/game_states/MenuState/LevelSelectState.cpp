@@ -1,4 +1,4 @@
-#include "LevelSelectState.h"
+п»ї#include "LevelSelectState.h"
 #include "GameState.h"
 
 namespace Arkanoid {
@@ -21,11 +21,11 @@ namespace Arkanoid {
         const float buttonW = 120, buttonH = 70;
         const float spacingX = 100, spacingY = 70;
 
-        // Размер сетки
+        // Р Р°Р·РјРµСЂ СЃРµС‚РєРё
         float gridW = COLS * buttonW + (COLS - 1) * spacingX;
         float gridH = ROWS * buttonH + (ROWS - 1) * spacingY;
 
-        // Центрирование
+        // Р¦РµРЅС‚СЂРёСЂРѕРІР°РЅРёРµ
         float startX = (engine.getWindow().getSize().x - gridW) / 2.0f;
         float startY = (engine.getWindow().getSize().y - gridH) / 2.0f + 40; 
 

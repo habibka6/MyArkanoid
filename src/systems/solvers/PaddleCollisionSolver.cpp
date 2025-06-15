@@ -1,4 +1,4 @@
-#include "PaddleCollisionSolver.h"
+﻿#include "PaddleCollisionSolver.h"
 #include "Config.h"
 #include <cmath>
 #include <algorithm>

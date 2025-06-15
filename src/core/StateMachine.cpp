@@ -1,4 +1,4 @@
-#include "StateMachine.h"
+﻿#include "StateMachine.h"
 #include "State.h"
 
 namespace Arkanoid {

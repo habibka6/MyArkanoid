@@ -1,4 +1,4 @@
-#include "LevelManager.h"
+п»ї#include "LevelManager.h"
 #include "Config.h"
 #include <fstream>
 #include <iostream>
@@ -15,7 +15,7 @@ namespace Arkanoid {
         loadLevelsFromJSON();
 
         if (predefinedLevels.empty()) {
-            // Если JSON не загрузились, создаём дефолтный уровень
+            // Р•СЃР»Рё JSON РЅРµ Р·Р°РіСЂСѓР·РёР»РёСЃСЊ, СЃРѕР·РґР°С‘Рј РґРµС„РѕР»С‚РЅС‹Р№ СѓСЂРѕРІРµРЅСЊ
             predefinedLevels.push_back(createDefaultLevel());
         }
 
@@ -25,7 +25,7 @@ namespace Arkanoid {
     bool LevelManager::loadLevel(int levelNumber) {
         if (levelNumber <= 0) return false;
 
-        // Ищем уровень среди загруженных
+        // РС‰РµРј СѓСЂРѕРІРµРЅСЊ СЃСЂРµРґРё Р·Р°РіСЂСѓР¶РµРЅРЅС‹С…
         for (const auto& level : predefinedLevels) {
             if (level.levelNumber == levelNumber) {
                 currentLevel = level;
@@ -33,13 +33,13 @@ namespace Arkanoid {
             }
         }
 
-        // Пытаемся загрузить отдельный файл
+        // РџС‹С‚Р°РµРјСЃСЏ Р·Р°РіСЂСѓР·РёС‚СЊ РѕС‚РґРµР»СЊРЅС‹Р№ С„Р°Р№Р»
         std::string filename = "assets/levels/level_" + std::to_string(levelNumber) + ".json";
         if (loadSingleLevel(filename, levelNumber)) {
             return true;
         }
 
-        // Создаём дефолтный уровень
+        // РЎРѕР·РґР°С‘Рј РґРµС„РѕР»С‚РЅС‹Р№ СѓСЂРѕРІРµРЅСЊ
         currentLevel = createDefaultLevel();
         currentLevel.levelNumber = levelNumber;
         currentLevel.name = "Level " + std::to_string(levelNumber);
@@ -49,7 +49,7 @@ namespace Arkanoid {
     void LevelManager::loadLevelsFromJSON() {
         predefinedLevels.clear();
 
-        // Пытаемся загрузить основной файл со всеми уровнями
+        // РџС‹С‚Р°РµРјСЃСЏ Р·Р°РіСЂСѓР·РёС‚СЊ РѕСЃРЅРѕРІРЅРѕР№ С„Р°Р№Р» СЃРѕ РІСЃРµРјРё СѓСЂРѕРІРЅСЏРјРё
         std::ifstream file("assets/levels/levels.json");
         if (file.is_open()) {
             try {
@@ -75,7 +75,7 @@ namespace Arkanoid {
             }
         }
 
-        // Загружаем отдельные файлы уровней
+        // Р—Р°РіСЂСѓР¶Р°РµРј РѕС‚РґРµР»СЊРЅС‹Рµ С„Р°Р№Р»С‹ СѓСЂРѕРІРЅРµР№
         for (int i = 1; i <= maxLevels; ++i) {
             std::string filename = "assets/levels/level_" + std::to_string(i) + ".json";
             loadSingleLevel(filename, i);
@@ -94,7 +94,7 @@ namespace Arkanoid {
 
             LevelData level = parseJSONLevel(json, levelNumber);
             if (validateLevelData(level)) {
-                // Заменяем существующий уровень или добавляем новый
+                // Р—Р°РјРµРЅСЏРµРј СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ СѓСЂРѕРІРµРЅСЊ РёР»Рё РґРѕР±Р°РІР»СЏРµРј РЅРѕРІС‹Р№
                 auto it = std::find_if(predefinedLevels.begin(), predefinedLevels.end(),
                     [levelNumber](const LevelData& l) { return l.levelNumber == levelNumber; });
 
@@ -121,14 +121,14 @@ namespace Arkanoid {
         level.name = json.value("name", "Level " + std::to_string(levelNumber));
         level.description = json.value("description", "");
 
-        // Параметры размещения
+        // РџР°СЂР°РјРµС‚СЂС‹ СЂР°Р·РјРµС‰РµРЅРёСЏ
         level.centerHorizontally = json.value("centerHorizontally", true);
         level.centerVertically = json.value("centerVertically", false);
         level.marginTop = json.value("marginTop", 100.0f);
         level.marginSides = json.value("marginSides", 50.0f);
         level.blockSpacing = json.value("spacing", defaultSpacing);
 
-        // Загрузка макета
+        // Р—Р°РіСЂСѓР·РєР° РјР°РєРµС‚Р°
         if (json.contains("layout") && json["layout"].is_array()) {
             for (const auto& row : json["layout"]) {
                 std::vector<int> levelRow;
@@ -144,7 +144,7 @@ namespace Arkanoid {
         level.rows = static_cast<int>(level.layout.size());
         level.cols = level.rows > 0 ? static_cast<int>(level.layout[0].size()) : 0;
 
-        // Вычисляем стартовую позицию
+        // Р’С‹С‡РёСЃР»СЏРµРј СЃС‚Р°СЂС‚РѕРІСѓСЋ РїРѕР·РёС†РёСЋ
         level.startPosition = calculateCenteredStartPosition(level);
 
         return level;
@@ -207,14 +207,14 @@ namespace Arkanoid {
 
     std::unique_ptr<BaseBlock> LevelManager::createBlock(int blockType, float x, float y) const {
         switch (blockType) {
-        case 1: // Зелёный блок (1 удар)
+        case 1: // Р—РµР»С‘РЅС‹Р№ Р±Р»РѕРє (1 СѓРґР°СЂ)
             return std::make_unique<Block>(x, y, Block::Type::Green);
-        case 2: // Жёлтый блок (2 удара)
+        case 2: // Р–С‘Р»С‚С‹Р№ Р±Р»РѕРє (2 СѓРґР°СЂР°)
             return std::make_unique<Block>(x, y, Block::Type::Yellow);
-        case 3: // Красный блок (3 удара)
+        case 3: // РљСЂР°СЃРЅС‹Р№ Р±Р»РѕРє (3 СѓРґР°СЂР°)
             return std::make_unique<Block>(x, y, Block::Type::Red);
 
-        case 9: // Камень (неразрушимый)
+        case 9: // РљР°РјРµРЅСЊ (РЅРµСЂР°Р·СЂСѓС€РёРјС‹Р№)
             return std::make_unique<Rock>(x, y);
         default:
             return nullptr;
@@ -250,10 +250,10 @@ namespace Arkanoid {
     bool LevelManager::isLevelComplete(const std::vector<std::unique_ptr<BaseBlock>>& blocks) const {
        
         for (const auto& block : blocks) {
-            // Усиленная проверка
+            // РЈСЃРёР»РµРЅРЅР°СЏ РїСЂРѕРІРµСЂРєР°
             if (!block || !block->isActive()) continue;
 
-            // Только разрушимые блоки (не Rock) учитываются
+            // РўРѕР»СЊРєРѕ СЂР°Р·СЂСѓС€РёРјС‹Рµ Р±Р»РѕРєРё (РЅРµ Rock) СѓС‡РёС‚С‹РІР°СЋС‚СЃСЏ
             if (block->getBlockType() != BlockType::Rock) {
                 return false;
             }

@@ -1,6 +1,6 @@
-#pragma once
+п»ї#pragma once
 #include "Entity.h"
-// Типы коллизий для уведомлений
+// РўРёРїС‹ РєРѕР»Р»РёР·РёР№ РґР»СЏ СѓРІРµРґРѕРјР»РµРЅРёР№
 namespace Arkanoid {
 enum class CollisionType {
     BallBlock,

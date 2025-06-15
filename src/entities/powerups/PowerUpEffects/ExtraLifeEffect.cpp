@@ -1,4 +1,4 @@
-#include "ExtraLifeEffect.h"
+﻿#include "ExtraLifeEffect.h"
 
 namespace Arkanoid {
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Ball.h"
 #include <SFML/Graphics.hpp>
 

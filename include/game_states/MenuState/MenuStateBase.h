@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "State.h"
 #include "GameEngine.h"
 #include <vector>
@@ -32,7 +32,7 @@ namespace Arkanoid {
 
         virtual void onSelect(int idx);
         virtual void onBack() {}
-        virtual void setupMenu() = 0; // реализуется в наследниках
+        virtual void setupMenu() = 0; // СЂРµР°Р»РёР·СѓРµС‚СЃСЏ РІ РЅР°СЃР»РµРґРЅРёРєР°С…
 
         void navigate(int dir);
         void updateHighlight();

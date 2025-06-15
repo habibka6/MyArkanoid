@@ -1,4 +1,4 @@
-#include "ScalePaddleEffect.h"
+﻿#include "ScalePaddleEffect.h"
 
 namespace Arkanoid {
 

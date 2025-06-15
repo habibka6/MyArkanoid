@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <SFML/Graphics.hpp>
 
 namespace Arkanoid {
@@ -10,12 +10,12 @@ namespace Arkanoid {
         State(GameEngine& engine);
         virtual ~State() = default;
 
-        // Основные методы состояния
+        // РћСЃРЅРѕРІРЅС‹Рµ РјРµС‚РѕРґС‹ СЃРѕСЃС‚РѕСЏРЅРёСЏ
         virtual void update(float deltaTime) = 0;
         virtual void render(sf::RenderWindow& window) = 0;
         virtual void handleEvent(const sf::Event& event) = 0;
 
-        // Методы жизненного цикла
+        // РњРµС‚РѕРґС‹ Р¶РёР·РЅРµРЅРЅРѕРіРѕ С†РёРєР»Р°
         virtual void enter() {}
         virtual void exit() {}
         virtual void pause() {}

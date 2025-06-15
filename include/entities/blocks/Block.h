@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "BaseBlock.h"
 #include "Config.h"
 namespace Arkanoid {

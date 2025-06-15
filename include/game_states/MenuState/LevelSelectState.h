@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "MenuStateBase.h"
 
 namespace Arkanoid {
@@ -22,7 +22,7 @@ namespace Arkanoid {
         void onSelect(int idx) override;
         void onBack() override;
 
-        // Сетка уровней
+        // РЎРµС‚РєР° СѓСЂРѕРІРЅРµР№
         static constexpr int ROWS = 3;
         static constexpr int COLS = 4;
         static constexpr int LEVELS = ROWS * COLS;

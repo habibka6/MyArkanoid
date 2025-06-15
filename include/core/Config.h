@@ -1,18 +1,18 @@
-#pragma once
+п»ї#pragma once
 #include <SFML/Graphics.hpp>
 
 namespace Config {
-    // Настройки окна
+    // РќР°СЃС‚СЂРѕР№РєРё РѕРєРЅР°
     namespace Window {
         constexpr  float WIDTH = 1280;
         constexpr float HEIGHT = 720;
         constexpr char* TITLE = "Arkanoid";
     }
 
-    // Физические константы
+    // Р¤РёР·РёС‡РµСЃРєРёРµ РєРѕРЅСЃС‚Р°РЅС‚С‹
     namespace Physics {
 
-        // Коллизии
+        // РљРѕР»Р»РёР·РёРё
         constexpr float DEG_TO_RAD = 3.14159f / 180.0f;
         constexpr float PADDLE_INFLUENCE = 0.2f;
         constexpr float MAX_SPEED_FACTOR = 1.2f;
@@ -21,13 +21,13 @@ namespace Config {
         constexpr float MIN_PADDLE_ANGLE = 15.0f;
     }
 
-    // Мяч
+    // РњСЏС‡
     namespace Ball {
         constexpr float BASE_SPEED = 650.0f;
         constexpr float SPEED_INCREASE_PER_HIT = 0.02f;
     }
 
-    // Платформа
+    // РџР»Р°С‚С„РѕСЂРјР°
     namespace Paddle {
         const sf::Vector2f SIZE{ 120.0f, 20.0f };
         constexpr float WIDTH = 120.0;
@@ -37,20 +37,20 @@ namespace Config {
         constexpr float SHRINK_FACTOR = 0.7f; 
     }
 
-    // Блоки
+    // Р‘Р»РѕРєРё
     namespace Block {
         constexpr float WIDTH = 90.0f; 
         constexpr float HEIGHT = 40.0f;
     }
 
-    // Бонусы (PowerUps)
+    // Р‘РѕРЅСѓСЃС‹ (PowerUps)
     namespace PowerUp {
         constexpr float FALL_SPEED = 200.0f;
         constexpr float DEFAULT_DURATION = 10.0f; 
         constexpr float SPAWN_CHANCE = 0.2f;
     }
 
-    // Игровой процесс
+    // РРіСЂРѕРІРѕР№ РїСЂРѕС†РµСЃСЃ
     namespace Game {
         constexpr int LIVES = 3;
         constexpr float TARGET_FPS = 60;
