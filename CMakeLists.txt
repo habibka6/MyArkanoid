@@ -108,15 +108,6 @@ if(WIN32)
         openal32.dll
     )
     
-    # Копируем каждый файл
-    foreach(DLL ${NEEDED_DLLS})
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_SOURCE_DIR}/${DLL}"
-            $<TARGET_FILE_DIR:${PROJECT_NAME}>
-        )
-    endforeach()
-    
     # Копирование папки assets
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory

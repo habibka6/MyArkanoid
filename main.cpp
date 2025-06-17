@@ -1,5 +1,4 @@
-﻿// main.cpp (необходимо создать)
-#include "GameEngine.h"
+﻿#include "GameEngine.h"
 
 int main() {
     Arkanoid::GameEngine game;
