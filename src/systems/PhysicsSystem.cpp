@@ -6,7 +6,7 @@ namespace Arkanoid {
 
     PhysicsSystem::PhysicsSystem(sf::RenderWindow& window)
         : window(window),
-        spatialGrid(Config::Window::WIDTH, Config::Window::HEIGHT, 100.0f) {
+        spatialGrid(Config::Window::WIDTH, Config::Window::HEIGHT, Config::Block::WIDTH * 5 ) {
 
         worldBounds = sf::FloatRect(0, 0, Config::Window::WIDTH, Config::Window::HEIGHT);
 
@@ -15,68 +15,65 @@ namespace Arkanoid {
         wallSolver = std::make_unique<WallCollisionSolver>(Config::Window::WIDTH, Config::Window::HEIGHT);
     }
 
-
+    // Добавить наблюдателя за коллизиями
     void PhysicsSystem::addObserver(ICollisionObserver* observer) {
         observers.push_back(observer);
     }
 
+    // Удалить наблюдателя
     void PhysicsSystem::removeObserver(ICollisionObserver* observer) {
         observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
     }
 
+    // Оповестить всех наблюдателей о коллизии
     void PhysicsSystem::notifyObservers(CollisionType type, Entity* obj1, Entity* obj2) {
         for (auto* observer : observers) {
             observer->onCollision(type, obj1, obj2);
         }
     }
 
-
-
+    // Главный update физики за кадр
     void PhysicsSystem::update(Ball& ball, Paddle& paddle,
         std::vector<std::unique_ptr<BaseBlock>>& blocks,
         std::vector<std::unique_ptr<PowerUp>>& powerups,
         float deltaTime) {
 
-        spatialGrid.update(blocks);
+        spatialGrid.update(blocks); 
 
-        constrainPaddleToWindow(paddle);
+        constrainPaddleToWindow(paddle); 
 
-        checkBallCollisions(ball, paddle, blocks, deltaTime);
+        checkBallCollisions(ball, paddle, blocks, deltaTime); 
 
         checkWallCollisions(ball, deltaTime);
 
-        checkPowerUpCollisions(powerups, paddle);
-
-        if (isBallLost(ball)) {
-            notifyObservers(CollisionType::BallLost, &ball, nullptr);
-        }
+        checkPowerUpCollisions(powerups, paddle); 
     }
 
+    // Проверка и обработка коллизий шарика с платформой и блоками
     void PhysicsSystem::checkBallCollisions(Ball& ball, Paddle& paddle,
         std::vector<std::unique_ptr<BaseBlock>>& blocks,
         float deltaTime) {
         sf::FloatRect ballBounds = ball.getBounds();
 
-        // Paddle collision
+        // Коллизия с платформой
         if (paddleSolver->checkPaddleCollision(ball, paddle)) {
             paddleSolver->resolvePaddleCollision(ball, paddle, deltaTime);
-
             notifyObservers(CollisionType::BallPaddle, &ball, &paddle);
             return;
         }
 
-        // Block collisions
+        // Коллизии с блоками (только ближайшие по spatial grid)
         auto potentialBlocks = spatialGrid.getPotentialCollisions(ballBounds);
         for (auto* block : potentialBlocks) {
             if (blockSolver->checkBlockCollision(ball, *block)) {
                 blockSolver->resolveBlockCollision(ball, *block, deltaTime);
-
                 notifyObservers(CollisionType::BallBlock, &ball, &*block);
                 break; 
             }
         }
     }
 
+    // Проверка и обработка коллизий бонусов с платформой
     void PhysicsSystem::checkPowerUpCollisions(std::vector<std::unique_ptr<PowerUp>>& powerups,
         Paddle& paddle) {
         sf::FloatRect paddleBounds = paddle.getBounds();
@@ -89,26 +86,23 @@ namespace Arkanoid {
         }
     }
 
+    // Проверка и обработка коллизий шарика со стенами
     void PhysicsSystem::checkWallCollisions(Ball& ball, float deltaTime) {
         if (wallSolver->checkWallCollisions(ball)) {
             wallSolver->resolveCollision(ball, sf::FloatRect(), deltaTime);
-
             notifyObservers(CollisionType::BallWall, &ball, nullptr);
         }
     }
 
+    // Не даём платформе выйти за пределы окна
     void PhysicsSystem::constrainPaddleToWindow(Paddle& paddle) {
         paddle.constrainToWindow(worldBounds.width);
     }
 
-    bool PhysicsSystem::isBallLost(const Ball& ball) const {
-        return wallSolver->isBallLost(ball,worldBounds.height);
-    }
-
+    // Установка новых границ мира (например, при изменении размера окна)
     void PhysicsSystem::setWorldBounds(const sf::FloatRect& bounds) {
         worldBounds = bounds;
         wallSolver = std::make_unique<WallCollisionSolver>(bounds.width, bounds.height);
     }
 
 } // namespace Arkanoid
- 

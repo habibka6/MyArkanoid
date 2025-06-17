@@ -3,8 +3,7 @@
 
 namespace Arkanoid {
 
-    ShrinkPaddlePowerUp::ShrinkPaddlePowerUp(float x, float y)
-        : PowerUp(x, y)
+    ShrinkPaddlePowerUp::ShrinkPaddlePowerUp(float x, float y) : PowerUp(x, y)
     {
         setupAppearance();
     }

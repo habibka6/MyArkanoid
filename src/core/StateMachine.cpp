@@ -3,7 +3,8 @@
 
 namespace Arkanoid {
 
-    void StateMachine::pushState(std::unique_ptr<State> state) {
+    void StateMachine::pushState(std::unique_ptr<State> state)
+    {
         if (!states.empty()) {
             states.top()->pause();
         }
@@ -12,8 +13,10 @@ namespace Arkanoid {
         states.push(std::move(state));
     }
 
-    void StateMachine::popState() {
-        if (!states.empty()) {
+    void StateMachine::popState()
+    {
+        if (!states.empty())
+        {
             states.top()->exit();
             states.pop();
 
@@ -23,7 +26,8 @@ namespace Arkanoid {
         }
     }
 
-    void StateMachine::changeState(std::unique_ptr<State> state) {
+    void StateMachine::changeState(std::unique_ptr<State> state)
+    {
         if (!states.empty()) {
             states.top()->exit();
             states.pop();
@@ -33,37 +37,43 @@ namespace Arkanoid {
         states.push(std::move(state));
     }
 
-    void StateMachine::clearStates() {
+    void StateMachine::clearStates()
+    {
         while (!states.empty()) {
             states.top()->exit();
             states.pop();
         }
     }
 
-    void StateMachine::update(float deltaTime) {
+    void StateMachine::update(float deltaTime)
+    {
         if (!states.empty()) {
             states.top()->update(deltaTime);
         }
     }
 
-    void StateMachine::render(sf::RenderWindow& window) {
+    void StateMachine::render(sf::RenderWindow& window)
+    {
         if (!states.empty()) {
             states.top()->render(window);
         }
     }
 
-    void StateMachine::handleEvent(const sf::Event& event) {
+    void StateMachine::handleEvent(const sf::Event& event)
+    {
         if (!states.empty()) {
             states.top()->handleEvent(event);
         }
     }
 
-    bool StateMachine::isEmpty() const {
+    bool StateMachine::isEmpty() const
+    {
         return states.empty();
     }
 
-    State* StateMachine::getCurrentState() const {
+    State* StateMachine::getCurrentState() const
+    {
         return states.empty() ? nullptr : states.top().get();
     }
 
-} 
+} // namespace Arkanoid

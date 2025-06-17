@@ -2,9 +2,7 @@
 
 namespace Arkanoid {
 
-    ExtraLifeEffect::ExtraLifeEffect()
-        : finished(false) {
-    }
+    ExtraLifeEffect::ExtraLifeEffect(): finished(false) {}
 
     void ExtraLifeEffect::apply(Ball& ball, Paddle& paddle, std::function<void()> gameCallback) {
         if (gameCallback) {
@@ -37,6 +35,6 @@ namespace Arkanoid {
         return PowerUpType::ExtraLife;
     }
     float ExtraLifeEffect::getRemainingTime() const {
-        return 0.0;
+        return 0.0f;
     }
 } // namespace Arkanoid

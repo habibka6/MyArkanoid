@@ -10,12 +10,14 @@
 
 namespace Arkanoid {
 
+    // Состояния игрового процесса
     enum class GameStatus {
         Playing,
         Paused,
         LevelComplete
     };
 
+    // Система рендеринга игровых объектов и интерфейса во время игры
     class RenderSystem {
     public:
         RenderSystem(sf::RenderWindow& window);
@@ -31,7 +33,7 @@ namespace Arkanoid {
         void renderUI(int score, int lives, int level);
         void renderBackground();
 
-        // Рендеринг игрового контента
+        // Рендеринг игровых обьектов
         void renderGameContent(
             const Ball& ball,
             const Paddle& paddle,
@@ -45,10 +47,6 @@ namespace Arkanoid {
         void renderPauseOverlay();
         void renderLevelCompleteOverlay();
 
-        // Настройки
-        void setVSync(bool enabled);
-        void setInterpolation(bool enabled);
-        bool isInterpolationEnabled() const;
 
         sf::Vector2u getWindowSize() const;
 

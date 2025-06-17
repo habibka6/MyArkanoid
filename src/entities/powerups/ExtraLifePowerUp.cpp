@@ -2,8 +2,7 @@
 
 namespace Arkanoid {
 
-    ExtraLifePowerUp::ExtraLifePowerUp(float x, float y)
-        : PowerUp(x, y)
+    ExtraLifePowerUp::ExtraLifePowerUp(float x, float y) : PowerUp(x, y)
     {
         setupAppearance();
     }

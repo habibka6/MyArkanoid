@@ -1,12 +1,13 @@
 ﻿#include "MenuStateBase.h"
 #include "AssetManager.h"
 #include "SoundManager.h"
-
 #include "Config.h"
 
 namespace Arkanoid {
 
-    MenuStateBase::MenuStateBase(GameEngine& engine) : State(engine) {
+    MenuStateBase::MenuStateBase(GameEngine& engine)
+        : State(engine)
+    {
         try {
             font = AssetManager::getInstance().getFont("retro.ttf");
         }
@@ -14,10 +15,11 @@ namespace Arkanoid {
     }
 
     void MenuStateBase::enter() {
-        // Фон
+
         try {
             sf::Texture& bgTexture = AssetManager::getInstance().getTexture("menu_background.jpg");
             backgroundSprite.setTexture(bgTexture);
+
             auto winSize = engine.getWindow().getSize();
             auto texSize = bgTexture.getSize();
             backgroundSprite.setScale(
@@ -38,26 +40,35 @@ namespace Arkanoid {
     }
 
     void MenuStateBase::render(sf::RenderWindow& window) {
-        if (backgroundSprite.getTexture())
+        if (backgroundSprite.getTexture()) {
             window.draw(backgroundSprite);
+        }
+
         window.draw(titleText);
-        for (const auto& item : menuItems)
+
+        for (const auto& item : menuItems) {
             window.draw(item.text);
+        }
     }
 
     void MenuStateBase::handleEvent(const sf::Event& event) {
         if (event.type == sf::Event::KeyPressed) {
             switch (event.key.code) {
             case sf::Keyboard::Up:   navigate(-1); break;
-            case sf::Keyboard::Down: navigate(1);  break;
+            case sf::Keyboard::Down: navigate(1);   break;
             case sf::Keyboard::Enter:
             case sf::Keyboard::Space: onSelect(selectedItem); break;
             case sf::Keyboard::Escape: onBack(); break;
             default: break;
             }
         }
+
         if (event.type == sf::Event::MouseMoved) {
-            sf::Vector2f mousePos(static_cast<float>(event.mouseMove.x), static_cast<float>(event.mouseMove.y));
+            sf::Vector2f mousePos(
+                static_cast<float>(event.mouseMove.x),
+                static_cast<float>(event.mouseMove.y)
+            );
+
             for (int i = 0; i < menuItems.size(); ++i) {
                 if (menuItems[i].text.getGlobalBounds().contains(mousePos)) {
                     selectedItem = i;
@@ -66,8 +77,15 @@ namespace Arkanoid {
                 }
             }
         }
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-            sf::Vector2f mousePos(static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y));
+
+        if (event.type == sf::Event::MouseButtonPressed &&
+            event.mouseButton.button == sf::Mouse::Left)
+        {
+            sf::Vector2f mousePos(
+                static_cast<float>(event.mouseButton.x),
+                static_cast<float>(event.mouseButton.y)
+            );
+
             for (int i = 0; i < menuItems.size(); ++i) {
                 if (menuItems[i].text.getGlobalBounds().contains(mousePos)) {
                     onSelect(i);
@@ -77,25 +95,35 @@ namespace Arkanoid {
         }
     }
 
+
     void MenuStateBase::navigate(int dir) {
         int n = static_cast<int>(menuItems.size());
         selectedItem = (selectedItem + dir + n) % n;
         updateHighlight();
-        try { SoundManager::getInstance().playSound(SoundType::ButtonClick); }
+
+        try {
+            SoundManager::getInstance().playSound(SoundType::ButtonClick);
+        }
         catch (...) {}
     }
 
     void MenuStateBase::onSelect(int idx) {
-        try { SoundManager::getInstance().playSound(SoundType::ButtonClick); }
+        try {
+            SoundManager::getInstance().playSound(SoundType::ButtonClick);
+        }
         catch (...) {}
-        if (menuItems[idx].action) menuItems[idx].action();
+
+        if (menuItems[idx].action) {
+            menuItems[idx].action();
+        }
     }
 
     void MenuStateBase::updateHighlight() {
         for (int i = 0; i < menuItems.size(); ++i) {
-            menuItems[i].text.setFillColor(i == selectedItem ? sf::Color::Yellow : sf::Color::White);
-            menuItems[i].text.setOutlineColor(i == selectedItem ? sf::Color::Red : sf::Color::Black);
-            menuItems[i].text.setOutlineThickness(i == selectedItem ? 2 : 1);
+            bool isSelected = (i == selectedItem);
+            menuItems[i].text.setFillColor(isSelected ? sf::Color::Yellow : sf::Color::White);
+            menuItems[i].text.setOutlineColor(isSelected ? sf::Color::Red : sf::Color::Black);
+            menuItems[i].text.setOutlineThickness(isSelected ? 2 : 1);
         }
     }
 
@@ -112,4 +140,4 @@ namespace Arkanoid {
         text.setPosition((winW - bounds.width) / 2, y);
     }
 
-}
+} // namespace Arkanoid

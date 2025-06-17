@@ -66,4 +66,4 @@ namespace Arkanoid {
         return cells;
     }
 
-} 
+} // namespace Arkanoid

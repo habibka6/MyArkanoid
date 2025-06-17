@@ -5,29 +5,33 @@
 
 namespace Arkanoid {
 
+    // Проверка пересечения мяча и блока
     bool BlockCollisionSolver::checkBlockCollision(Ball& ball, BaseBlock& block) const {
         return ball.getBounds().intersects(block.getBounds()) && block.isActive();
     }
 
-void BlockCollisionSolver::resolveBlockCollision(Ball& ball, BaseBlock& block, float deltaTime) {
-    float radius = ball.getBounds().width * 0.5f;
-    auto [normal, collisionTime] = sweepCollision(
-        ball.getPosition(), ball.getVelocity(), radius, block.getBounds(), deltaTime);
+    // Разрешение коллизии мяча с блоком
+    void BlockCollisionSolver::resolveBlockCollision(Ball& ball, BaseBlock& block, float deltaTime) {
+        float radius = ball.getBounds().width * 0.5f;
+        auto [normal, collisionTime] = sweepCollision(
+            ball.getPosition(), ball.getVelocity(), radius, block.getBounds(), deltaTime);
 
-    if (normal.x == 0 && normal.y == 0) {
-        normal = calculateNormal(ball.getPosition(), block.getBounds());
+        if (normal.x == 0 && normal.y == 0) {
+            normal = calculateNormal(ball.getPosition(), block.getBounds());
+        }
+
+        if (collisionTime > 0) {
+            ball.setPosition(ball.getPosition() + ball.getVelocity() * collisionTime);
+            ball.reflect(normal);
+        }
+        else {
+            ball.reflect(normal);
+            correctPosition(ball, block.getBounds(), normal);
+        }
+        ensureMinimumDirectionVelocity(ball);
     }
 
-    if (collisionTime > 0) {
-        ball.setPosition(ball.getPosition() + ball.getVelocity() * collisionTime);
-        ball.reflect(normal);
-    } else {
-        ball.reflect(normal);
-        correctPosition(ball, block.getBounds(), normal);
-    }
-    ensureMinimumVerticalVelocity(ball);
-} 
-
+    // Определение стороны столкновения
     BlockCollisionSolver::CollisionSide BlockCollisionSolver::determineCollisionSide(const sf::Vector2f& ballPos, const sf::FloatRect& blockBounds) {
         sf::Vector2f blockCenter(blockBounds.left + blockBounds.width / 2, blockBounds.top + blockBounds.height / 2);
         sf::Vector2f ballToCenter = blockCenter - ballPos;
@@ -40,6 +44,7 @@ void BlockCollisionSolver::resolveBlockCollision(Ball& ball, BaseBlock& block, f
             (ballToCenter.y > 0 ? CollisionSide::Top : CollisionSide::Bottom);
     }
 
+    // Вычисление нормали столкновения
     sf::Vector2f BlockCollisionSolver::calculateNormal(const sf::Vector2f& ballPos, const sf::FloatRect& blockBounds) {
         switch (determineCollisionSide(ballPos, blockBounds)) {
         case CollisionSide::Top: return { 0, -1 };
@@ -50,6 +55,7 @@ void BlockCollisionSolver::resolveBlockCollision(Ball& ball, BaseBlock& block, f
         }
     }
 
+    // Коррекция позиции мяча после столкновения
     void BlockCollisionSolver::correctPosition(Ball& ball, const sf::FloatRect& blockBounds,
         const sf::Vector2f& normal, float separation) {
         auto ballBounds = ball.getBounds();
@@ -69,7 +75,8 @@ void BlockCollisionSolver::resolveBlockCollision(Ball& ball, BaseBlock& block, f
         ball.move(correction);
     }
 
-    void BlockCollisionSolver::ensureMinimumVerticalVelocity(Ball& ball, float minRatio) {
+    // Гарантия минимальной скорости мяча
+    void BlockCollisionSolver::ensureMinimumDirectionVelocity(Ball& ball, float minRatio) {
         auto velocity = ball.getVelocity();
         float speed = std::hypot(velocity.x, velocity.y);
         float minVertical = speed * minRatio;
@@ -92,8 +99,7 @@ void BlockCollisionSolver::resolveBlockCollision(Ball& ball, BaseBlock& block, f
         ball.setVelocity(velocity);
     }
 
-
-
+    // Sweep-тест для точного определения столкновения
     std::pair<sf::Vector2f, float> BlockCollisionSolver::sweepCollision(
         const sf::Vector2f& startPos, const sf::Vector2f& velocity, float radius,
         const sf::FloatRect& blockBounds, float deltaTime) {

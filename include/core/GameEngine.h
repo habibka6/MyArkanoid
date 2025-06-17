@@ -14,7 +14,6 @@ namespace Arkanoid {
         GameEngine();
         ~GameEngine() = default;
 
-        // Основные методы
         void run();
         void initialize();
         void cleanup();
@@ -28,7 +27,6 @@ namespace Arkanoid {
         RenderSystem& getRenderSystem();
         sf::RenderWindow& getWindow();
 
-        // Управление временем
         float getDeltaTime() const;
 
     private:
@@ -40,7 +38,6 @@ namespace Arkanoid {
         sf::Clock clock;
         float deltaTime;
 
-        // Константы
         static const float TARGET_FPS;
         static const float TIME_STEP;
 

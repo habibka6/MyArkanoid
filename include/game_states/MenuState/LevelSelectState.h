@@ -22,7 +22,7 @@ namespace Arkanoid {
         void onSelect(int idx) override;
         void onBack() override;
 
-        // Сетка уровней
+        // Параметры сетки уровней
         static constexpr int ROWS = 3;
         static constexpr int COLS = 4;
         static constexpr int LEVELS = ROWS * COLS;
@@ -32,7 +32,7 @@ namespace Arkanoid {
         int selectedCol = 0;
 
         void updateHighlight();
-        int getSelectedIndex() const { return selectedRow * COLS + selectedCol; }
+        int getSelectedIndex() const;
     };
 
 }

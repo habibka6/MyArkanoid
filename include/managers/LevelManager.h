@@ -10,6 +10,7 @@
 
 namespace Arkanoid {
 
+    // параметры уровня
     struct LevelData {
         int levelNumber;
         std::string name;
@@ -20,7 +21,6 @@ namespace Arkanoid {
         sf::Vector2f startPosition;
         float blockSpacing;
 
-        // Новые параметры для центрирования
         bool centerHorizontally;
         bool centerVertically;
         float marginTop;
@@ -52,9 +52,7 @@ namespace Arkanoid {
 
         // Навигация
         bool hasNextLevel() const;
-        bool hasPreviousLevel() const;
         bool nextLevel();
-        bool previousLevel();
         void resetToFirstLevel();
 
         // Проверка завершения

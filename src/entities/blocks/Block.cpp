@@ -2,10 +2,8 @@
 
 namespace Arkanoid {
 
-    Block::Block(float x, float y, Type type)
-        : blockType(type),
-        destroyed(false),
-        active(true) {
+    Block::Block(float x, float y, Type type) : blockType(type), destroyed(false), active(true)
+    {
         setupBlock();
         setPosition({ x, y });
     }
@@ -28,12 +26,15 @@ namespace Arkanoid {
             maxHealth = currentHealth = 3;
             pointValue = 30;
             break;
+        default:
+            maxHealth = currentHealth = 1;
+            pointValue = 0;
+            break;
         }
-
         updateAppearance();
     }
 
-    void Block::update(float deltaTime) {}
+    void Block::update(float deltaTime) { }
 
     void Block::draw(sf::RenderWindow& window) const {
         if (active && !destroyed) {
@@ -62,13 +63,10 @@ namespace Arkanoid {
     }
 
     void Block::hit() {
-        currentHealth--;
-        updateAppearance();
-
-        if (currentHealth <= 0) {
+        if (--currentHealth <= 0) {
             destroyed = true;
         }
-        
+        updateAppearance();
     }
 
     bool Block::isDestroyed() const {
@@ -83,31 +81,19 @@ namespace Arkanoid {
         return BlockType::Standard;
     }
 
-    sf::Color Block::getColor() const {
-        return shape.getFillColor();
-    }
-
     void Block::updateAppearance() {
         shape.setFillColor(getColorForType(blockType, currentHealth, maxHealth));
     }
 
     sf::Color Block::getColorForType(Type type, int health, int maxHealth) {
-        float ratio = static_cast<float>(health) / maxHealth;
+        const float ratio = static_cast<float>(health) / maxHealth;
 
         switch (type) {
-        case Type::Green:
-            return sf::Color::Green;
-        case Type::Yellow:
-            if (health == maxHealth) {
-                return sf::Color::Yellow;
-            }
-            else {
-                return sf::Color(205, 160, 50); 
-            }
-        case Type::Red:
-            return sf::Color(255 * ratio, 0, 0);
+        case Type::Green:  return sf::Color::Green;
+        case Type::Yellow: return (health == maxHealth) ? sf::Color::Yellow : sf::Color(205, 160, 50);
+        case Type::Red:    return sf::Color(255 * ratio, 0, 0);
+        default:           return sf::Color::White;
         }
-        return sf::Color::White;
     }
 
 } // namespace Arkanoid

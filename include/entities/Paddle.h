@@ -5,6 +5,7 @@
 
 namespace Arkanoid {
 
+    // Класс ракетки (платформы), управляемой игроком
     class Paddle : public MovableEntity {
     public:
         Paddle(float startX, float startY);

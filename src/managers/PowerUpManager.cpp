@@ -10,6 +10,7 @@ namespace Arkanoid
         : powerups(&powerups) {
     }
 
+    // Спавн бонуса с определенной вероятностью, если нет активного временного эффекта
     void PowerUpManager::spawnPowerUp(const sf::Vector2f& position)
     {
         static std::random_device rd;
@@ -26,14 +27,17 @@ namespace Arkanoid
         }
     }
 
+    // Обновление состояния бонусов и эффектов
     void PowerUpManager::update(float deltaTime, Paddle& paddle, Ball& ball) {
+
         for (auto it = powerups->begin(); it != powerups->end(); ) {
             auto& powerup = *it;
 
             if (powerup->isActive()) {
-                powerup->update(deltaTime);  
+                powerup->update(deltaTime);
             }
 
+            // Удаляем неактивные или ушедшие за экран бонусы
             if (!powerup->isActive() || powerup->getPosition().y > Config::Window::HEIGHT) {
                 it = powerups->erase(it);
             }
@@ -54,6 +58,7 @@ namespace Arkanoid
         }
     }
 
+    // Отрисовка всех активных бонусов
     void PowerUpManager::render(sf::RenderWindow& window)
     {
         for (auto& powerup : *powerups)
@@ -65,14 +70,13 @@ namespace Arkanoid
         }
     }
 
+    // Применение эффекта бонуса к платформе и мячу
     void PowerUpManager::applyPowerUpEffect(PowerUp& powerup, Paddle& paddle, Ball& ball)
     {
+        // Снимаем "мешающие" эффекты
         switch (powerup.getPowerUpType())
         {
         case PowerUpType::ExpandPaddle:
-            cancelEffect(PowerUpType::ShrinkPaddle);
-            cancelEffect(PowerUpType::ExpandPaddle);
-            break;
         case PowerUpType::ShrinkPaddle:
             cancelEffect(PowerUpType::ExpandPaddle);
             cancelEffect(PowerUpType::ShrinkPaddle);
@@ -98,6 +102,7 @@ namespace Arkanoid
         activeEffects.push_back(std::move(effect));
     }
 
+    // Отмена эффекта
     void PowerUpManager::cancelEffect(PowerUpType type)
     {
         for (auto it = activeEffects.begin(); it != activeEffects.end();)
@@ -114,6 +119,7 @@ namespace Arkanoid
         }
     }
 
+    // Сбросить все бонусы и эффекты
     void PowerUpManager::reset()
     {
         powerups->clear();
@@ -125,16 +131,19 @@ namespace Arkanoid
         activeEffects.clear();
     }
 
+    // Получить список активных эффектов
     const std::vector<std::unique_ptr<PowerUpEffect>>& PowerUpManager::getActiveEffects() const
     {
         return activeEffects;
     }
 
+    // Установить коллбэк для бонуса "доп. жизнь"
     void PowerUpManager::setExtraLifeCallback(std::function<void()> callback)
     {
         extraLifeCallback = callback;
     }
 
+    // Проверка наличия активного временного эффекта
     bool PowerUpManager::isTemporaryEffectActive() const {
         for (const auto& effect : activeEffects) {
             if (effect->isTemporary() && !effect->isFinished()) {

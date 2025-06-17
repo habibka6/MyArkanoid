@@ -65,7 +65,7 @@ set(SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 # Указываем путь к SFML
-set(SFML_DIR "C:/C++Libraries/SFML-2.6.2/lib/cmake/SFML")
+set(SFML_DIR "${CMAKE_SOURCE_DIR}/SFML-2.6.2/lib/cmake/SFML")
 find_package(SFML 2.6 COMPONENTS graphics window system audio REQUIRED)
 
 # Теперь указываем include директории (ПОСЛЕ создания target)

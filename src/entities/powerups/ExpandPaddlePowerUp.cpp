@@ -2,8 +2,7 @@
 
 namespace Arkanoid {
 
-    ExpandPaddlePowerUp::ExpandPaddlePowerUp(float x, float y)
-        : PowerUp(x, y)
+    ExpandPaddlePowerUp::ExpandPaddlePowerUp(float x, float y) : PowerUp(x, y)
     {
         setupAppearance();
     }

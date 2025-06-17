@@ -5,6 +5,8 @@ namespace Arkanoid {
 
     class GameEngine;
 
+    // Базовый класс для всех игровых состояний (паттерн "State")
+    // Определяет интерфейс для конкретных состояний (меню, настройки, уровни, игра, окончание игры)
     class State {
     public:
         State(GameEngine& engine);

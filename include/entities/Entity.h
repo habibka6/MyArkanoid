@@ -11,6 +11,7 @@ namespace Arkanoid {
         PowerUp
     };
 
+    // Абстрактный базовый класс для всех игровых объектов
     class Entity {
     public:
         virtual ~Entity() = default;

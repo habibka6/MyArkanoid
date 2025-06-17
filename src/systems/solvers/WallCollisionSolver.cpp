@@ -6,6 +6,8 @@ namespace Arkanoid {
     WallCollisionSolver::WallCollisionSolver(float windowWidth, float windowHeight)
         : worldBounds{ 0, 0, windowWidth, windowHeight } {
     }
+
+    // Разрешение коллизии мяча со стенами
     void WallCollisionSolver::resolveCollision(Ball& ball, const sf::FloatRect&, float deltaTime) {
         float radius = ball.getBounds().width * 0.5f;
         auto pos = ball.getPosition();
@@ -34,7 +36,7 @@ namespace Arkanoid {
         }
     }
 
-
+    // Проверка выхода мяча за границы
     bool WallCollisionSolver::checkWallCollisions(Ball& ball) const {
         float radius = ball.getBounds().width * 0.5f;
         auto pos = ball.getPosition();
@@ -43,12 +45,6 @@ namespace Arkanoid {
         return (pos.x - radius <= worldBounds.left && vel.x < 0) ||
             (pos.x + radius >= worldBounds.left + worldBounds.width && vel.x > 0) ||
             (pos.y - radius <= worldBounds.top && vel.y < 0);
-    }
-
-    
-
-    bool WallCollisionSolver::isBallLost(const Ball& ball, float worldHeight) {
-        return ball.getPosition().y > worldHeight + 50;
     }
 
 }

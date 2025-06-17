@@ -2,8 +2,7 @@
 
 namespace Arkanoid {
 
-    PowerUp::PowerUp(float x, float y)
-        : active(true), fallSpeed(Config::PowerUp::FALL_SPEED)
+    PowerUp::PowerUp(float x, float y) : active(true), fallSpeed(Config::PowerUp::FALL_SPEED)
     {
         shape.setSize(sf::Vector2f(30, 30));
         shape.setOrigin(shape.getSize().x / 2, shape.getSize().y / 2);

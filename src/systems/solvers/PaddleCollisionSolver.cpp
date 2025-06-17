@@ -5,10 +5,12 @@
 
 namespace Arkanoid {
 
+    // Проверка столкновения мяча с платформой
     bool PaddleCollisionSolver::checkPaddleCollision(Ball& ball, Paddle& paddle) const {
         return ball.getBounds().intersects(paddle.getBounds()) && ball.getVelocity().y > 0;
     }
 
+    // Разрешение коллизии мяча с платформой
     void PaddleCollisionSolver::resolvePaddleCollision(Ball& ball, Paddle& paddle, float) {
         calculateAndApplyPaddleReflection(ball, paddle);
         applyPaddleInfluence(ball, paddle);
@@ -16,7 +18,7 @@ namespace Arkanoid {
         ball.increaseSpeedFactor(Config::Ball::SPEED_INCREASE_PER_HIT);
     }
 
-
+    // Вычисление отражения мяча от платформы
     void PaddleCollisionSolver::calculateAndApplyPaddleReflection(Ball& ball, const Paddle& paddle) {
         float halfW = paddle.getSize().x * 0.5f;
         float paddleCX = paddle.getPosition().x + halfW;
@@ -40,22 +42,14 @@ namespace Arkanoid {
         ball.setVelocity(newVel);
     }
 
-    sf::Vector2f PaddleCollisionSolver::calculateReflectionNormal(const sf::Vector2f& ballPos, const sf::FloatRect& paddleBounds) {
-        float relativeX = (ballPos.x - paddleBounds.left) / paddleBounds.width;
-        relativeX = std::clamp(relativeX, 0.0f, 1.0f);
-        float maxAngle = 60.0f;
-        float angle = (relativeX - 0.5f) * maxAngle * 2.0f;
-        float angleRad = angle * Config::Physics::DEG_TO_RAD;
-
-        return sf::Vector2f(std::sin(angleRad), -std::abs(std::cos(angleRad)));
-    }
-
+    // Влияние скорости платформы на мяч
     void PaddleCollisionSolver::applyPaddleInfluence(Ball& ball, const Paddle& paddle, float influence) {
         auto vel = ball.getVelocity();
         vel.x += paddle.getVelocity().x * influence;
         ball.setVelocity(vel);
     }
 
+    // Коррекция позиции мяча после столкновения с платформой
     void PaddleCollisionSolver::correctPosition(Ball& ball, const sf::FloatRect& paddleBounds) {
         auto ballBounds = ball.getBounds();
         if (ballBounds.top + ballBounds.height > paddleBounds.top) {

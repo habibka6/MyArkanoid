@@ -6,7 +6,7 @@ namespace Arkanoid {
 
     class ScalePaddleEffect : public PowerUpEffect {
     public:
-        ScalePaddleEffect(float duration = 8.0f, float scaleFactor= 1.0f);
+        ScalePaddleEffect(float duration = 8.0f, float scaleFactor= 1);
         ~ScalePaddleEffect() = default;
 
         void apply(Ball& ball, Paddle& paddle, std::function<void()> gameCallback) override;

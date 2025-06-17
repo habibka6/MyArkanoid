@@ -21,7 +21,6 @@ namespace Arkanoid {
         bool isDestroyed() const override;
         int getPoints() const override;
         BlockType getBlockType() const override;
-        sf::Color getColor() const override;
 
     private:
         sf::RectangleShape shape;

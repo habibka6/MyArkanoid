@@ -9,56 +9,49 @@ namespace Arkanoid {
         : window(window),
         interpolationEnabled(true),
         hasBackground(false) {
-
         initializeUI();
         loadBackground();
-        setVSync(true);
     }
 
     void RenderSystem::render(float interpolationFactor) {
-    
         renderBackground();
     }
 
+    // Очистка окна цветом
     void RenderSystem::clear(const sf::Color& color) {
         window.clear(color);
     }
 
+    // Отображение содержимого окна
     void RenderSystem::display() {
         window.display();
     }
 
+    // Рендеринг всей игровой сцены
     void RenderSystem::renderGameContent(
         const Ball& ball,
         const Paddle& paddle,
         const std::vector<std::unique_ptr<BaseBlock>>& blocks,
         const std::vector<std::unique_ptr<PowerUp>>& powerups,
         const std::vector<std::unique_ptr<PowerUpEffect>>& activeEffects,
-        int score, int lives, int level) {
-
-        // Рендеринг фона
+        int score, int lives, int level)
+    {
         renderBackground();
 
-        // Рендеринг игровых объектов
+        // Игровые объекты
         ball.draw(window);
         paddle.draw(window);
 
-        for (const auto& block : blocks) {
-            if (block->isActive()) {
-                block->draw(window);
-            }
-        }
+        for (const auto& block : blocks)
+            if (block->isActive()) block->draw(window);
 
-        for (const auto& powerup : powerups) {
-            if (powerup->isActive()) {
-                powerup->draw(window);
-            }
-        }
+        for (const auto& powerup : powerups)
+            if (powerup->isActive()) powerup->draw(window);
 
-        // Рендеринг UI
         renderUI(score, lives, level);
     }
 
+    // Рендеринг UI (счёт, жизни, уровень)
     void RenderSystem::renderUI(int score, int lives, int level) {
         scoreText.setString("Score: " + std::to_string(score));
         livesText.setString("Lives: " + std::to_string(lives));
@@ -69,13 +62,13 @@ namespace Arkanoid {
         window.draw(levelText);
     }
 
+    // Рендеринг фона
     void RenderSystem::renderBackground() {
-        if (hasBackground) {
+        if (hasBackground)
             window.draw(backgroundSprite);
-        }
     }
 
-
+    // Оверлей паузы
     void RenderSystem::renderPauseOverlay() {
         sf::RectangleShape overlay;
         overlay.setSize(sf::Vector2f(Config::Window::WIDTH, Config::Window::HEIGHT));
@@ -86,6 +79,7 @@ namespace Arkanoid {
         window.draw(pauseText);
     }
 
+    // Оверлей завершения уровня
     void RenderSystem::renderLevelCompleteOverlay() {
         sf::RectangleShape overlay;
         overlay.setSize(sf::Vector2f(Config::Window::WIDTH, Config::Window::HEIGHT));
@@ -96,23 +90,12 @@ namespace Arkanoid {
         window.draw(levelCompleteText);
     }
 
-
-    void RenderSystem::setVSync(bool enabled) {
-        window.setVerticalSyncEnabled(enabled);
-    }
-
-    void RenderSystem::setInterpolation(bool enabled) {
-        interpolationEnabled = enabled;
-    }
-
-    bool RenderSystem::isInterpolationEnabled() const {
-        return interpolationEnabled;
-    }
-
+    // Получить размер окна
     sf::Vector2u RenderSystem::getWindowSize() const {
         return window.getSize();
     }
 
+    // Инициализация UI-элементов
     void RenderSystem::initializeUI() {
         try {
             font = AssetManager::getInstance().getFont("retro.ttf");
@@ -121,13 +104,13 @@ namespace Arkanoid {
             setupText(livesText, "Lives: 3", 10, 40);
             setupText(levelText, "Level: 1", 10, 70);
 
-            // Инициализация текстов состояний
+            // Текст для паузы
             pauseText.setFont(font);
             pauseText.setString("PAUSED");
             pauseText.setCharacterSize(72);
             pauseText.setFillColor(sf::Color::Yellow);
 
-
+            // Текст для завершения уровня
             levelCompleteText.setFont(font);
             levelCompleteText.setString("LEVEL COMPLETE!");
             levelCompleteText.setCharacterSize(48);
@@ -136,10 +119,12 @@ namespace Arkanoid {
         }
         catch (const std::exception& e) {
             if (!font.loadFromFile("C:/Windows/Fonts/arial.ttf")) {
+
             }
         }
     }
 
+    // Загрузка и масштабирование фоновой текстуры
     void RenderSystem::loadBackground() {
         try {
             sf::Texture& bgTexture = AssetManager::getInstance().getTexture("background.png");
@@ -161,17 +146,18 @@ namespace Arkanoid {
         }
     }
 
+    // Настройка параметров текста
     void RenderSystem::setupText(sf::Text& text, const std::string& content, float x, float y, int size) {
         text.setFont(font);
         text.setString(content);
         text.setCharacterSize(size);
         text.setFillColor(sf::Color::White);
         text.setPosition(x, y);
-
         text.setOutlineColor(sf::Color::Black);
         text.setOutlineThickness(1);
     }
 
+    // Центрирование текста по окну
     void RenderSystem::centerText(sf::Text& text) {
         sf::FloatRect textBounds = text.getLocalBounds();
         text.setPosition(
@@ -180,4 +166,4 @@ namespace Arkanoid {
         );
     }
 
-} 
+} // namespace Arkanoid

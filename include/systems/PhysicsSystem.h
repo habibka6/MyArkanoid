@@ -13,24 +13,23 @@
 #include <memory>
 
 namespace Arkanoid {
-
+    // Система физики, обрабатывающая коллизии и движения объектов
     class PhysicsSystem {
     public:
         PhysicsSystem(sf::RenderWindow& window);
         ~PhysicsSystem() = default;
+
 
         void update(Ball& ball, Paddle& paddle,
             std::vector<std::unique_ptr<BaseBlock>>& blocks,
             std::vector<std::unique_ptr<PowerUp>>& powerups,
             float deltaTime);
 
-        // Observer methods
+        // Методы для управления наблюдателями
         void addObserver(ICollisionObserver* observer);
         void removeObserver(ICollisionObserver* observer);
 
         void setWorldBounds(const sf::FloatRect& bounds);
-        bool isBallLost(const Ball& ball) const;
-
     private:
         sf::RenderWindow& window;
         SpatialGrid spatialGrid;
@@ -40,18 +39,21 @@ namespace Arkanoid {
         std::unique_ptr<PaddleCollisionSolver> paddleSolver;
         std::unique_ptr<WallCollisionSolver> wallSolver;
 
-        // Observer storage
-        std::vector<ICollisionObserver*> observers;
 
-        // Notify all observers
+        std::vector<ICollisionObserver*> observers; // Список наблюдателей
+
+        // Уведомление наблюдателей
         void notifyObservers(CollisionType type, Entity* obj1, Entity* obj2);
 
+        // Методы проверки коллизий
         void checkBallCollisions(Ball& ball, Paddle& paddle,
             std::vector<std::unique_ptr<BaseBlock>>& blocks,
             float deltaTime);
         void checkPowerUpCollisions(std::vector<std::unique_ptr<PowerUp>>& powerups,
             Paddle& paddle);
         void checkWallCollisions(Ball& ball, float deltaTime);
+
+        // Ограничение движения платформы
         void constrainPaddleToWindow(Paddle& paddle);
     };
 

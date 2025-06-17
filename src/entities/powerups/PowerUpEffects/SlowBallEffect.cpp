@@ -3,12 +3,8 @@
 namespace Arkanoid {
 
     SlowBallEffect::SlowBallEffect(float duration, float slowFactor)
-        : duration(duration),
-        timeRemaining(duration),
-        slowFactor(slowFactor),
-        savedSpeedFactor(1.0f),
-        finished(false),
-        affectedBall(nullptr) {
+        : duration(duration), timeRemaining(duration), slowFactor(slowFactor),
+        savedSpeedFactor(1.0f), finished(false), affectedBall(nullptr) {
     }
 
     void SlowBallEffect::apply(Ball& ball, Paddle&, std::function<void()>) {

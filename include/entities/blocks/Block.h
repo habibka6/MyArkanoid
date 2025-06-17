@@ -5,6 +5,8 @@ namespace Arkanoid {
 
     class Block : public BaseBlock {
     public:
+
+        // Вариации разрушаемых блоков
         enum class Type {
             Green,
             Yellow,
@@ -14,7 +16,6 @@ namespace Arkanoid {
         Block(float x, float y, Type type);
         ~Block() = default;
 
-        // Entity interface
         void update(float deltaTime) override;
         void draw(sf::RenderWindow& window) const override;
         sf::Vector2f getPosition() const override;
@@ -28,7 +29,6 @@ namespace Arkanoid {
         bool isDestroyed() const override;
         int getPoints() const override;
         BlockType getBlockType() const override;
-        sf::Color getColor() const override;
 
     private:
         sf::RectangleShape shape;
@@ -39,8 +39,8 @@ namespace Arkanoid {
         bool active;
         int pointValue;
 
-        void setupBlock();
-        void updateAppearance();
+        void setupBlock(); // Инициализация блока
+        void updateAppearance(); // Обновление внешнего вида (цвета) после удара мяча
         sf::Color getColorForType(Type type, int health, int maxHealth);
     };
 

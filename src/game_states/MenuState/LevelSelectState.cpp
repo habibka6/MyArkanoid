@@ -21,11 +21,9 @@ namespace Arkanoid {
         const float buttonW = 120, buttonH = 70;
         const float spacingX = 100, spacingY = 70;
 
-        // Размер сетки
         float gridW = COLS * buttonW + (COLS - 1) * spacingX;
         float gridH = ROWS * buttonH + (ROWS - 1) * spacingY;
 
-        // Центрирование
         float startX = (engine.getWindow().getSize().x - gridW) / 2.0f;
         float startY = (engine.getWindow().getSize().y - gridH) / 2.0f + 40; 
 
@@ -137,4 +135,5 @@ namespace Arkanoid {
         engine.getStateMachine().popState();
     }
 
+    int LevelSelectState:: getSelectedIndex() const { return selectedRow * COLS + selectedCol; }
 }

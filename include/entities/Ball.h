@@ -7,7 +7,7 @@ namespace Arkanoid {
 
     class Ball : public MovableEntity {
     public:
-        Ball(float startX, float startY);
+        Ball(float startX, float startY);                     
         ~Ball() = default;
 
         void update(float deltaTime) override;
@@ -25,19 +25,18 @@ namespace Arkanoid {
         void move(const sf::Vector2f& offset) override;
 
        
-        void reset(float paddleCenterX, float paddleY);
-        void reflect(const sf::Vector2f& normal);
-        void increaseSpeedFactor(float value);
-        void resetSpeedFactor();
+        void reset(float paddleCenterX, float paddleY);     // Сбрасывает мяч на позицию над платформой
+        void reflect(const sf::Vector2f& normal);           // Отражает мяч от поверхности с заданной нормалью
+        void increaseSpeedFactor(float value);              // Увеличивает множитель скорости мяча(при столкновении с полатформой)
+        void resetSpeedFactor();                            
         float getSpeedFactor() const;
         void setSpeedFactor(float newSpeedFactor);
         float getBaseSpeed() const;
         sf::Sprite& getSprite();
-        void draw(sf::RenderWindow& window, float alpha) const;
 
         bool getIsOnPaddle() const;
         void updateOnPaddle(float paddleCenterX, float paddleY);
-        void launch();
+        void launch();                                      //Запуск мяча, находящегося на платформе
 
     private:
         sf::Sprite sprite;

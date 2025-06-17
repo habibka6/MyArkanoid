@@ -21,6 +21,7 @@ namespace Arkanoid {
             setupText(menuItems[i].text, menuItems[i].label, startY + i * spacing);
         }
     }
+    void OptionsState::onBack() { engine.getStateMachine().popState(); }
 
     void OptionsState::updateVolumeLabels() {
         menuItems[0].label = "Music Volume: " + volumeLabels[musicVolumeIndex];
@@ -48,7 +49,7 @@ namespace Arkanoid {
                     SoundManager::getInstance().playSound(SoundType::ButtonClick);
                 }
             }
-            if (selectedItem == 1) { // Sound Volume
+            if (selectedItem == 1) { 
                 if (event.key.code == sf::Keyboard::Left && soundVolumeIndex > 0) {
                     soundVolumeIndex--;
                     SoundManager::getInstance().setSoundVolume(soundVolumeIndex * 25.0f);

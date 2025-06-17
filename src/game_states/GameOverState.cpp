@@ -18,7 +18,7 @@ namespace Arkanoid {
         titleText.setCharacterSize(80);
         titleText.setFillColor(gameResult == GameOverReason::Victory ? sf::Color::Green : sf::Color::Red);
         auto bounds = titleText.getLocalBounds();
-        titleText.setPosition((engine.getWindow().getSize().x - bounds.width) / 2,180 );
+        titleText.setPosition((engine.getWindow().getSize().x - bounds.width) / 2, 180 );
 
         // Информация о счёте
         std::string info = "Final Score: " + std::to_string(finalScore) +
@@ -29,17 +29,16 @@ namespace Arkanoid {
         infoText.setCharacterSize(32);
         infoText.setFillColor(sf::Color::White);
         auto ibounds = infoText.getLocalBounds();
-        infoText.setPosition((engine.getWindow().getSize().x - ibounds.width) / 2,320);
+        infoText.setPosition((engine.getWindow().getSize().x - ibounds.width) / 2, 320);
 
-        // Затемнение
         fadeRect.setSize(sf::Vector2f(engine.getWindow().getSize()));
         fadeRect.setFillColor(sf::Color(0, 0, 0, 180));
     }
 
     void GameOverState::enter() {
         try {
-            std::string music = (gameResult == GameOverReason::Victory) ? "victory_music.ogg" : "game_over.wav";
-            SoundManager::getInstance().playMusic(music, false);
+            std::string endgame = (gameResult == GameOverReason::Victory) ? "victory_music.ogg" : "game_over.wav";
+            SoundManager::getInstance().playSound(endgame);
         }
         catch (...) {}
         fadeAlpha = 0.f;
@@ -48,7 +47,6 @@ namespace Arkanoid {
     }
 
     void GameOverState::render(sf::RenderWindow& window) {
-        // Затемнение
         fadeAlpha = std::min(180.f, fadeAlpha + 2.5f); 
         fadeRect.setFillColor(sf::Color(0, 0, 0, static_cast<sf::Uint8>(fadeAlpha)));
         window.draw(fadeRect);

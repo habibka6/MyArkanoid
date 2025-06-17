@@ -56,8 +56,4 @@ namespace Arkanoid {
         return BlockType::Rock;
     }
 
-    sf::Color Rock::getColor() const {
-        return shape.getFillColor();
-    }
-
 } // namespace Arkanoid

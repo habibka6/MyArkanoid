@@ -4,23 +4,24 @@
 
 namespace Arkanoid {
 
+    // Конструктор: инициализация звуков и пула
     SoundManager::SoundManager()
         : soundVolume(100.0f),
         musicVolume(50.0f),
         muted(false) {
         initializeSoundMap();
-
-        // Инициализация пула звуков
         for (size_t i = 0; i < MAX_CONCURRENT_SOUNDS; ++i) {
             soundPool.push_back(std::make_unique<sf::Sound>());
         }
     }
 
+    // Получение синглтона
     SoundManager& SoundManager::getInstance() {
         static SoundManager instance;
         return instance;
     }
 
+    // Заполнение карты звуков
     void SoundManager::initializeSoundMap() {
         soundMap[SoundType::BlockHit] = "block_hit.wav";
         soundMap[SoundType::RockHit] = "rock_hit.wav";
@@ -36,7 +37,6 @@ namespace Arkanoid {
 
     void SoundManager::playSound(SoundType soundType) {
         if (muted) return;
-
         std::string filename = getSoundFilename(soundType);
         if (!filename.empty()) {
             playSound(filename);
@@ -45,7 +45,6 @@ namespace Arkanoid {
 
     void SoundManager::playSound(const std::string& filename) {
         if (muted) return;
-
         try {
             sf::Sound* sound = getAvailableSound();
             if (sound) {
@@ -58,16 +57,16 @@ namespace Arkanoid {
         catch (const std::exception& e) {}
     }
 
+    // Получение свободного звука из пула
     sf::Sound* SoundManager::getAvailableSound() {
-
         for (auto& sound : soundPool) {
             if (sound->getStatus() != sf::Sound::Playing) {
                 return sound.get();
             }
         }
-
         return soundPool[0].get();
     }
+
 
     std::string SoundManager::getSoundFilename(SoundType soundType) const {
         auto it = soundMap.find(soundType);
@@ -119,11 +118,7 @@ namespace Arkanoid {
 
     void SoundManager::setMuted(bool muted) {
         this->muted = muted;
-
-        // Устанавливаем громкость музыки
         music.setVolume(muted ? 0.0f : musicVolume);
-
-        // Останавливаем все звуки если включена мутация
         if (muted) {
             for (auto& sound : soundPool) {
                 if (sound->getStatus() == sf::Sound::Playing) {
@@ -144,4 +139,4 @@ namespace Arkanoid {
         }
     }
 
-} 
+} // namespace Arkanoid

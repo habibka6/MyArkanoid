@@ -3,8 +3,7 @@
 
 namespace Arkanoid {
 
-    SlowBallPowerUp::SlowBallPowerUp(float x, float y)
-        : PowerUp(x, y)
+    SlowBallPowerUp::SlowBallPowerUp(float x, float y) : PowerUp(x, y)
     {
         setupAppearance();
     }

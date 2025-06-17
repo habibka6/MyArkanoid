@@ -6,7 +6,7 @@
 namespace Arkanoid {
 
     MainMenuState::MainMenuState(GameEngine& engine) : MenuStateBase(engine) {
-        setupText(titleText, "ARKANOID", 100, 72);
+        setupText(titleText, "ARKANOID", 100, 70);
         setupMenu();
     }
 
@@ -28,5 +28,9 @@ namespace Arkanoid {
             setupText(menuItems[i].text, menuItems[i].label, startY + i * spacing);
         }
     }
+    void MainMenuState::onBack() {
+        engine.quit(); 
+    }
+
 
 }

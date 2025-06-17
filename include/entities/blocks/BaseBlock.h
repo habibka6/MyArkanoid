@@ -3,12 +3,13 @@
 
 namespace Arkanoid {
 
+    // Типы блоков в игре
     enum class BlockType {
         Standard,
-        Rock,
-        Special
+        Rock
     };
 
+    // Базовый абстрактный класс для всех типов блоков
     class BaseBlock : public Entity {
     public:
         virtual ~BaseBlock() = default;
@@ -21,7 +22,6 @@ namespace Arkanoid {
         virtual bool isDestroyed() const = 0;
         virtual int getPoints() const = 0;
         virtual BlockType getBlockType() const = 0;
-        virtual sf::Color getColor() const = 0;
 
     protected:
         BaseBlock() = default;

@@ -8,7 +8,7 @@ public:
     MainMenuState(GameEngine& engine);
 protected:
     void setupMenu() override;
-    void onBack() override { engine.quit(); }
+    void onBack() override; // Выход из игры
 };
 
 }

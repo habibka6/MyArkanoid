@@ -9,10 +9,8 @@ namespace Arkanoid {
         WallCollisionSolver(float windowWidth, float windowHeight);
         void resolveCollision(Ball& ball, const sf::FloatRect& bounds, float deltaTime);
         bool checkWallCollisions(Ball& ball) const;
-        static bool isBallLost(const Ball& ball, float worldHeight);
-
     private:
-        sf::FloatRect worldBounds;
+        sf::FloatRect worldBounds; // Границы игрового поля
     };
 
 }

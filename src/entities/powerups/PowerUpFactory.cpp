@@ -7,6 +7,7 @@
 namespace Arkanoid {
 
     PowerUpFactory::PowerUpFactory() {
+        // Регистрируем создателей для каждого типа PowerUp
         creators[PowerUpType::ShrinkPaddle] = [](float x, float y) {
             return std::make_unique<ShrinkPaddlePowerUp>(x, y);
             };
@@ -24,16 +25,12 @@ namespace Arkanoid {
             };
     }
 
-    std::unique_ptr<PowerUp> PowerUpFactory::createPowerUp(
-        PowerUpType type,
-        float x,
-        float y
-    ) const {
+    std::unique_ptr<PowerUp> PowerUpFactory::createPowerUp(PowerUpType type, float x,float y) const {
         auto it = creators.find(type);
         if (it != creators.end()) {
             return it->second(x, y);
         }
-        return nullptr; // Или бросить исключение
+        return nullptr; 
     }
 
 } // namespace Arkanoid

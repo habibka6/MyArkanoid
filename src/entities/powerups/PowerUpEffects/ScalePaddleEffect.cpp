@@ -3,13 +3,8 @@
 namespace Arkanoid {
 
     ScalePaddleEffect::ScalePaddleEffect(float duration, float scaleFactor)
-        : duration(duration),
-        timeRemaining(duration),
-        scaleFactor(scaleFactor),
-        applied(false),
-        finished(false),
-        affectedPaddle(nullptr) {
-    }
+        : duration(duration), timeRemaining(duration),  scaleFactor(scaleFactor),
+        applied(false), finished(false), affectedPaddle(nullptr) {}
 
     void ScalePaddleEffect::apply(Ball& ball, Paddle& paddle, std::function<void()> gameCallback) {
         if (applied) return;

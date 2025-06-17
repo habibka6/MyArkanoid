@@ -5,10 +5,8 @@
 namespace Arkanoid {
 
     Ball::Ball(float startX, float startY)
-        : baseSpeed(Config::Ball::BASE_SPEED),
-        speedFactor(1.0f),
-        active(true),
-        isOnPaddle(true)        
+        : baseSpeed(Config::Ball::BASE_SPEED), speedFactor(1.0f),
+          active(true), isOnPaddle(true)        
     {  
         setupSprite();
         reset(startX, startY);
@@ -44,15 +42,6 @@ namespace Arkanoid {
         if (active) {
             window.draw(sprite);
         }
-    }
-
-    void Ball::draw(sf::RenderWindow& window, float alpha) const {
-        if (!active) return;
-
-        sf::Sprite tempSprite = sprite;
-        sf::Vector2f interpolatedPos = previousPosition * (1 - alpha) + sprite.getPosition() * alpha;
-        tempSprite.setPosition(interpolatedPos);
-        window.draw(tempSprite);
     }
 
     sf::Vector2f Ball::getPosition() const {

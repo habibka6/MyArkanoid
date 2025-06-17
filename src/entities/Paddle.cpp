@@ -4,9 +4,7 @@
 namespace Arkanoid {
 
     Paddle::Paddle(float startX, float startY)
-        : velocity(0.0f, 0.0f),
-        active(true),
-        speed(Config::Paddle::BASE_SPEED) {
+        : velocity(0.0f, 0.0f), active(true), speed(Config::Paddle::BASE_SPEED) {
         setupSprite();
         originalScale = sprite.getScale();
         setPosition({ startX, startY });
@@ -96,11 +94,7 @@ namespace Arkanoid {
     }
 
     void Paddle::constrainToWindow(float windowWidth) {
-        float x = std::clamp(
-            sprite.getPosition().x,
-            0.0f,
-            windowWidth - sprite.getGlobalBounds().width
-        );
+        float x = std::clamp( sprite.getPosition().x, 0.0f, windowWidth - sprite.getGlobalBounds().width);
         sprite.setPosition(x, sprite.getPosition().y);
     }
 
