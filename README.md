@@ -96,7 +96,6 @@ MyArkanoid/
 │       ├── ICollisionObserver.h
 │       ├── PhysicsSystem.h
 │       ├── RenderSystem.h
-│       ├── SpatialGrid.h
 │       └── solvers/         # Солверы коллизий
 │           ├── BlockCollisionSolver.h
 │           ├── PaddleCollisionSolver.h

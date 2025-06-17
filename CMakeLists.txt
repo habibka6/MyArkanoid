@@ -45,7 +45,6 @@ set(SOURCES
     src/systems/solvers/BlockCollisionSolver.cpp  
     src/systems/solvers/WallCollisionSolver.cpp  
     src/systems/solvers/PaddleCollisionSolver.cpp  
-    src/systems/SpatialGrid.cpp
 
     # Системы
     src/systems/PhysicsSystem.cpp

@@ -26,7 +26,7 @@
             "centerHorizontally": true,
             "centerVertically": false,
             "marginTop": 110,
-            "spacing": 15,
+            "spacing": 5,
             "layout": [
                 [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
                 [ 1, 1, 9, 1, 1, 1, 1, 1, 9, 1, 1 ],
@@ -42,7 +42,7 @@
             "centerHorizontally": true,
             "centerVertically": false,
             "marginTop": 100,
-            "spacing": 8,
+            "spacing": 6,
             "layout": [
                 [ 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9 ],
                 [ 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1 ],
@@ -58,7 +58,7 @@
             "centerHorizontally": true,
             "centerVertically": false,
             "marginTop": 95,
-            "spacing": 7,
+            "spacing": 8,
             "layout": [
                 [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
                 [ 2, 9, 2, 2, 2, 2, 2, 2, 2, 9, 2 ],

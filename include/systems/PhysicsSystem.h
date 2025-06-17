@@ -3,7 +3,6 @@
 #include "Paddle.h"
 #include "BaseBlock.h"
 #include "PowerUp.h"
-#include "SpatialGrid.h"
 #include "BlockCollisionSolver.h"
 #include "PaddleCollisionSolver.h"
 #include "WallCollisionSolver.h"
@@ -32,7 +31,6 @@ namespace Arkanoid {
         void setWorldBounds(const sf::FloatRect& bounds);
     private:
         sf::RenderWindow& window;
-        SpatialGrid spatialGrid;
         sf::FloatRect worldBounds;
 
         std::unique_ptr<BlockCollisionSolver> blockSolver;

@@ -23,7 +23,7 @@ namespace Config {
 
     // Мяч
     namespace Ball {
-        constexpr float BASE_SPEED = 630.0f;
+        constexpr float BASE_SPEED = 650.0f;
         constexpr float SPEED_INCREASE_PER_HIT = 0.02f;
     }
 
@@ -53,6 +53,6 @@ namespace Config {
     // Игровой процесс
     namespace Game {
         constexpr int LIVES = 3;
-        constexpr float TARGET_FPS = 120;
+        constexpr float TARGET_FPS = 200;
     }
 }
