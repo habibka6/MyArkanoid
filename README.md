@@ -145,36 +145,32 @@ MyArkanoid/
 ---
 
 ## ⚙️ Настройка параметров игры
-Все ключевые параметры игры можно гибко настраивать через файл `include/Config.h`:
+Все ключевые параметры игры можно гибко настраивать через файл `include/core/Config.h`:
 
 ```cpp
 // Пример настроек в Config.h
 namespace Config {
-    // Физика
-    constexpr float BALL_SPEED = 350.0f;
-    constexpr float PADDLE_SPEED = 500.0f;
-    constexpr float POWERUP_FALL_SPEED = 150.0f;
-    
-    // Геймплей
-    constexpr float BALL_ACCELERATION = 1.05f; // Коэффициент ускорения мяча
-    constexpr int POWERUP_SPAWN_CHANCE = 30;    // Шанс выпадения бонуса (1-100%)
-    constexpr float BONUS_DURATION = 10.0f;     // Длительность действия бонусов
-    
+
+    constexpr float Ball::BASE_SPEED = 650.0f;
+    constexpr float PADDLE_SPEED = 900.0f;
+    constexpr float POWERUP::FALL_SPEED = 200.0f;
+   
+    constexpr float Ball::SPEED_INCREASE_PER_HIT = 0.02f; //ускорение мяча на
+    constexpr int PoowerUp::SPAWN_CHANCE = 30;    // Шанс выпадения бонуса (1-100%)
     // Системные
-    constexpr int FPS_LIMIT = 144;
+    onstexpr float Game::TARGET_FPS = 120; 
 }
 ```
 
 **Что можно настроить:**
-- Скорость мяча (`BALL_SPEED`)
-- Скорость движения платформы (`PADDLE_SPEED`)
-- Скорость падения бонусов (`POWERUP_FALL_SPEED`)
-- Коэффициент ускорения мяча после отскока (`BALL_ACCELERATION`)
-- Шанс выпадения бонусов из блоков (`POWERUP_SPAWN_CHANCE`)
-- Ограничение FPS (`FPS_LIMIT`)
-- Длительность действия бонусов (`BONUS_DURATION`)
+- Скорость мяча (`Ball::BASE_SPEED`)
+- Скорость движения платформы (`Paddle::BASE_SPEED`)
+- Скорость падения бонусов (`PowerUp::FALL_SPEED`)
+- Коэффициент ускорения мяча после отскока (Ball::SPEED_INCREASE_PER_HIT = 0.02f;)
+- Шанс выпадения бонусов из блоков (`PowerUp::SPAWN_CHANCE`)
+- Ограничение FPS (`TARGET_FPS`)
 - Размеры игровых объектов
-- Цветовые схемы
+
 
 После изменения параметров нужно пересобрать проект.
 
