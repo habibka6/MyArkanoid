@@ -148,6 +148,7 @@ namespace Arkanoid {
                     block->getBlockType() == BlockType::Rock ? SoundType::RockHit : SoundType::BlockHit
                 );
                 if (block->isDestroyed()) {
+                    updateScore(block->getPoints()); // Очки за сбор бонуса
                     powerUpManager.spawnPowerUp(block->getPosition()); 
                 }
             }

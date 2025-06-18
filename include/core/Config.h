@@ -23,7 +23,7 @@ namespace Config {
 
     // Мяч
     namespace Ball {
-        constexpr float BASE_SPEED = 650.0f;
+        constexpr float BASE_SPEED = 670.0f;
         constexpr float SPEED_INCREASE_PER_HIT = 0.02f;
     }
 
