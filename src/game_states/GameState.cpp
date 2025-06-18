@@ -25,7 +25,7 @@ namespace Arkanoid {
         initializeGame();        
         initializePhysics();      
         loadLevel(currentLevel); 
-        SoundManager::getInstance().playMusic("game_music.ogg", true); 
+        SoundManager::getInstance().playMusic("game_music.ogg", true); //нужно загрузить аудиофайл в "music/" (сейчас там глушилка стоит)
     }
 
     // Выход из игрового состояния

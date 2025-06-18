@@ -6,7 +6,7 @@
         {
             "number": 1,
             "name": "Classic Start",
-            "description": "Traditional arkanoid beginning",
+            "description": "Basic Level",
             "centerHorizontally": true,
             "centerVertically": false,
             "marginTop": 120,
